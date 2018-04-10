@@ -15,26 +15,26 @@ class App extends Component {
           <Route exact path="/" render={() => (
               <div>
                   <a href="/login" style={{ textDecoration: "none", color: "black" }}>Login</a>
-                  <div id="container">
-                      <div id="auth_box">
-                          <div id="auth_logo">
-                              <p>Prolific Trading</p>
-                          </div>
-                          <div>
-                                <button>Log In</button>
-                                <button>Sign Up</button>
-                          </div>
-                          <div>
-                              <button>Log In</button>
-                          </div>
-                      </div>
-                  </div>
               </div>
           )} />
 
           <Route exact path="/login" render={()  => (
               <div>
                   <a href="/" style={{ textDecoration: "none", color: "black" }}>Home</a>
+                  <div id="container">
+                      <div id="auth_box">
+                          <div id="auth_logo">
+                              <p>Prolific Trading</p>
+                          </div>
+                          <div>
+                              <button>Log In</button>
+                              <button>Sign Up</button>
+                          </div>
+                          <div>
+                              <button>Log In</button>
+                          </div>
+                      </div>
+                  </div>
               </div>
           )} />
 
