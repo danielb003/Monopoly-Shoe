@@ -26,3 +26,17 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+#container {
+  width: 100%;
+  height: 1000px;
+  border: 1px solid red;
+}
+
+#auth_box {
+  border: 1px solid black;
+  width: 400px;
+  height: 600px;
+  margin: 150px auto;
+  border-radius: 10px;
+}
