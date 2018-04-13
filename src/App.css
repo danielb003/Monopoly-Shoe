@@ -30,7 +30,6 @@
 #container {
   width: 100%;
   height: 1000px;
-  border: 1px solid red;
 }
 
 #auth_box {
@@ -39,4 +38,78 @@
   height: 600px;
   margin: 150px auto;
   border-radius: 10px;
+}
+
+.pad-sides{
+  padding-top: 10px;
+  padding-left: 25px;
+  padding-right: 25px;
+}
+
+.nopad_bottom{
+  margin-bottom: 0;
+}
+
+div.card {
+  padding: 10px;
+  border-radius: 15px;
+  /*color: white;*/
+  background-color: lightgray;
+  width: 250px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  text-align: center;
+}
+
+.noPad_left{
+  padding-left: 0px;
+}
+
+.noPad{
+  padding:0;
+  margin:0;
+}
+
+table thead{
+  color: white;
+  background-color: #2677c7;
+}
+
+table td{
+  background-color: white;
+}
+
+#crypto_icon{
+  width: 30px;
+  height: 30px;
+}
+
+#sell{
+  color: red;
+}
+
+#buy{
+  color: green;
+}
+
+#dashboard{
+  font-family: "monospace";
+  color: #ff1c60;
+}
+
+#heading{
+  color: white;
+  font-size: 30px;
+  font-family: "monospace";
+}
+
+p{
+  font-family: "Courier";
+  color:whitesmoke;
+  font-weight: bold;
+  font-size: 25px;
+}
+
+.fix-overflow{
+  /*overflow: auto;*/
+  clear: both;
 }

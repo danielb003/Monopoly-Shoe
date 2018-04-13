@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
 import firebase from "firebase";
-import Form, { Input, Fieldset } from 'react-bootstrap-form';
 
-export default class Login extends Component {
+export default class SignUp extends Component {
 
    render() {
       return (
          <div style={{ height: "100px" }}>
-            <p style={{ color: "black" }}>This is the login bar</p>
+            <p style={{ color: "black" }}>This is the sign up bar</p>
+            <form>
 
+            </form>
          </div>
       )
    }

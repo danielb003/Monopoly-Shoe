@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import Home from './Home';
+import Auth from './authentication/Auth';
+import Dashboard from './dashboard/Dashboard';
 import firebase from 'firebase';
-import { BrowserRouter } from 'react-router-dom';
-
+import { BrowserRouter, Route } from 'react-router-dom';
 import registerServiceWorker from './registerServiceWorker';
 
 // Initialize Firebase
@@ -21,7 +22,11 @@ firebase.initializeApp(config);
 
 const Root = () => (
     <BrowserRouter>
-        <App />
+        <div>
+            <Route exact path="/" component={Home} />
+            <Route path="/auth" component={Auth} />
+            <Route path="/dashboard" component={Dashboard} />
+        </div>
     </BrowserRouter>
 );
 
