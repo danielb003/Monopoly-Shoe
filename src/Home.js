@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import CryptoChart from './graph/CryptoChart';
+import Transaction from './graph/Transaction';
 
 export default class Home extends Component {
    state = {
@@ -27,6 +28,7 @@ export default class Home extends Component {
               </Navbar>
               <div className='crypto_chart'>
                  <CryptoChart />
+                 <Transaction />
               </div>
            </div>
         )
