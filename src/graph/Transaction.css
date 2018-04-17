@@ -1,0 +1,19 @@
+div.buy-box, .sell-box{
+    padding: 5px 20px 5px 20px;
+    color: black;
+    background-color: white;
+    width: 100%;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+div.buy-box p, .sell-box p{
+    color: black;
+}
+
+div.pad-box{
+    padding: 0px 5px 0px 0px;
+}
+
+#buy-button, #sell-button{
+    width: 100%;
+}
