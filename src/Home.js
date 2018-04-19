@@ -4,6 +4,7 @@ import CryptoChart from './graph/CryptoChart';
 import Transaction from './graph/Transaction';
 /*import './Home.css';*/
 
+
 export default class Home extends Component {
    state = {
       type: null
