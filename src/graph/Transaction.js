@@ -46,7 +46,7 @@ class Transaction extends Component{
         this.handleSellPriceChange = this.handleSellPriceChange.bind(this);
         this.handleSellAmountChange = this.handleSellAmountChange.bind(this);
 
-        this.handleSubmit = this.handleSubmit.bind(this);
+        // this.handleSubmit = this.handleSubmit.bind(this);
         // this.save_BuyOrder = this.save_BuyOrder
     }
 
@@ -86,7 +86,7 @@ class Transaction extends Component{
     }
 
     save_BuyOrder = (event) => {
-        firebase.database().ref('buy/4').set({
+        firebase.database().ref('buy/').push({
             price: this.state.buyPrice,
             amount: this.state.buyAmount
         }).then(function () {
@@ -95,11 +95,15 @@ class Transaction extends Component{
             .catch(function (error) {
                 console.log("Insertion Failed: " + error.message)
             });
+        this.setState({
+            buyAmount: '',
+            buyPrice: ''
+        });
         event.preventDefault();
     }
 
     save_SellOrder = (event) => {
-        firebase.database().ref('sell/4').set({
+        firebase.database().ref('sell/').push({
             price: this.state.sellPrice,
             amount: this.state.sellAmount
         }).then(function() {
@@ -107,6 +111,10 @@ class Transaction extends Component{
         })
         .catch(function(error) {
             console.log("Insertion Failed: " + error.message)
+        });
+        this.setState({
+            sellAmount: '',
+            sellPrice: ''
         });
         event.preventDefault();
     }
@@ -172,11 +180,11 @@ class Transaction extends Component{
         });
     }
 
-    handleSubmit(event) {
-        alert('buyPrice: ' + this.state.buyPrice + ', buyAmount: ' + this.state.buyAmount);
-        alert('sellPrice: ' + this.state.sellPrice + ', sellAmount: ' + this.state.sellAmount);
-        alert('api_price: ' + this.state.currentPrice);
-        event.preventDefault();
+    // handleSubmit(event) {
+    //     alert('buyPrice: ' + this.state.buyPrice + ', buyAmount: ' + this.state.buyAmount);
+    //     alert('sellPrice: ' + this.state.sellPrice + ', sellAmount: ' + this.state.sellAmount);
+    //     alert('api_price: ' + this.state.currentPrice);
+    //     event.preventDefault();
         // firebase.database().ref('sell/4').set({
         //     price: this.state.price,
         //     amount: this.state.amount
@@ -196,7 +204,7 @@ class Transaction extends Component{
         //     price: '',
         //     amount: ''
         // });
-    }
+    // }
 
     render(){
 
