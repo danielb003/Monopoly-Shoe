@@ -38,7 +38,9 @@ class Transaction extends Component{
             buyPrice: null,
             sellPrice: null,
             buyAmount: null,
-            sellAmount: null
+            sellAmount: null,
+            buyTotal: null,
+            sellTotal: null
         }
 
         this.handleBuyPriceChange = this.handleBuyPriceChange.bind(this);
@@ -52,12 +54,12 @@ class Transaction extends Component{
 
     componentDidMount(){
 
-        this.retreive_currentPrice();
+        this.retrieve_currentPrice();
 
 
     }
 
-    retreive_currentPrice = () => {
+    retrieve_currentPrice = () => {
         this.getData = () => {
             const {data} = this.props;
             const coin = 'BTC'
@@ -67,13 +69,9 @@ class Transaction extends Component{
             fetch(url).then(r => r.json())
                 .then((coinData) => {
                     const price = coinData.AUD;
-                    // const change = price - data[0].y;
-                    // const changeP = (price - data[0].y) / data[0].y * 100;
 
                     this.setState({
                         currentPrice: coinData.AUD,
-                        // monthChangeD: change.toLocaleString('en-AU',{ style: 'currency', currency: 'AUD' }),
-                        // monthChangeP: changeP.toFixed(2) + '%',
                         updatedAt: new Date()
                     })
                 })
@@ -88,7 +86,8 @@ class Transaction extends Component{
     save_BuyOrder = (event) => {
         firebase.database().ref('buy/').push({
             price: this.state.buyPrice,
-            amount: this.state.buyAmount
+            amount: this.state.buyAmount,
+            total: this.state.buyTotal
         }).then(function () {
             console.log("Insertion Succeeded.")
         })
@@ -97,7 +96,8 @@ class Transaction extends Component{
             });
         this.setState({
             buyAmount: '',
-            buyPrice: ''
+            buyPrice: '',
+            buyTotal: ''
         });
         event.preventDefault();
     }
@@ -105,7 +105,8 @@ class Transaction extends Component{
     save_SellOrder = (event) => {
         firebase.database().ref('sell/').push({
             price: this.state.sellPrice,
-            amount: this.state.sellAmount
+            amount: this.state.sellAmount,
+            total: this.state.sellTotal
         }).then(function() {
             console.log("Insertion Succeeded.")
         })
@@ -114,7 +115,8 @@ class Transaction extends Component{
         });
         this.setState({
             sellAmount: '',
-            sellPrice: ''
+            sellPrice: '',
+            sellTotal: ''
         });
         event.preventDefault();
     }
@@ -160,23 +162,38 @@ class Transaction extends Component{
 
     handleBuyAmountChange(event) {
         this.setState({
-            buyAmount: event.target.value
-        });
+            buyAmount: event.target.value,
+        }, () => this.handleBuyTotalChange());
+        // callback function for real time update on Total value
     }
+
     handleBuyPriceChange(event) {
         this.setState({
             buyPrice: event.target.value
         });
     }
 
+    handleBuyTotalChange = () => {
+        this.setState({
+            buyTotal: this.state.buyAmount * this.state.buyPrice
+        });
+    }
+
     handleSellAmountChange(event) {
         this.setState({
-            sellAmount: event.target.value
-        });
+            sellAmount: event.target.value,
+
+        }, () => this.handleSellTotalChange());
     }
     handleSellPriceChange(event) {
         this.setState({
             sellPrice: event.target.value
+        });
+    }
+
+    handleSellTotalChange = () => {
+        this.setState({
+            sellTotal: this.state.sellAmount * this.state.sellPrice
         });
     }
 
@@ -241,6 +258,18 @@ class Transaction extends Component{
                                         }}
                                         margin="normal"
                                     />
+                                <p>Total</p>
+                                <TextField
+                                    id="buyTotal"
+                                    label="Total"
+                                    value={this.state.buyTotal}
+                                    type="number"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    margin="normal"
+                                    disabled
+                                />
                                 <Button id="buy-button" color="primary" type="submit" >
                                     <h3>Buy</h3>
                                 </Button>
@@ -275,6 +304,18 @@ class Transaction extends Component{
                                         }}
                                         margin="normal"
                                     />
+                                <p>Total</p>
+                                <TextField
+                                    id="sellTotal"
+                                    label="Total"
+                                    value={this.state.sellTotal}
+                                    type="number"
+                                    InputLabelProps={{
+                                        shrink: true,
+                                    }}
+                                    margin="normal"
+                                    disabled
+                                />
                                 <Button id="sell-button" color="secondary" type="submit" >
                                     <h3>Sell</h3>
                                 </Button>
