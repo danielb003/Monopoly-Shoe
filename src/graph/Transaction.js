@@ -33,7 +33,8 @@ class Transaction extends Component{
         this.state = {
             currentPrice: null,
             updatedAt: null,
-            orders: [],
+            buyOrders: [],
+            sellOrders: [],
             current_order: null,
             buyPrice: null,
             sellPrice: null,
@@ -55,8 +56,8 @@ class Transaction extends Component{
     componentDidMount(){
 
         this.retrieve_currentPrice();
-
-
+        // this.retrieve_orders();
+        // this.process_orders();
     }
 
     retrieve_currentPrice = () => {
@@ -81,6 +82,7 @@ class Transaction extends Component{
         }
         this.getData();
         this.refresh = setInterval(() => this.getData(), 90000);
+        this.retrieve_orders();
     }
 
     save_BuyOrder = (event) => {
@@ -121,44 +123,86 @@ class Transaction extends Component{
         event.preventDefault();
     }
 
-    process_order = () => {
+    retrieve_orders = () => {
         // get api value for various crypto values
         // if buy/sell order reach specified amount, process it
         // loop all orders and process it
-        // const assignedOrder = [];
-        // const orderFB = firebase.database().ref('buy/');
-        //
-        //
-        // orderFB.on('value', (snapshot) => {
-        //     if(snapshot.val() !== null){
-        //
-        //         for(const index in snapshot.val()){
-        //             // if(snapshot.val()[index].type === 'tech') {
-        //             //     tempTech.push(snapshot.val()[index]);
-        //             // }
-        //
-        //             // esfr
-        //         }
-        //         assignedOrder.push({
-        //             // id:snapshot[index].id,
-        //             amount:snapshot[index].amount,
-        //             price:snapshot[index].price
-        //         });
-        //         // pendingTickets.push(responseJson[index]);
-        //         // get apiPrice and currentPrice
-        //         // check if api price meet buy price than process it
-        //
-        //         this.forceUpdate();
-        //     }
-        // }).then((orders) => {
-        //     this.setState({
-        //         assignedOrder: orders
-        //     });
-        // })
-        // // for(const index in responseJson) {
-        //
-        // // }
+        const assignedBuyOrder = [];
+        const assignedSellOrder = [];
+        const buyOrderFB = firebase.database().ref('buy/');
+        const sellOrderFB = firebase.database().ref('sell/');
+        buyOrderFB.on('value', (snapshot) => {
+            if(snapshot.val() !== null){
+
+                for(const index in snapshot.val()){
+
+                    assignedBuyOrder.push({
+                        id:index,
+                        amount:snapshot.child(index + "/amount").val(),
+                        price:snapshot.child(index + "/price").val(),
+                        total:snapshot.child(index + "/total").val()
+                    });
+                }
+                this.setState({
+                    buyOrders: assignedBuyOrder
+                });
+                this.process_orders("buy");
+            }
+        });
+        sellOrderFB.on('value', (snapshot) => {
+            if(snapshot.val() !== null){
+
+                for(const index in snapshot.val()){
+
+                    assignedSellOrder.push({
+                        id:index,
+                        amount:snapshot.child(index + "/amount").val(),
+                        price:snapshot.child(index + "/price").val(),
+                        total:snapshot.child(index + "/total").val()
+                    });
+                }
+                this.setState({
+                    sellOrders: assignedSellOrder
+                });
+                this.process_orders("sell");
+            }
+        });
+
     }
+
+    process_orders = (type) => {
+        const buyOrderLists = this.state.buyOrders;
+        const sellOrderLists = this.state.sellOrders;
+        const btc_price = this.state.currentPrice;
+        console.log('bitcoin price= ' + btc_price);
+        console.log('buy orderLists: ' + buyOrderLists);
+        console.log('sell orderLists: ' + sellOrderLists);
+        if (type === "buy"){
+            console.log("Buy Iteration");
+            for(const index in buyOrderLists){
+                // console.log('price: ' + orderLists[index]["price"]);
+                if (btc_price <= buyOrderLists[index]["price"]){
+                    console.log('user price= ' + buyOrderLists[index]["price"]);
+                    console.log('bitcoin price= ' + btc_price);
+                    // process the money:
+                    // deduct money from user's balance and increase their btc coin
+                }
+            }
+        }else if (type === "sell"){
+            console.log("Sell Iteration");
+            for(const index in sellOrderLists){
+                // console.log('price: ' + orderLists[index]["price"]);
+                if (btc_price >= sellOrderLists[index]["price"]){
+                    console.log('user price= ' + sellOrderLists[index]["price"]);
+                    console.log('bitcoin price= ' + btc_price);
+                    // process the money:
+                    // deduct money from user's balance and increase their btc coin
+                }
+            }
+        }
+    }
+
+
 
     handleBuyAmountChange(event) {
         this.setState({
@@ -225,7 +269,7 @@ class Transaction extends Component{
 
     render(){
 
-        const { orders,  current_order, buyPrice, buyAmount, sellPrice, sellAmount } = this.state;
+        const { buyOrders,  current_order, buyPrice, buyAmount, sellPrice, sellAmount } = this.state;
         return(
             <div>
                 <div className="container table-bordered">
