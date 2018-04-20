@@ -69,7 +69,7 @@ class Dashboard extends Component {
                         <div className="fix-overflow noPad">
                            <h4 id="heading" className="pull-left">Trading View</h4>
                            <div className='crypto_chart container-fluid'>
-                              <CryptoChart />
+                              <CryptoChart/>
                            </div>
                         </div>
 
