@@ -70,7 +70,7 @@ class CryptoChart extends Component {
                </div>
             </div>
             <div className='row'>
-               <div className='chart'>
+               <div className='chart text-center'>
                   { !this.state.fetchingData ?
                      <LineChart data={this.state.data} onChartHover={ (a,b) => this.handleChartHover(a,b) }/>
                      : null }
