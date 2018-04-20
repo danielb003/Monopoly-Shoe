@@ -3,6 +3,7 @@ import './Transaction.css';
 import Button from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import firebase from "firebase/index";
+import { withStyles} from 'material-ui/styles';
 
 
 // const config = {
@@ -23,9 +24,27 @@ const config = {
     messagingSenderId: "909893903732"
 };
 
+const styles = theme => ({
+    bootstrapInput: {
+        borderRadius: 4,
+        backgroundColor: theme.palette.common.white,
+        border: "1px solid #ced4da",
+        fontSize: 16,
+        padding: "10px 12px",
+        transition: theme.transitions.create(["border-color", "box-shadow"]),
+        "&:focus": {
+            borderColor: "#80bdff",
+            boxShadow: "0 0 0 0.2rem rgba(0,123,255,.25)"
+        }
+    }
+
+});
+
+
 firebase.initializeApp(config);
 
-class Transaction extends Component{
+
+export default withStyles(styles)(class Transaction extends Component{
 
     constructor(props){
 
@@ -54,6 +73,7 @@ class Transaction extends Component{
     }
 
     componentDidMount(){
+
 
         this.retrieve_currentPrice();
         // this.retrieve_orders();
@@ -347,45 +367,56 @@ class Transaction extends Component{
         });
     }
 
+
     render(){
 
-        const { buyOrders,  sellOrders, current_order, buyPrice, buyAmount, sellPrice, sellAmount } = this.state;
+        const { classes } = this.props,{ buyOrders,  current_order, buyPrice, buyAmount, sellPrice, sellAmount } = this.state;
         return(
             <div>
                 <div className="container table-bordered">
                     <div className="row">
                         <div className="col-md-6 table-bordered pad-box">
                             <div className="buy-box table-bordered">
-                                <h2 className="text-center">BUY</h2>
-                                <p>Price</p>
+                                <h2 className="text-center">BUYING</h2>
+                                <p>Price:</p>
                                 <form onSubmit={this.save_BuyOrder}>
-                                <TextField
+                                <TextField fullWidth
                                     id="buyPrice"
-                                    label="Price"
                                     value={this.state.buyPrice}
                                     onChange={this.handleBuyPriceChange}
                                     type="number"
+                                    InputProps={{
+                                        disableUnderline: true,
+                                        classes: {
+                                                    input: classes.bootstrapInput
+                                        }
+                                           }}
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
                                     margin="normal"
                                 />
-                                <p>Amount</p>
-                                    <TextField
+
+                                <p>Amount:</p>
+                                    <TextField fullWidth
                                         id="buyAmount"
-                                        label="Amount"
                                         value={this.state.buyAmount}
                                         onChange={this.handleBuyAmountChange}
                                         type="number"
+                                               InputProps={{
+                                                   disableUnderline: true,
+                                                   classes: {
+                                                       input: classes.bootstrapInput
+                                                   }
+                                               }}
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
                                         margin="normal"
                                     />
-                                <p>Total</p>
-                                <TextField
+                                <p>Total:</p>
+                                <TextField fullWidth
                                     id="buyTotal"
-                                    label="Total"
                                     value={this.state.buyTotal}
                                     type="number"
                                     InputLabelProps={{
@@ -402,36 +433,45 @@ class Transaction extends Component{
                         </div>
                         <div className="col-md-6 table-bordered noPad">
                             <div className="sell-box table-bordered">
-                                <h2 className="text-center">SELL</h2>
-                                <p>Price</p>
+                                <h2 className="text-center">SELLING</h2>
+                                <p>Price:</p>
                                 <form onSubmit={this.save_SellOrder}>
-                                    <TextField
+                                    <TextField fullWidth
                                         id="sellPrice"
-                                        label="Price"
                                         value={this.state.sellPrice}
                                         onChange={this.handleSellPriceChange}
                                         type="number"
+                                               InputProps={{
+                                                   disableUnderline: true,
+                                                   classes: {
+                                                       input: classes.bootstrapInput
+                                                   }
+                                               }}
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
                                         margin="normal"
                                     />
-                                <p>Amount</p>
-                                    <TextField
+                                <p>Amount:</p>
+                                    <TextField fullWidth
                                         id="sellAmount"
-                                        label="Amount"
                                         value={this.state.sellAmount}
                                         onChange={this.handleSellAmountChange}
                                         type="number"
+                                               InputProps={{
+                                                   disableUnderline: true,
+                                                   classes: {
+                                                       input: classes.bootstrapInput
+                                                   }
+                                               }}
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
                                         margin="normal"
                                     />
-                                <p>Total</p>
-                                <TextField
+                                <p>Total:</p>
+                                <TextField fullWidth
                                     id="sellTotal"
-                                    label="Total"
                                     value={this.state.sellTotal}
                                     type="number"
                                     InputLabelProps={{
@@ -453,5 +493,5 @@ class Transaction extends Component{
     }
 }
 
+)
 
-export default Transaction;
