@@ -23,7 +23,7 @@ class CryptoChart extends Component {
    componentDidMount(){
       const getData = () => {
          const coin = 'BTC'
-         const limit = 365
+         const limit = 30
          const currency = 'AUD'
          const url = 'https://min-api.cryptocompare.com/data/histoday?fsym=' + coin + '&limit=' + limit + '&tsym=' + currency;
 
