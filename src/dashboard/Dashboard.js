@@ -9,13 +9,36 @@ import ethereum_icon from './../img/ethereum_icon.png';
 import litecoin_icon from './../img/litecoin_icon.png';
 import Switch from 'material-ui/Switch';
 import Button from 'material-ui/Button';
+import { app } from '../Constant'
 import CryptoChart from '../graph/CryptoChart';
 
 class Dashboard extends Component {
+   constructor(props) {
+      super(props);
 
-   state = {
-      openTradingAccount: true
-   };
+      this.state = {
+         authenticated: false,
+         openTradingAccount: true
+      };
+   }
+
+   componentWillMount() {
+      this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
+         if(user) {
+            this.setState({
+               authenticated : true
+            })
+         } else {
+            this.setState({
+               authenticated: false
+            })
+         }
+      })
+   }
+
+   componentWillUnmount() {
+      this.removeAuthListener()
+   }
 
    handleChange = name => event => {
       this.setState({ [name]: event.target.checked });
@@ -29,14 +52,19 @@ class Dashboard extends Component {
                   <NavItem href="/">
                      <p>MonopolyShoe</p>
                   </NavItem>
-                  <NavItem eventKey={1} href="/Dashboard">
+                  <NavItem eventKey={1} href="/dashboard">
                      Portfolio
                   </NavItem>
                </Nav>
                <Nav pullRight>
-                  <NavItem eventKey={2} href="/">
-                     Logout
-                  </NavItem>
+                  {this.state.authenticated ? (
+                     <NavItem eventKey={2} href="/logout">
+                        Logout
+                     </NavItem> ) : (
+                     <NavItem eventKey={2} href="/auth">
+                        Login
+                     </NavItem> )
+                  }
                </Nav>
             </Navbar>
 

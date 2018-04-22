@@ -17,7 +17,7 @@ export default class Auth extends Component {
             phonenumber: '',
             tradingaccount: false,
             admin: false,
-        }
+        };
 
         this.handleLoginClick = this.handleLoginClick.bind(this);
         this.handleSignUpClick = this.handleSignUpClick.bind(this);
@@ -30,33 +30,6 @@ export default class Auth extends Component {
     handleSignUpClick = (type) => {
        this.setState({ type: type });
     }
-
-   handleLogin = (email, password) => {
-       alert("Inside hangleLogin");
-      firebase.auth().signInWithEmailAndPassword(email, password)
-         .catch(function(error) {
-            // Handle errors
-            var errorCode = error.code;
-            var errorMessage = error.message;
-         });
-   }
-
-   handleRegister = (name, email, password) => {
-      alert("Inside hangleRegister");
-      const user = {};
-      user['user/' + this.state.user.uid] = {
-         name: name,
-         email: email,
-         password: password
-      };
-
-      firebase.auth().createUserWithEmailAndPassword(email, password)
-         .catch(function(error) {
-            // Handle errors
-            var errorCode = error.code;
-            var errorMessage = error.message;
-         });
-   }
 
     render() {
        const type = this.state.type;
@@ -89,10 +62,9 @@ export default class Auth extends Component {
                            )
                            : this.state.type === 'signup' ? (
                               <SignUp />
-                           ) :null }
-                        </div>
-                        <div id="login_bar">
-                           <button id="login"><a href="/dashboard" style={{ textDecoration: "none", color: "black" }}>Log In</a></button>
+                           ) : (
+                              <Login />
+                           ) }
                         </div>
                     </div>
                 </div>
