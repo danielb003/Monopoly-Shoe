@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
-import firebase from "firebase";
 import './Login.css';
 import { Redirect } from 'react-router-dom'
 import { app } from '../Constant'
-import Form, { Button, ControlLabel, FormControl, FormGroup } from 'react-bootstrap';
 
 export default class Login extends Component {
    constructor(props) {

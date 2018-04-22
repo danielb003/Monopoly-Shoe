@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import App from './../App';
-import { Jumbotron } from 'react-bootstrap';
 import { Navbar, Nav, NavItem, NavDropdown, NavbarBrand, MenuItem} from 'react-bootstrap';
+import { Redirect } from 'react-router-dom'
 import './../App.css';
 import profile_img from './../img/profile-img.png';
 import bitcoin_icon from './../img/bitcoin_icon.png';
@@ -45,6 +44,10 @@ class Dashboard extends Component {
    };
 
    render(){
+      if(this.state.authenticated === false) {
+         return <Redirect to='/'/>
+      }
+
       return (
          <div>
             <Navbar inverse>
