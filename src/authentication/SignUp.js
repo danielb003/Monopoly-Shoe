@@ -12,7 +12,7 @@ export default class SignUp extends Component {
          lname: '',
          email: '',
          password: '',
-         admin: false
+         admin: false,
       };
       this.handleChange = this.handleChange.bind(this);
       this.handleSignUp = this.handleSignUp.bind(this);
@@ -59,14 +59,6 @@ export default class SignUp extends Component {
          console.log(error);
       })
 
-      const user2 = {};
-      user2['user/' + this.state.uid] = {
-         fname: this.state.fname,
-         lname: this.state.lname,
-         email: this.state.email,
-         password: this.state.password
-      };
-
       console.table([{
          fname: this.state.fname,
          lname: this.state.lname,
@@ -75,21 +67,15 @@ export default class SignUp extends Component {
          redirect: this.state.redirect
       }])
 
-      var user = app.auth().currentUser;
-      var uid, email, password;
-
-      if(user != null) {
-         uid = user.uid;
-         email = user.email;
-         password = user.password;
-      }
-
-      app.database().ref('user/' + uid).set({
+      const usersRef = app.database().ref('user');
+      const user = {
          fname: this.state.fname,
          lname: this.state.lname,
-         email: email,
-         password: password
-      });
+         email: this.state.email,
+         password: this.state.password,
+         admin: this.state.admin
+      }
+      usersRef.push(user);
    }
 
    render() {

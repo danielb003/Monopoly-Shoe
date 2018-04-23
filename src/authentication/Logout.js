@@ -3,8 +3,8 @@ import { Redirect } from 'react-router-dom'
 import { app } from '../Constant'
 
 export default class Logout extends Component {
-   constructor() {
-      super()
+   constructor(props) {
+      super(props)
       this.state= {
          redirect: false
       }
