@@ -9,29 +9,16 @@ export default class Auth extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            firstname: '',
-            lastname: '',
-            email: '',
-            password: '',
-            phonenumber: '',
-            tradingaccount: false,
-            admin: false,
+            type: null
         };
-
-        this.handleLoginClick = this.handleLoginClick.bind(this);
-        this.handleSignUpClick = this.handleSignUpClick.bind(this);
+        this.handleClick = this.handleClick.bind(this);
     }
 
-    handleLoginClick = (type) => {
-       this.setState({ type: type });
-    }
-
-    handleSignUpClick = (type) => {
+    handleClick(type) {
        this.setState({ type: type });
     }
 
     render() {
-       const type = this.state.type;
         return (
             <div>
                 <div id="container">
@@ -52,8 +39,8 @@ export default class Auth extends Component {
                             <p>Prolific Trading</p>
                         </div>
                         <div id="tabs">
-                            <button id="login_tab" onClick={() => this.handleLoginClick('login')}>Log In</button>
-                            <button id="signup_tab" onClick={() => this.handleSignUpClick('signup')}>Sign Up</button>
+                            <button id="login_tab" onClick={() => this.handleClick('login')}>Log In</button>
+                            <button id="signup_tab" onClick={() => this.handleClick('signup')}>Sign Up</button>
                         </div>
                         <div id="pane">
                         { this.state.type === 'login' ? (

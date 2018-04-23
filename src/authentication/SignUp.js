@@ -11,7 +11,8 @@ export default class SignUp extends Component {
          fname: '',
          lname: '',
          email: '',
-         password: ''
+         password: '',
+         admin: false
       };
       this.handleChange = this.handleChange.bind(this);
       this.handleSignUp = this.handleSignUp.bind(this);
