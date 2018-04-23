@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import CryptoChart from './graph/CryptoChart';
 import Transaction from './graph/Transaction';
-import {app} from "./Constant";
+import { app } from "./Constant";
 /*import './Home.css';*/
 
 
@@ -11,20 +11,16 @@ export default class Home extends Component {
       super();
 
       this.state = {
-         authentication: false,
+         authenticated: false,
       };
    }
 
    componentWillMount() {
       this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
          if(user) {
-            this.setState({
-               authenticated : true
-            })
+            this.setState({ authenticated : true })
          } else {
-            this.setState({
-               authenticated: false
-            })
+            this.setState({ authenticated: false })
          }
       })
    }
