@@ -14,6 +14,20 @@ export default class SignUp extends Component {
       this.handleSignUp = this.handleSignUp.bind(this);
    }
 
+   componentWillMount() {
+      this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
+         if(user) {
+            this.setState({ redirect: true })
+         } else {
+            this.setState({ redirect: false })
+         }
+      })
+   }
+
+   componentWillUnmount(){
+      this.removeAuthListener();
+   }
+
    /*handleChange(e) {
       this.setState({
          fname: e.target.fname,
@@ -25,19 +39,6 @@ export default class SignUp extends Component {
 
    handleSignUp(event, email, password) {
       event.preventDefault()
-
-      const user = {};
-      user['user/' + this.state.userId] = {
-         fname: this.fnameInput.value,
-         lname: this.lnameInput.value,
-         email: this.emailInput.value,
-         password: this.passwordInput.value
-      };
-
-      var extras = {
-         fname: this.fnameInput.value,
-         lname: this.lnameInput.value
-      };
 
       email = this.emailInput.value;
       password = this.passwordInput.value;
@@ -51,7 +52,15 @@ export default class SignUp extends Component {
             alert(errorMessage);
          }
          console.log(error);
-      }).then(this.setState({ redirect: true}))
+      })
+
+      const user = {};
+      user['user/' + this.state.uid] = {
+         fname: this.fnameInput.value,
+         lname: this.lnameInput.value,
+         email: this.emailInput.value,
+         password: this.passwordInput.value
+      };
 
       console.table([{
          fname: this.fnameInput.value,
@@ -63,17 +72,17 @@ export default class SignUp extends Component {
    }
 
    render() {
-      if(this.state.redirect === true) {
+      if(this.state.redirect) {
          return <Redirect to='/dashboard'/>
       }
 
       return (
          <div id="signup_div">
             <form onSubmit={(event) => { this.handleSignUp(event) }} ref={(form) => { this.loginForm = form }}>
-               <input id="firstname" type="text" name="fname" placeholder="Enter first name" ref={(input) => { this.fnameInput = input }}></input>
-               <input id="lastname" type="text" name="lname" placeholder="Enter last name" ref={(input) => { this.lnameInput = input }}></input>
-               <input id="email" type="email" name="email" placeholder="Enter email" ref={(input) => { this.emailInput = input }}></input>
-               <input id="password" type="password" name="password" placeholder="Enter password" ref={(input) => { this.passwordInput = input }}></input>
+               <input id="firstname" type="text" name="fname" placeholder="Enter first name" ref={(input) => { this.fnameInput = input }} required></input>
+               <input id="lastname" type="text" name="lname" placeholder="Enter last name" ref={(input) => { this.lnameInput = input }} required></input>
+               <input id="email" type="email" name="email" placeholder="Enter email" ref={(input) => { this.emailInput = input }} required></input>
+               <input id="password" type="password" name="password" placeholder="Enter password" ref={(input) => { this.passwordInput = input }} required></input>
                <input id="submit" type="submit" value="Sign Up"></input>
             </form>
          </div>
