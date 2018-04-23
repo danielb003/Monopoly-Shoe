@@ -8,9 +8,12 @@ export default class SignUp extends Component {
       super(props);
       this.state = {
          redirect: false,
+         fname: '',
+         lname: '',
          email: '',
          password: ''
-      }
+      };
+      this.handleChange = this.handleChange.bind(this);
       this.handleSignUp = this.handleSignUp.bind(this);
    }
 
@@ -28,22 +31,23 @@ export default class SignUp extends Component {
       this.removeAuthListener();
    }
 
-   /*handleChange(e) {
-      this.setState({
-         fname: e.target.fname,
-         lname: e.target.lname,
-         email: e.target.email,
-         password: e.target.password
-      });
-   }*/
+   handleChange(event) {
+      const name = event.target.name;
+      const value = event.target.value;
+      this.setState({ [name]: value });
+      console.table([{
+         fname: this.state.fname,
+         lname: this.state.lname,
+         email: this.state.email,
+         password: this.state.password,
+         redirect: this.state.redirect
+      }])
+   }
 
-   handleSignUp(event, email, password) {
+   handleSignUp(event) {
       event.preventDefault()
 
-      email = this.emailInput.value;
-      password = this.passwordInput.value;
-
-      app.auth().createUserWithEmailAndPassword(email, password).catch(function(error) {
+      app.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).catch(function(error) {
          var errorCode = error.code;
          var errorMessage = error.message;
          if(errorCode == 'auth/weak-password') {
@@ -54,21 +58,37 @@ export default class SignUp extends Component {
          console.log(error);
       })
 
-      const user = {};
-      user['user/' + this.state.uid] = {
-         fname: this.fnameInput.value,
-         lname: this.lnameInput.value,
-         email: this.emailInput.value,
-         password: this.passwordInput.value
+      const user2 = {};
+      user2['user/' + this.state.uid] = {
+         fname: this.state.fname,
+         lname: this.state.lname,
+         email: this.state.email,
+         password: this.state.password
       };
 
       console.table([{
-         fname: this.fnameInput.value,
-         lname: this.lnameInput.value,
-         email: this.emailInput.value,
-         password: this.passwordInput.value,
+         fname: this.state.fname,
+         lname: this.state.lname,
+         email: this.state.email,
+         password: this.state.password,
          redirect: this.state.redirect
       }])
+
+      var user = app.auth().currentUser;
+      var uid, email, password;
+
+      if(user != null) {
+         uid = user.uid;
+         email = user.email;
+         password = user.password;
+      }
+
+      app.database().ref('user/' + uid).set({
+         fname: this.state.fname,
+         lname: this.state.lname,
+         email: email,
+         password: password
+      });
    }
 
    render() {
@@ -78,11 +98,11 @@ export default class SignUp extends Component {
 
       return (
          <div id="signup_div">
-            <form onSubmit={(event) => { this.handleSignUp(event) }} ref={(form) => { this.loginForm = form }}>
-               <input id="firstname" type="text" name="fname" placeholder="Enter first name" ref={(input) => { this.fnameInput = input }} required></input>
-               <input id="lastname" type="text" name="lname" placeholder="Enter last name" ref={(input) => { this.lnameInput = input }} required></input>
-               <input id="email" type="email" name="email" placeholder="Enter email" ref={(input) => { this.emailInput = input }} required></input>
-               <input id="password" type="password" name="password" placeholder="Enter password" ref={(input) => { this.passwordInput = input }} required></input>
+            <form onSubmit={this.handleSignUp}>
+               <input id="firstname" type="text" name="fname" placeholder="Enter first name" value={this.state.fname} onChange={this.handleChange} required></input>
+               <input id="lastname" type="text" name="lname" placeholder="Enter last name" value={this.state.lname} onChange={this.handleChange} required></input>
+               <input id="email" type="email" name="email" placeholder="Enter email" value={this.state.email} onChange={this.handleChange} required></input>
+               <input id="password" type="password" name="password" placeholder="Enter password" value={this.state.password} onChange={this.handleChange} required></input>
                <input id="submit" type="submit" value="Sign Up"></input>
             </form>
          </div>
