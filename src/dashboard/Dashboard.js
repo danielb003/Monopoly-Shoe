@@ -19,7 +19,8 @@ class Dashboard extends Component {
       this.state = {
          authenticated: true,
          openTradingAccount: null,
-          uid: null
+          uid: null,
+          history:[]
       };
 
       this.handleChange = this.handleChange.bind(this);
@@ -38,6 +39,7 @@ class Dashboard extends Component {
 
    componentDidMount(){
        this.loadTradingStatus();
+       this.retrieve_history();
    }
 
    componentWillUnmount(){
@@ -117,6 +119,38 @@ class Dashboard extends Component {
             trading: this.state.openTradingAccount
         });
     }
+
+    retrieve_history = () => {
+
+        const assignedHistory = [];
+        const historyFB = firebase.database().ref('history/');
+        historyFB.on('value', (snapshot) => {
+            if(snapshot.val() !== null){
+
+                for(const index in snapshot.val()) {
+                    if (snapshot.child(index + "/user_id").val() == firebase.auth().currentUser.uid) {
+
+                        assignedHistory.push({
+                            id: index,
+                            amount: snapshot.child(index + "/amount").val(),
+                            coinType: snapshot.child(index + "/coinType").val(),
+                            type: snapshot.child(index + "/type").val(),
+                            price: snapshot.child(index + "/price").val(),
+                            user_id: snapshot.child(index + "/user_id").val(),
+                            timestamp: snapshot.child(index + "/timestamp").val(),
+                            coinValue: snapshot.child(index + "/coinValue").val()
+                        });
+                    }
+                }
+                this.setState({
+                    history: assignedHistory
+                });
+            }
+        });
+
+    }
+
+
 
    render(){
       if(this.state.authenticated === false) {
@@ -252,52 +286,33 @@ class Dashboard extends Component {
 
                            <div className="container-fluid noPad">
                               <h4 id="heading" className="pull-left">Transaction History</h4>
-                              <table className="table table-bordered">
-                                 <thead className="">
-                                 <tr>
-                                    <th>Date</th>
-                                    <th>Pair</th>
-                                    <th>Type</th>
-                                    <th>Price</th>
-                                    <th>Filled</th>
-                                    <th>Fee</th>
-                                    <th>Total</th>
-                                 </tr>
-                                 </thead>
-                                 <tbody>
-                                 <tr>
-                                    <td>2017-11-23 19:19:23
-                                    </td>
-                                    <td>BCC/ETH</td>
-                                    <td id="sell">Sell</td>
-                                    <td>0.00016800</td>
-                                    <td>1685</td>
-                                    <td>0.03838254 BNB</td>
-                                    <td>0.2830800 ETH</td>
+                               {this.state.history.map((his) => {
+                                   return (
 
-                                 </tr>
-                                 <tr>
-                                    <td>2017-11-25 13:11:21
-                                    </td>
-                                    <td>LTE/ETH</td>
-                                    <td id="buy">Buy</td>
-                                    <td>0.00025800</td>
-                                    <td>805</td>
-                                    <td>0.13838254 BNB</td>
-                                    <td>1.6830800 ETH</td>
-                                 </tr>
-                                 <tr>
-                                    <td>2018-01-23 08:22:33
-                                    </td>
-                                    <td>BCC/ETH</td>
-                                    <td id="sell">Sell</td>
-                                    <td>0.00016800</td>
-                                    <td>2005</td>
-                                    <td>0.19838254 BNB</td>
-                                    <td>0.6830800 ETH</td>
-                                 </tr>
-                                 </tbody>
-                              </table>
+                                       <table className="table table-bordered">
+                                           <thead className="">
+                                           <tr>
+                                               <th>Date</th>
+                                               <th>Coin</th>
+                                               <th>Type</th>
+                                               <th>Price</th>
+                                               <th>Amount</th>
+                                               <th>Value</th>
+                                           </tr>
+                                           </thead>
+                                           <tbody>
+                                           <tr key={his.id}>
+                                               <td>{his.timestamp}</td>
+                                               <td>{his.coinType}</td>
+                                               <td>{his.type}</td>
+                                               <td>{his.price}</td>
+                                               <td>{his.amount}</td>
+                                               <td>{his.coinValue}</td>
+                                           </tr>
+                                           </tbody>
+                                       </table>
+                                   )
+                               })}
                            </div>
                         </div>
                      </div>
