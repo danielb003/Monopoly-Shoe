@@ -10,14 +10,16 @@ import Switch from 'material-ui/Switch';
 import Button from 'material-ui/Button';
 import { app } from '../Constant';
 import CryptoChart from '../graph/CryptoChart';
+import firebase from 'firebase';
 
 class Dashboard extends Component {
-   constructor() {
-      super();
+   constructor(props) {
+      super(props);
 
       this.state = {
          authenticated: true,
-         openTradingAccount: true
+         openTradingAccount: null,
+          uid: null
       };
 
       this.handleChange = this.handleChange.bind(this);
@@ -30,16 +32,91 @@ class Dashboard extends Component {
          } else {
             this.setState({ authenticated: false })
          }
-      })
+      });
+
+   }
+
+   componentDidMount(){
+       this.loadTradingStatus();
    }
 
    componentWillUnmount(){
       this.removeAuthListener();
-   }
-
-   handleChange() {
 
    }
+
+    loadTradingStatus = () => {
+        // var ref = new Firebase("https://yourfirebase.firebaseio.com");
+        // var authData = app.auth().userinfo.uid;
+        var userID = firebase.auth().currentUser.uid;
+
+        this.setState({
+           uid : userID
+        });
+
+        if (userID){
+            const userDB = firebase.database().ref('user/' + userID);
+            var trading = null;
+            userDB.on('value', (snapshot) => {
+
+                if (snapshot.val() !== null) {
+                    trading = snapshot.child("/trading").val();
+                }
+                console.log('load trading : ' + trading);
+                this.setState({
+                    openTradingAccount: trading
+                });
+            });
+
+
+        }
+
+    }
+
+    handleChange = event => {
+        // this.setState({ [name]: event.target.checked }, () => {
+        //     this.setState({
+        //         openTradingAccount: event.target.checked
+        //     })
+        // });
+
+        // });
+
+        // this.setState({ [name]: event.target.checked } , () => {
+        //    this.setState()
+        //     openTradingAccount: event.target.checked
+        // });
+        //  if (this.state.openTradingAccount == false){
+        //      event.target.checked = false;
+        //  }else {
+        //      event.target.checked = true;
+        //  }
+        this.setState({
+            // [name]: event.target.checked,
+            openTradingAccount: event.target.checked
+        });
+        this.updateTrading();
+    }
+
+    updateTrading = () => {
+        console.log(this.state.openTradingAccount);
+        var user = firebase.auth().currentUser;
+        const tradingStatus = firebase.database().ref('user/' + user.uid);
+        var tradingDB;
+        tradingStatus.on('value', (snapshot) => {
+            if (snapshot.val() !== null) {
+               tradingDB = snapshot.child("/trading").val();
+            }
+        });
+        console.log('tradingDB: ' + tradingDB);
+                // const sellOrderFB = firebase.database().ref('sell/');
+        // buyOrderFB.on('value', (snapshot) => {
+        //     if(snapshot.val() !== null){
+         console.log('trading status in handle change ' + tradingStatus);
+        firebase.database().ref('user/' + user.uid + '/').update({
+            trading: this.state.openTradingAccount
+        });
+    }
 
    render(){
       if(this.state.authenticated === false) {
@@ -77,7 +154,7 @@ class Dashboard extends Component {
                            <div>
                               <Switch
                                  checked={this.state.openTradingAccount}
-                                 onChange={this.handleChange('openTradingAccount')}
+                                 onChange={this.handleChange}
                                  value="Enable"
                                  color="primary"
                               />

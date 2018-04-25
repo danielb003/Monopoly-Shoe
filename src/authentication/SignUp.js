@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './SignUp.css';
 import { Redirect } from 'react-router-dom'
 import { app } from '../Constant'
+import firebase from 'firebase';
 
 export default class SignUp extends Component {
    constructor(props) {
@@ -13,6 +14,7 @@ export default class SignUp extends Component {
          email: '',
          password: '',
          admin: false,
+          pushID: null
       };
       this.handleChange = this.handleChange.bind(this);
       this.handleSignUp = this.handleSignUp.bind(this);
@@ -25,11 +27,30 @@ export default class SignUp extends Component {
          } else {
             this.setState({ redirect: false })
          }
-      })
+      });
    }
 
-   componentWillUnmount(){
-      this.removeAuthListener();
+   componentWillUnmount() {
+       this.removeAuthListener();
+
+       var uid = firebase.auth().currentUser.uid;
+       console.log('uid= ' + uid);
+       const user = firebase.database().ref('user/' + this.state.pushID);
+       user.on('value', (snapshot) => {
+           if (snapshot.val() !== null) {
+
+              user.remove();
+               firebase.database().ref('user/' + uid).set({
+                     fname: this.state.fname,
+                     lname: this.state.lname,
+                     email: this.state.email,
+                     password: this.state.password,
+                     admin: this.state.admin,
+                     trading: false
+               });
+
+           }
+       });
    }
 
    handleChange(event) {
@@ -67,15 +88,24 @@ export default class SignUp extends Component {
          redirect: this.state.redirect
       }])
 
-      const usersRef = app.database().ref('user');
+       const usersRef = app.database().ref('user');
+
       const user = {
          fname: this.state.fname,
          lname: this.state.lname,
          email: this.state.email,
          password: this.state.password,
-         admin: this.state.admin
+         admin: this.state.admin,
+          trading: false
       }
-      usersRef.push(user);
+
+      // set user's uid as push key
+      var push_id = usersRef.push(user).key;
+      this.setState({
+          pushID: push_id
+      })
+      firebase.database().ref().child('user').child(push_id).set(user);
+
    }
 
    render() {
