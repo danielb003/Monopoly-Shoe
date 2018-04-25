@@ -23,12 +23,12 @@ export default class Auth extends Component {
                 <div id="container">
                    <Navbar inverse>
                       <Nav>
-                         <NavItem>
+                         <NavItem class="nav_item">
                             <p>Prolific Trading</p>
                          </NavItem>
                       </Nav>
                       <Nav pullRight>
-                         <NavItem eventKey={2} href="/">
+                         <NavItem class="nav_item" eventKey={2} href="/">
                             Home
                          </NavItem>
                       </Nav>

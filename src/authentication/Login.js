@@ -9,7 +9,8 @@ export default class Login extends Component {
       this.state = {
          redirect: false,
          email: '',
-         password: ''
+         password: '',
+         errors: []
       };
       this.handleChange = this.handleChange.bind(this);
       this.handleLogin = this.handleLogin.bind(this);
