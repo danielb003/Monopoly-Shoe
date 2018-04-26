@@ -46,9 +46,12 @@ class Dashboard extends Component {
    }
 
     loadTradingStatus = () => {
-        // var ref = new Firebase("https://yourfirebase.firebaseio.com");
         // var authData = app.auth().userinfo.uid;
-        var userID = firebase.auth().currentUser.uid;
+        var userID = null;
+        if (firebase.auth().currentUser.uid){
+            userID = firebase.auth().currentUser.uid;
+        }
+
 
         this.setState({
            uid : userID

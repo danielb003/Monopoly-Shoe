@@ -280,8 +280,8 @@ export default withStyles(styles)(class Transaction extends Component{
                         var final_user_coin = null;
                         var final_user_balance = null;
                         if (snapshot.val() !== null) {
-                            var user_coin = snapshot.child("/BTC").val();
-                            var user_balance = snapshot.child("/balance").val();
+                            var user_coin = snapshot.child("/coin/" + this.state.coinType).val();
+                            var user_balance = snapshot.child("/coin/balance").val();
                             // console.log("user_coin: " + user_coin);
                             // console.log("user_balance: " + user_balance);
                             final_user_coin = user_coin + buy_amount;
@@ -306,21 +306,16 @@ export default withStyles(styles)(class Transaction extends Component{
                             // console.log("oid " + oid);
                             // console.log("status " + status);
                             if (status === false) {
-                                // console.log("status === false ");
-                                const update_User_State = {};
-                                update_User_State['user/' + uid + '/coin'] = {
-                                    BTC: final_user_coin,
-                                    balance: final_user_balance
-                                }
-                                // firebase.database().ref('user/' + uid + '/').update({
-                                //     BTC: final_user_coin,
-                                //     balance: final_user_balance
-                                // });
+                                
+                                var updates = {};
+                                updates['user/' + uid + '/coin/' + this.state.coinType] = final_user_coin;
+                                updates['user/' + uid + '/coin/balance'] = final_user_balance;
+
                                 // update only one field and does not overwrite other fields
                                 firebase.database().ref('buy/' + oid + '/').update({
                                     process: true
                                 });
-                                firebase.database().ref().update(update_User_State);
+                                firebase.database().ref().update(updates);
                             }
 
                         }
