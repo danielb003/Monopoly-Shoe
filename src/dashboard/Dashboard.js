@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Navbar, Nav, NavItem, NavDropdown, NavbarBrand, MenuItem} from 'react-bootstrap';
 import { Redirect } from 'react-router-dom'
 import './../App.css';
+import './Dashboard.css';
 import profile_img from './../img/profile-img.png';
 import bitcoin_icon from './../img/bitcoin_icon.png';
 import ethereum_icon from './../img/ethereum_icon.png';
@@ -211,7 +212,10 @@ class Dashboard extends Component {
     startDateChange(event){
         this.setState({
             startDate: event.target.value
+        }, () => {
+            console.log('startDate: ' + this.setState());
         });
+
     }
     endDateChange(event){
         this.setState({
@@ -225,8 +229,26 @@ class Dashboard extends Component {
          return <Redirect to='/'/>
       }
 
-
-       const { startDate,endDate } = this.state;
+      const historyState = this.state.history;
+      const { startDate,endDate } = this.state;
+      const historyTableData = historyState ? (
+          this.state.history.map(function(item){
+          return (
+              <tbody>
+              <tr key={item.id}>
+                  <td>{item.timestamp.substring(0, 10)}</td>
+                  <td>{item.coinType}</td>
+                  <td>{item.type}</td>
+                  <td>{item.price}</td>
+                  <td>{item.amount}</td>
+                  <td>{item.coinValue}</td>
+              </tr>
+              </tbody>
+              // </table>
+          )
+      })) : (
+          null
+      );
 
       return (
             <div>
@@ -358,59 +380,56 @@ class Dashboard extends Component {
                            <div className="container-fluid noPad">
                               <h4 id="heading" className="pull-left">Transaction History</h4>
 
-                               <form onSubmit={this.handleSubmit} noValidate>
-                                   <TextField
-                                       id="startDate"
-                                       value={this.state.startDate}
-                                       onChange={this.startDateChange}
-                                       label="Start Date"
-                                       type="date"
-                                       InputLabelProps={{
-                                           shrink: true,
-                                       }}
-                                   />
-                                   <TextField
-                                       id="endDate"
-                                       label="End Date"
-                                       value={this.state.endDate}
-                                       onChange={this.endDateChange}
-                                       type="date"
-                                       InputLabelProps={{
-                                           shrink: true,
-                                       }}
-                                   />
-                                   <Button id="filter-button" color="primary" type="submit" >
-                                       <p>Filter</p>
-                                   </Button>
-                               </form>
+                               <div className="col-md-12 white-bg table-bordered">
+                                   <form onSubmit={this.handleSubmit} noValidate>
+                                       <div className="col-md-3">
+                                           <h4>Start Date</h4>
+                                           <TextField
+                                               id="startDate"
+                                               value={this.state.startDate}
+                                               onChange={this.startDateChange}
+                                               type="date"
+                                               InputLabelProps={{
+                                                   shrink: true,
+                                               }}
+                                           />
+                                       </div>
+                                       <div className="col-md-3">
+                                           <h4>End Date</h4>
+                                           <TextField
+                                               id="endDate"
+                                               // label="End Date"
+                                               value={this.state.endDate}
+                                               onChange={this.endDateChange}
+                                               type="date"
+                                               InputLabelProps={{
+                                                   shrink: true,
+                                               }}
+                                           />
+                                       </div>
+                                       <div className="filter">
+                                           <Button id="filter-button" color="primary" type="submit" >
+                                           <p>Filter</p>
+                                           </Button>
+                                       </div>
 
-                               {this.state.history.map((his) => {
-                                   return (
+                                   </form>
+                               </div>
 
-                                       <table className="table table-bordered">
-                                           <thead className="">
-                                           <tr>
-                                               <th>Date</th>
-                                               <th>Coin</th>
-                                               <th>Type</th>
-                                               <th>Price</th>
-                                               <th>Amount</th>
-                                               <th>Value</th>
-                                           </tr>
-                                           </thead>
-                                           <tbody>
-                                           <tr key={his.id}>
-                                               <td>{his.timestamp.substring(0, 10)}</td>
-                                               <td>{his.coinType}</td>
-                                               <td>{his.type}</td>
-                                               <td>{his.price}</td>
-                                               <td>{his.amount}</td>
-                                               <td>{his.coinValue}</td>
-                                           </tr>
-                                           </tbody>
-                                       </table>
-                                   )
-                               })}
+                               <table className="table table-bordered">
+                                   {this.state.history ? (<thead className="">
+                                   <tr>
+                                       <th>Date</th>
+                                       <th>Coin</th>
+                                       <th>Type</th>
+                                       <th>Price</th>
+                                       <th>Amount</th>
+                                       <th>Value</th>
+                                   </tr>
+                                   </thead>) : null}
+                                   {historyTableData}
+                               </table>
+
                            </div>
                         </div>
                      </div>
