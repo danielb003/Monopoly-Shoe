@@ -25,7 +25,8 @@ class Dashboard extends Component {
           uid: null,
           history:[],
           startDate:null,
-          endDate:null
+          endDate:null,
+          user_data: [],
       };
 
       this.handleChange = this.handleChange.bind(this);
@@ -42,12 +43,13 @@ class Dashboard extends Component {
             this.setState({ authenticated: false })
          }
       });
-
    }
 
    componentDidMount(){
       // this.loadTradingStatus();
        this.retrieve_history();
+       this.retrieve_userData();
+       this.loadTradingStatus();
    }
 
    componentWillUnmount(){
@@ -56,34 +58,24 @@ class Dashboard extends Component {
    }
 
     loadTradingStatus = () => {
-        // var authData = app.auth().userinfo.uid;
-        var userID = null;
-        if (firebase.auth().currentUser.uid){
-            userID = firebase.auth().currentUser.uid;
-        }
+        var user_id = null;
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                user_id = user.uid;
+                const userDB = firebase.database().ref('user/' + user_id);
+                var trading = null;
+                userDB.on('value', (snapshot) => {
 
-
-        this.setState({
-           uid : userID
-        });
-
-        if (userID){
-            const userDB = firebase.database().ref('user/' + userID);
-            var trading = null;
-            userDB.on('value', (snapshot) => {
-
-                if (snapshot.val() !== null) {
-                    trading = snapshot.child("/trading").val();
-                }
-                console.log('load trading : ' + trading);
-                this.setState({
-                    openTradingAccount: trading
+                    if (snapshot.val() !== null) {
+                        trading = snapshot.child("/trading").val();
+                    }
+                    console.log('load trading : ' + trading);
+                    this.setState({
+                        openTradingAccount: trading
+                    });
                 });
-            });
-
-
-        }
-
+            }
+        });
     }
 
     handleChange = event => {
@@ -157,7 +149,33 @@ class Dashboard extends Component {
                 });
             }
         });
+    }
 
+    retrieve_userData = () => {
+        var user_id = null;
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                user_id = user.uid;
+                const user_details = [];
+                const userData = firebase.database().ref('user/' + user_id);
+                userData.on('value', (snapshot) => {
+                    if(snapshot.val() !== null) {
+                        console.log('admin: ' + snapshot.child('admin').val());
+                        user_details.push({
+                            admin: snapshot.child('admin').val(),
+                            coin: snapshot.child('coin').val(),
+                            email: snapshot.child('email').val(),
+                            fname: snapshot.child('fname').val(),
+                            lname: snapshot.child('lname').val(),
+                            trading: snapshot.child('trading').val()
+                        });
+                        this.setState({
+                            user_data: user_details[0]
+                        });
+                    }
+                });
+            }
+        });
     }
 
     handleSubmit(event) {
@@ -173,8 +191,8 @@ class Dashboard extends Component {
                 [name]: value
             });*/
 
-            var momentStartDate=moment(this.state.startDate);
-            var momentEndDate=moment(this.state.endDate);
+        var momentStartDate=moment(this.state.startDate);
+        var momentEndDate=moment(this.state.endDate);
 
         const assignedFilHistory = [];
         const historyFB = firebase.database().ref('history/');
@@ -214,8 +232,6 @@ class Dashboard extends Component {
     startDateChange(event){
         this.setState({
             startDate: event.target.value
-        }, () => {
-            console.log('startDate: ' + this.state.startDate);
         });
 
     }
@@ -232,7 +248,8 @@ class Dashboard extends Component {
       }
 
       const historyState = this.state.history;
-      const { startDate,endDate } = this.state;
+      const { startDate,endDate, user_data } = this.state;
+
       const historyTableData = historyState ? (
           this.state.history.map(function(item){
           return (
@@ -246,11 +263,26 @@ class Dashboard extends Component {
                   <td>{item.coinValue}</td>
               </tr>
               </tbody>
-              // </table>
           )
       })) : (
           null
       );
+
+
+      //  const userData = this.state.user_data;
+      // const portfolioTable = userData ? (
+      //     this.state.user_data.map(function(item){
+      //         return (
+      //             <tbody>
+      //             <tr key={item.id}>
+      //                 {/*<td>{item.image}</td>*/}
+      //                 {/*<td>{item.totalBalance}</td>*/}
+      //                 {/*<td>{item.availableBalance}</td>*/}
+      //                 {/*<td>{item.BTC value}</td>*/}
+      //             </tr>
+      //             </tbody>
+      //         )
+      // })) : ( null );
 
       return (
             <div>
@@ -277,12 +309,14 @@ class Dashboard extends Component {
                         <div className="text-center"><h1 className="display-4"> &nbsp;</h1></div>
                         <div className="card center-block noPad_left">
                            <img id="user_profile" src={profile_img } className="center-block img-responsive img-circle" />
-                           <h2>Panhaseth Heang</h2><br/>
-                           <strong>Email: seth@rmit.com </strong> <br/>
+                           <h2> {user_data.fname} {user_data.lname}</h2><br/>
+                           <strong>{user_data.email} </strong> <br/><br/>
+                            {user_data.admin ? (<strong>Admin User</strong>) : (<strong>Regular User</strong>)}
+                            <br/><br/>
                            <strong>Trading Account</strong>
                            <div>
                               <Switch
-                                 checked={this.state.openTradingAccount}
+                                 checked={user_data.trading}
                                  onChange={this.handleChange}
                                  value="Enable"
                                  color="primary"
@@ -292,20 +326,17 @@ class Dashboard extends Component {
                      </div>
 
 
+
                      <div className="col-md-9 noPad">
                         <div className="text-center"><h1 id="dashboard" className="display-4">DASHBOARD</h1></div>
                         <div className="container col-md-12 noPad">
 
-                           <div className="fix-overflow noPad">
-                              <h4 id="heading" className="pull-left">Trading View</h4>
-                              <div className='crypto_chart container-fluid'>
-                                 <CryptoChart/>
-                              </div>
-                           </div>
 
                            <div className="container-fluid noPad">
                               <h4 id="heading" className="pull-left">Portfolio</h4>
-                              <table className="table table-bordered">
+
+
+                               <table className="table table-bordered">
                                  <thead className="">
                                  <tr>
                                     <th>Coin</th>
@@ -316,6 +347,8 @@ class Dashboard extends Component {
                                     <th></th>
                                  </tr>
                                  </thead>
+
+                                   {/*{portfolioTable}*/}
                                  <tbody>
                                  <tr>
                                     <td><img id="crypto_icon" src={ bitcoin_icon } className="noPad img-responsive"/>
