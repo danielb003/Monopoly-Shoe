@@ -166,37 +166,37 @@ export default withStyles(styles)(class Transaction extends Component{
             });
         });
 
-
-        // });
-        // event.preventDefault();
     }
 
     save_SellOrder = (event) => {
-
-        firebase.database().ref('sell/').push({
-            price: parseInt(this.state.sellPrice),
-            amount: parseInt(this.state.sellAmount),
-            total: this.state.sellTotal,
-            user_id: 'id-1',
-            process: false,
-            timestamp: this.state.timestamp,
-            // coinType: this.state.coinType,
-            coinValue: this.state.currentPrice
-        }).then(function() {
-            console.log("Insertion Succeeded.")
-        }).catch(function(error) {
-                console.log("Sell Order Insertion Failed: " + error.message)
-        });
-        this.setState({
-            sellAmount: '',
-            sellPrice: '',
-            sellTotal: ''
-        });
-
-        // this.loadTimestamp().then(function(){
-        //
-        // });
         event.preventDefault();
+        var moment = require('moment');
+        var currentTime = moment();
+        currentTime = currentTime.format();
+        console.log('current timestamp: ' + currentTime);
+        this.setState({
+            timestamp: currentTime
+        }, () => {
+            firebase.database().ref('sell/').push({
+                price: parseInt(this.state.sellPrice),
+                amount: parseInt(this.state.sellAmount),
+                total: this.state.sellTotal,
+                user_id: this.state.uid,
+                process: false,
+                timestamp: this.state.timestamp,
+                coinType: this.state.coinType,
+                coinValue: this.state.currentPrice
+            }).then(function () {
+                console.log("Insertion Succeeded.")
+            }).catch(function (error) {
+                console.log("Sell Order Insertion Failed: " + error.message)
+            });
+            this.setState({
+                sellAmount: '',
+                sellPrice: '',
+                sellTotal: ''
+            });
+        });
     }
 
     retrieve_orders = () => {
@@ -306,7 +306,7 @@ export default withStyles(styles)(class Transaction extends Component{
                             // console.log("oid " + oid);
                             // console.log("status " + status);
                             if (status === false) {
-                                
+
                                 var updates = {};
                                 updates['user/' + uid + '/coin/' + this.state.coinType] = final_user_coin;
                                 updates['user/' + uid + '/coin/balance'] = final_user_balance;
@@ -339,8 +339,8 @@ export default withStyles(styles)(class Transaction extends Component{
                         var final_user_coin = null;
                         var final_user_balance = null;
                         if (snapshot.val() !== null) {
-                            var user_coin = snapshot.child("/BTC").val();
-                            var user_balance = snapshot.child("/balance").val();
+                            var user_coin = snapshot.child("/coin/" + this.state.coinType).val();
+                            var user_balance = snapshot.child("/coin/balance").val();
                             // console.log("user_coin: " + user_coin);
                             // console.log("user_balance: " + user_balance);
                             final_user_coin = user_coin - sell_amount;
@@ -362,19 +362,17 @@ export default withStyles(styles)(class Transaction extends Component{
                                     }
                                 }
                             });
-                            console.log("oid " + oid);
-                            console.log("status " + status);
+                            // console.log("oid " + oid);
+                            // console.log("status " + status);
                             if (status === false) {
-                                console.log("status === false ");
-                                const update_User_State = {};
-                                update_User_State['user/' + uid + '/'] = {
-                                    BTC: final_user_coin,
-                                    balance: final_user_balance
-                                }
+                                var updates = {};
+                                updates['user/' + uid + '/coin/' + this.state.coinType] = final_user_coin;
+                                updates['user/' + uid + '/coin/balance'] = final_user_balance;
+
                                 firebase.database().ref('sell/' + oid + '/').update({
                                     process: true
                                 });
-                                firebase.database().ref().update(update_User_State);
+                                firebase.database().ref().update(updates);
                             }
 
                         }
