@@ -203,6 +203,8 @@ class Dashboard extends Component {
                 }
                 this.setState({
                     history: assignedFilHistory
+                }, () => {
+                    console.log(assignedFilHistory)
                 });
             }
         });
@@ -213,7 +215,7 @@ class Dashboard extends Component {
         this.setState({
             startDate: event.target.value
         }, () => {
-            console.log('startDate: ' + this.setState());
+            console.log('startDate: ' + this.state.startDate);
         });
 
     }
@@ -381,7 +383,7 @@ class Dashboard extends Component {
                               <h4 id="heading" className="pull-left">Transaction History</h4>
 
                                <div className="col-md-12 white-bg table-bordered">
-                                   <form onSubmit={this.handleSubmit} noValidate>
+                                   <form id="filter" onSubmit={this.handleSubmit} noValidate>
                                        <div className="col-md-3">
                                            <h4>Start Date</h4>
                                            <TextField
