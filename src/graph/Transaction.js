@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './Transaction.css';
-import Button from 'material-ui/Button';
+import RaisedButton from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import firebase from "firebase/index";
 import { withStyles} from 'material-ui/styles';
@@ -144,6 +144,11 @@ export default withStyles(styles)(class Transaction extends Component{
         var currentTime = moment();
         currentTime = currentTime.format();
         console.log('current timestamp: ' + currentTime);
+        if (this.state.buyTotal == null || 0){
+            alert("Buy Total is 0!");
+            return;
+        }
+
         this.setState({
             timestamp: currentTime
         }, () => {
@@ -177,6 +182,10 @@ export default withStyles(styles)(class Transaction extends Component{
         var currentTime = moment();
         currentTime = currentTime.format();
         console.log('current timestamp: ' + currentTime);
+        if (this.state.sellTotal == null || 0){
+            alert("Sell Total is 0!");
+            return;
+        }
         this.setState({
             timestamp: currentTime
         }, () => {
@@ -418,6 +427,10 @@ export default withStyles(styles)(class Transaction extends Component{
 
 
     handleBuyAmountChange(event) {
+        // Prevent negative input value
+        if(event.target.value < 0) {
+            event.target.value = Math.abs(event.target.value);
+        }
         this.setState({
             buyAmount: event.target.value,
         }, () => this.handleBuyTotalChange());
@@ -425,8 +438,11 @@ export default withStyles(styles)(class Transaction extends Component{
     }
 
     handleBuyPriceChange(event) {
+        if(event.target.value < 0) {
+            event.target.value = Math.abs(event.target.value);
+        }
         this.setState({
-            buyPrice: event.target.value
+            buyPrice: event.target.value,
         });
     }
 
@@ -437,11 +453,17 @@ export default withStyles(styles)(class Transaction extends Component{
     }
 
     handleSellAmountChange(event) {
+        if(event.target.value < 0) {
+            event.target.value = Math.abs(event.target.value);
+        }
         this.setState({
             sellAmount: event.target.value,
         }, () => this.handleSellTotalChange());
     }
     handleSellPriceChange(event) {
+        if(event.target.value < 0) {
+            event.target.value = Math.abs(event.target.value);
+        }
         this.setState({
             sellPrice: event.target.value
         });
@@ -516,9 +538,9 @@ export default withStyles(styles)(class Transaction extends Component{
                                     margin="normal"
                                     disabled
                                 />
-                                <Button id="buy-button" color="primary" type="submit" >
+                                <RaisedButton id="buy-button" color="primary" type="submit" >
                                     <h3>Buy</h3>
-                                </Button>
+                                </RaisedButton>
                                 </form>
                             </div>
                         </div>
@@ -576,9 +598,9 @@ export default withStyles(styles)(class Transaction extends Component{
                                     margin="normal"
                                     disabled
                                 />
-                                <Button id="sell-button" color="secondary" type="submit" >
+                                <RaisedButton id="sell-button" color="secondary" type="submit" >
                                     <h3>Sell</h3>
-                                </Button>
+                                </RaisedButton>
                                 </form>
                             </div>
                         </div>
