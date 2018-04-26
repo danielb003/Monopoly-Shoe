@@ -37,7 +37,7 @@ class Dashboard extends Component {
    }
 
    componentDidMount(){
-       this.loadTradingStatus();
+       // this.loadTradingStatus();
    }
 
    componentWillUnmount(){

@@ -316,6 +316,21 @@ export default withStyles(styles)(class Transaction extends Component{
                                     process: true
                                 });
                                 firebase.database().ref().update(updates);
+
+                                // copy to a new record in history node
+                                firebase.database().ref('history/').push({
+                                    amount: this.state.buyAmount,
+                                    coinType: this.state.coinType,
+                                    coinValue: this.state.currentPrice,
+                                    price: this.state.buyPrice,
+                                    timestamp: this.state.timestamp,
+                                    type: "Buy",
+                                    user_id: this.state.uid
+                                });
+
+                                // then remove the processed transaction
+                                const processed_transaction = firebase.database().ref('buy/' + oid + '/');
+                                processed_transaction.remove();
                             }
 
                         }
@@ -373,6 +388,21 @@ export default withStyles(styles)(class Transaction extends Component{
                                     process: true
                                 });
                                 firebase.database().ref().update(updates);
+
+                                // copy to a new record in history node
+                                firebase.database().ref('history/').push({
+                                    amount: this.state.sellAmount,
+                                    coinType: this.state.coinType,
+                                    coinValue: this.state.currentPrice,
+                                    price: this.state.sellPrice,
+                                    timestamp: this.state.timestamp,
+                                    type: "Sell",
+                                    user_id: this.state.uid
+                                });
+
+                                // then remove the processed transaction
+                                const processed_transaction = firebase.database().ref('sell/' + oid + '/');
+                                processed_transaction.remove();
                             }
 
                         }
