@@ -18,6 +18,9 @@ const styles = theme => ({
             borderColor: "#80bdff",
             boxShadow: "0 0 0 0.2rem rgba(0,123,255,.25)"
         }
+    },
+    totalInput: {
+        fontSize:16
     }
 
 });
@@ -479,6 +482,11 @@ export default withStyles(styles)(class Transaction extends Component{
                                     id="buyTotal"
                                     value={this.state.buyTotal}
                                     type="number"
+                                           InputProps={{
+                                               classes: {
+                                                   input: classes.totalInput
+                                               }
+                                           }}
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
@@ -534,6 +542,11 @@ export default withStyles(styles)(class Transaction extends Component{
                                     id="sellTotal"
                                     value={this.state.sellTotal}
                                     type="number"
+                                           InputProps={{
+                                               classes: {
+                                                   input: classes.totalInput
+                                               }
+                                           }}
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
