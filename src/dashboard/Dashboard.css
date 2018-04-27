@@ -1,3 +1,17 @@
+.white-bg {
+    background-color: white;
+}
+
+form#filter {
+    height: 70px;
+}
+
+.filter{
+    height: 100%;
+}
+
+#filter-button{
+    height: 100%;
+=======
 .nav_item {
     margin-top: 10px;
-}
