@@ -288,15 +288,15 @@ class Dashboard extends Component {
             <div>
                <Navbar inverse>
                   <Nav>
-                     <NavItem href="/">
+                     <NavItem class="nav_item" href="/">
                         <p>MonopolyShoe</p>
                      </NavItem>
-                     <NavItem eventKey={1} href="/dashboard">
+                     <NavItem class="nav_item" eventKey={1} href="/dashboard">
                         Portfolio
                      </NavItem>
                   </Nav>
                   <Nav pullRight>
-                     <NavItem eventKey={2} href="/logout">
+                     <NavItem class="nav_item" eventKey={2} href="/logout">
                         Logout
                      </NavItem>
                   </Nav>
