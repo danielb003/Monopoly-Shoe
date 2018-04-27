@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import './Transaction.css';
-import Button from 'material-ui/Button';
+import RaisedButton from 'material-ui/Button';
 import TextField from 'material-ui/TextField';
 import firebase from "firebase/index";
 import { withStyles} from 'material-ui/styles';
+import { app } from "../Constant";
 
 const styles = theme => ({
     bootstrapInput: {
@@ -17,6 +18,9 @@ const styles = theme => ({
             borderColor: "#80bdff",
             boxShadow: "0 0 0 0.2rem rgba(0,123,255,.25)"
         }
+    },
+    totalInput: {
+        fontSize:16
     }
 
 });
@@ -37,13 +41,17 @@ export default withStyles(styles)(class Transaction extends Component{
             buyAmount: null,
             sellAmount: null,
             buyTotal: null,
-            sellTotal: null
+            sellTotal: null,
+            timestamp: null,
+            coinType: 'BTC',
+            uid: null
         }
 
         this.handleBuyPriceChange = this.handleBuyPriceChange.bind(this);
         this.handleBuyAmountChange = this.handleBuyAmountChange.bind(this);
         this.handleSellPriceChange = this.handleSellPriceChange.bind(this);
         this.handleSellAmountChange = this.handleSellAmountChange.bind(this);
+        this.loadTimestamp = this.loadTimestamp.bind(this);
 
         // this.handleSubmit = this.handleSubmit.bind(this);
         // this.save_BuyOrder = this.save_BuyOrder
@@ -51,17 +59,51 @@ export default withStyles(styles)(class Transaction extends Component{
 
     componentDidMount(){
 
+        this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
+            if(user) {
+                this.setState({ authenticated : true })
+            } else {
+                this.setState({ authenticated: false })
+            }
+        });
 
+        this.loadUserID();
         this.retrieve_currentPrice();
         // this.retrieve_orders();
         // this.process_orders();
     }
 
+
+
+    componentWillReceiveProps(props){
+        if (props.coin != this.state.coinType){
+            this.setState({
+                coinType : props.coin
+            }, () => this.retrieve_currentPrice());
+        }
+    }
+
+    loadUserID = () => {
+        // var ref = new Firebase("https://yourfirebase.firebaseio.com");
+        // var authData = app.auth().userinfo.uid;
+        var authData = firebase.auth().currentUser;
+        if (authData) {
+            this.setState({
+                uid : authData.uid
+            })
+            // console.log("User " + authData.uid + " is logged in with " + authData.provider);
+
+        }
+    }
+
     retrieve_currentPrice = () => {
         this.getData = () => {
-            const {data} = this.props;
-            const coin = 'BTC'
-            const currency = 'AUD'
+            // const {data} = this.props;
+            // const coin = 'BTC';
+
+            // filter coin, pass coin from chart
+            const coin = this.state.coinType;
+            const currency = 'AUD';
             const url = 'https://min-api.cryptocompare.com/data/price?fsym=' + coin + '&tsyms=' + currency;
 
             fetch(url).then(r => r.json())
@@ -69,6 +111,7 @@ export default withStyles(styles)(class Transaction extends Component{
                     const price = coinData.AUD;
 
                     this.setState({
+                        // coinType: coin,
                         currentPrice: coinData.AUD,
                         updatedAt: new Date()
                     })
@@ -82,46 +125,90 @@ export default withStyles(styles)(class Transaction extends Component{
         this.retrieve_orders();
     }
 
-    save_BuyOrder = (event) => {
-        firebase.database().ref('buy/').push({
-            price: parseInt(this.state.buyPrice),
-            amount: parseInt(this.state.buyAmount),
-            total: this.state.buyTotal,
-            user_id: 'id-1',
-            process: false
-        }).then(function () {
-            console.log("Insertion Succeeded.")
-        })
-            .catch(function (error) {
-                console.log("Buy Order Insertion Failed: " + error.message)
-            });
+    loadTimestamp(event){
+        var moment = require('moment');
+        var currentTime = moment();
+        currentTime = currentTime.format();
+        console.log('current timestamp: ' + currentTime);
         this.setState({
-            buyAmount: '',
-            buyPrice: '',
-            buyTotal: ''
+            timestamp: currentTime
         });
         event.preventDefault();
     }
 
-    save_SellOrder = (event) => {
-        firebase.database().ref('sell/').push({
-            price: parseInt(this.state.sellPrice),
-            amount: parseInt(this.state.sellAmount),
-            total: this.state.sellTotal,
-            user_id: 'id-1',
-            process: false
-        }).then(function() {
-            console.log("Insertion Succeeded.")
-        })
-        .catch(function(error) {
-            console.log("Sell Order Insertion Failed: " + error.message)
-        });
-        this.setState({
-            sellAmount: '',
-            sellPrice: '',
-            sellTotal: ''
-        });
+    save_BuyOrder = (event) => {
+        // this.loadTimestamp(event);
+        // this.loadTimestamp(event).then(() => {
         event.preventDefault();
+        var moment = require('moment');
+        var currentTime = moment();
+        currentTime = currentTime.format();
+        console.log('current timestamp: ' + currentTime);
+        if (this.state.buyTotal == null || 0){
+            alert("Buy Total is 0!");
+            return;
+        }
+
+        this.setState({
+            timestamp: currentTime
+        }, () => {
+            console.log('current timestamp in save_BuyOrder: ' + this.state.timestamp);
+            firebase.database().ref('buy/').push({
+                price: parseInt(this.state.buyPrice),
+                amount: parseInt(this.state.buyAmount),
+                total: this.state.buyTotal,
+                user_id: this.state.uid,
+                process: false,
+                timestamp: this.state.timestamp,
+                coinType: this.state.coinType,
+                coinValue: this.state.currentPrice
+            }).then(function () {
+                console.log("Insertion Succeeded.")
+            }).catch(function (error) {
+                console.log("Buy Order Insertion Failed: " + error.message)
+            });
+            this.setState({
+                buyAmount: '',
+                buyPrice: '',
+                buyTotal: ''
+            });
+        });
+
+    }
+
+    save_SellOrder = (event) => {
+        event.preventDefault();
+        var moment = require('moment');
+        var currentTime = moment();
+        currentTime = currentTime.format();
+        console.log('current timestamp: ' + currentTime);
+        if (this.state.sellTotal == null || 0){
+            alert("Sell Total is 0!");
+            return;
+        }
+        this.setState({
+            timestamp: currentTime
+        }, () => {
+            firebase.database().ref('sell/').push({
+                price: parseInt(this.state.sellPrice),
+                amount: parseInt(this.state.sellAmount),
+                total: this.state.sellTotal,
+                user_id: this.state.uid,
+                process: false,
+                timestamp: this.state.timestamp,
+                coinType: this.state.coinType,
+                coinValue: this.state.currentPrice
+            }).then(function () {
+                console.log("Insertion Succeeded.")
+            }).catch(function (error) {
+                console.log("Sell Order Insertion Failed: " + error.message)
+            });
+            this.setState({
+                sellAmount: '',
+                sellPrice: '',
+                sellTotal: ''
+            });
+        });
     }
 
     retrieve_orders = () => {
@@ -143,7 +230,9 @@ export default withStyles(styles)(class Transaction extends Component{
                         price:snapshot.child(index + "/price").val(),
                         total:snapshot.child(index + "/total").val(),
                         user_id:snapshot.child(index +"/user_id").val(),
-                        process:snapshot.child(index +"/process").val()
+                        process:snapshot.child(index +"/process").val(),
+                        timestamp:snapshot.child(index +"/timestamp").val(),
+                        coinValue:snapshot.child(index +"/coinValue").val()
                     });
                 }
                 this.setState({
@@ -163,7 +252,9 @@ export default withStyles(styles)(class Transaction extends Component{
                         price:snapshot.child(index + "/price").val(),
                         total:snapshot.child(index + "/total").val(),
                         user_id:snapshot.child(index +"/user_id").val(),
-                        process:snapshot.child(index +"/process").val()
+                        process:snapshot.child(index +"/process").val(),
+                        timestamp:snapshot.child(index +"/timestamp").val(),
+                        coinValue:snapshot.child(index +"/coinValue").val()
                     });
                 }
                 this.setState({
@@ -201,8 +292,8 @@ export default withStyles(styles)(class Transaction extends Component{
                         var final_user_coin = null;
                         var final_user_balance = null;
                         if (snapshot.val() !== null) {
-                            var user_coin = snapshot.child("/BTC").val();
-                            var user_balance = snapshot.child("/balance").val();
+                            var user_coin = snapshot.child("/coin/" + this.state.coinType).val();
+                            var user_balance = snapshot.child("/coin/balance").val();
                             // console.log("user_coin: " + user_coin);
                             // console.log("user_balance: " + user_balance);
                             final_user_coin = user_coin + buy_amount;
@@ -215,7 +306,7 @@ export default withStyles(styles)(class Transaction extends Component{
                                 if(snapshot.val() !== null){
 
                                     for(const indexJ in snapshot.val()){
-                                        console.log("indexJ " + indexJ);
+                                        // console.log("indexJ " + indexJ);
 
                                         if (indexJ === buyOrderLists[index]["id"] ){
                                             oid = indexJ;
@@ -227,17 +318,31 @@ export default withStyles(styles)(class Transaction extends Component{
                             // console.log("oid " + oid);
                             // console.log("status " + status);
                             if (status === false) {
-                                console.log("status === false ");
-                                const update_User_State = {};
-                                update_User_State['user/' + uid + '/'] = {
-                                    BTC: final_user_coin,
-                                    balance: final_user_balance
-                                }
+
+                                var updates = {};
+                                updates['user/' + uid + '/coin/' + this.state.coinType] = final_user_coin;
+                                updates['user/' + uid + '/coin/balance'] = final_user_balance;
+
                                 // update only one field and does not overwrite other fields
                                 firebase.database().ref('buy/' + oid + '/').update({
                                     process: true
                                 });
-                                firebase.database().ref().update(update_User_State);
+                                firebase.database().ref().update(updates);
+
+                                // copy to a new record in history node
+                                firebase.database().ref('history/').push({
+                                    amount: this.state.buyAmount,
+                                    coinType: this.state.coinType,
+                                    coinValue: this.state.currentPrice,
+                                    price: this.state.buyPrice,
+                                    timestamp: this.state.timestamp,
+                                    type: "Buy",
+                                    user_id: this.state.uid
+                                });
+
+                                // then remove the processed transaction
+                                const processed_transaction = firebase.database().ref('buy/' + oid + '/');
+                                processed_transaction.remove();
                             }
 
                         }
@@ -261,8 +366,8 @@ export default withStyles(styles)(class Transaction extends Component{
                         var final_user_coin = null;
                         var final_user_balance = null;
                         if (snapshot.val() !== null) {
-                            var user_coin = snapshot.child("/BTC").val();
-                            var user_balance = snapshot.child("/balance").val();
+                            var user_coin = snapshot.child("/coin/" + this.state.coinType).val();
+                            var user_balance = snapshot.child("/coin/balance").val();
                             // console.log("user_coin: " + user_coin);
                             // console.log("user_balance: " + user_balance);
                             final_user_coin = user_coin - sell_amount;
@@ -275,7 +380,7 @@ export default withStyles(styles)(class Transaction extends Component{
                                 if(snapshot.val() !== null){
 
                                     for(const indexJ in snapshot.val()){
-                                        console.log("indexJ " + indexJ);
+                                        // console.log("indexJ " + indexJ);
 
                                         if (indexJ === sellOrderLists[index]["id"] ){
                                             oid = indexJ;
@@ -284,19 +389,32 @@ export default withStyles(styles)(class Transaction extends Component{
                                     }
                                 }
                             });
-                            console.log("oid " + oid);
-                            console.log("status " + status);
+                            // console.log("oid " + oid);
+                            // console.log("status " + status);
                             if (status === false) {
-                                console.log("status === false ");
-                                const update_User_State = {};
-                                update_User_State['user/' + uid + '/'] = {
-                                    BTC: final_user_coin,
-                                    balance: final_user_balance
-                                }
+                                var updates = {};
+                                updates['user/' + uid + '/coin/' + this.state.coinType] = final_user_coin;
+                                updates['user/' + uid + '/coin/balance'] = final_user_balance;
+
                                 firebase.database().ref('sell/' + oid + '/').update({
                                     process: true
                                 });
-                                firebase.database().ref().update(update_User_State);
+                                firebase.database().ref().update(updates);
+
+                                // copy to a new record in history node
+                                firebase.database().ref('history/').push({
+                                    amount: this.state.sellAmount,
+                                    coinType: this.state.coinType,
+                                    coinValue: this.state.currentPrice,
+                                    price: this.state.sellPrice,
+                                    timestamp: this.state.timestamp,
+                                    type: "Sell",
+                                    user_id: this.state.uid
+                                });
+
+                                // then remove the processed transaction
+                                const processed_transaction = firebase.database().ref('sell/' + oid + '/');
+                                processed_transaction.remove();
                             }
 
                         }
@@ -309,6 +427,10 @@ export default withStyles(styles)(class Transaction extends Component{
 
 
     handleBuyAmountChange(event) {
+        // Prevent negative input value
+        if(event.target.value < 0) {
+            event.target.value = Math.abs(event.target.value);
+        }
         this.setState({
             buyAmount: event.target.value,
         }, () => this.handleBuyTotalChange());
@@ -316,8 +438,11 @@ export default withStyles(styles)(class Transaction extends Component{
     }
 
     handleBuyPriceChange(event) {
+        if(event.target.value < 0) {
+            event.target.value = Math.abs(event.target.value);
+        }
         this.setState({
-            buyPrice: event.target.value
+            buyPrice: event.target.value,
         });
     }
 
@@ -328,11 +453,17 @@ export default withStyles(styles)(class Transaction extends Component{
     }
 
     handleSellAmountChange(event) {
+        if(event.target.value < 0) {
+            event.target.value = Math.abs(event.target.value);
+        }
         this.setState({
             sellAmount: event.target.value,
         }, () => this.handleSellTotalChange());
     }
     handleSellPriceChange(event) {
+        if(event.target.value < 0) {
+            event.target.value = Math.abs(event.target.value);
+        }
         this.setState({
             sellPrice: event.target.value
         });
@@ -396,15 +527,20 @@ export default withStyles(styles)(class Transaction extends Component{
                                     id="buyTotal"
                                     value={this.state.buyTotal}
                                     type="number"
+                                           InputProps={{
+                                               classes: {
+                                                   input: classes.totalInput
+                                               }
+                                           }}
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
                                     margin="normal"
                                     disabled
                                 />
-                                <Button id="buy-button" color="primary" type="submit" >
+                                <RaisedButton id="buy-button" color="primary" type="submit" >
                                     <h3>Buy</h3>
-                                </Button>
+                                </RaisedButton>
                                 </form>
                             </div>
                         </div>
@@ -451,15 +587,20 @@ export default withStyles(styles)(class Transaction extends Component{
                                     id="sellTotal"
                                     value={this.state.sellTotal}
                                     type="number"
+                                           InputProps={{
+                                               classes: {
+                                                   input: classes.totalInput
+                                               }
+                                           }}
                                     InputLabelProps={{
                                         shrink: true,
                                     }}
                                     margin="normal"
                                     disabled
                                 />
-                                <Button id="sell-button" color="secondary" type="submit" >
+                                <RaisedButton id="sell-button" color="secondary" type="submit" >
                                     <h3>Sell</h3>
-                                </Button>
+                                </RaisedButton>
                                 </form>
                             </div>
                         </div>

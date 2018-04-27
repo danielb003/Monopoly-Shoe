@@ -54,8 +54,8 @@ export default class Home extends Component {
               </Navbar>
               {this.state.authenticated ? (
               <div className='crypto_chart'>
-                 <CryptoChart />
-                 <Transaction />
+                 <CryptoChart auth={true}/>
+                 {/*<Transaction />*/}
               </div> ) : (
                  <div className='crypto_chart'>
                     <CryptoChart />

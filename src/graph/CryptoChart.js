@@ -3,6 +3,7 @@ import './CryptoChart.css';
 import LineChart from './LineChart';
 import ToolTip from './ToolTip';
 import InfoBox from './InfoBox';
+import Transaction from './Transaction';
 
 class CryptoChart extends Component {
    constructor(props) {
@@ -110,6 +111,7 @@ class CryptoChart extends Component {
       clearInterval(this.refresh);
    }
    render() {
+       const isAuth = this.props.auth;
       return (
             <div className='container-fluid'>
                   <div className='row'>
@@ -138,7 +140,10 @@ class CryptoChart extends Component {
                   <div className='text-center'>
                         {this.state.pairs.map((pair, index) => <button key={index} onClick={() => this.onCoinClick(pair.name)}>{pair.name}</button>)}
                   </div>
-                  </div>  
+                  </div>
+                {
+                    isAuth ? (<Transaction coin={this.state.coin}/>) : null
+                }
         </div>
       );
    }
