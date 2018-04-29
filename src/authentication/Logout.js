@@ -21,7 +21,7 @@ export default class Logout extends Component {
          return <Redirect to="/" />
       }
 
-      return(
+      return (
          <div style={{ textAlign: "center", position: "absolute", top: "25%", left: "50%" }}>
             <h3 style={{ color: "rgb(220,220,220" }}>Logging Out...</h3>
          </div>

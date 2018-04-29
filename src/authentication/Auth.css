@@ -1,6 +1,9 @@
 #container {
     border: 1px solid red;
 }
+.nav_item {
+    margin-top: 10px;
+}
 #auth_box {
     border: 1px solid black;
     width: 400px;
