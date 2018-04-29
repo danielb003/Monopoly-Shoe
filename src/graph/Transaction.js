@@ -330,8 +330,8 @@ export default withStyles(styles)(class Transaction extends Component{
 
 
 
-                                const sellOrder = firebase.database().ref('buy/' + oid + '/');
-                                sellOrder.on('value', (snapshot) => {
+                                const buyOrder = firebase.database().ref('buy/' + oid + '/');
+                                buyOrder.on('value', (snapshot) => {
                                     if (snapshot.val() !== null) {
                                         // copy to a new record in history node
                                         firebase.database().ref('history/').push({
@@ -497,13 +497,13 @@ export default withStyles(styles)(class Transaction extends Component{
         const { classes } = this.props,{ buyOrders,  current_order, buyPrice, buyAmount, sellPrice, sellAmount } = this.state;
         return(
             <div>
-                <div className="container table-bordered">
+                <div className="container">
                     <div className="row">
-                        <div className="col-md-6 table-bordered pad-box">
-                            <div className="buy-box table-bordered">
+                        <div className="col-md-6 pad-box">
+                            <div className="buy-box pull-right">
                                 <h2 className="text-center">BUYING</h2>
                                 <p>Price:</p>
-                                <form onSubmit={this.save_BuyOrder}>
+                                <form id="transaction" onSubmit={this.save_BuyOrder}>
                                 <TextField fullWidth
                                     id="buyPrice"
                                     value={this.state.buyPrice}
@@ -560,11 +560,11 @@ export default withStyles(styles)(class Transaction extends Component{
                                 </form>
                             </div>
                         </div>
-                        <div className="col-md-6 table-bordered noPad">
-                            <div className="sell-box table-bordered">
+                        <div className="col-md-6 noPad">
+                            <div className="sell-box pull-left">
                                 <h2 className="text-center">SELLING</h2>
                                 <p>Price:</p>
-                                <form onSubmit={this.save_SellOrder}>
+                                <form id="transaction" onSubmit={this.save_SellOrder}>
                                     <TextField fullWidth
                                         id="sellPrice"
                                         value={this.state.sellPrice}
