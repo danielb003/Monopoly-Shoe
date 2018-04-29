@@ -84,23 +84,16 @@ export default withStyles(styles)(class Transaction extends Component{
     }
 
     loadUserID = () => {
-        // var ref = new Firebase("https://yourfirebase.firebaseio.com");
-        // var authData = app.auth().userinfo.uid;
         var authData = firebase.auth().currentUser;
         if (authData) {
             this.setState({
                 uid : authData.uid
             })
-            // console.log("User " + authData.uid + " is logged in with " + authData.provider);
-
         }
     }
 
     retrieve_currentPrice = () => {
         this.getData = () => {
-            // const {data} = this.props;
-            // const coin = 'BTC';
-
             // filter coin, pass coin from chart
             const coin = this.state.coinType;
             const currency = 'AUD';
@@ -161,7 +154,8 @@ export default withStyles(styles)(class Transaction extends Component{
                 process: false,
                 timestamp: this.state.timestamp,
                 coinType: this.state.coinType,
-                coinValue: this.state.currentPrice
+                coinValue: this.state.currentPrice,
+                coinTotal: this.state.currentPrice * parseInt(this.state.buyAmount)
             }).then(function () {
                 console.log("Insertion Succeeded.")
             }).catch(function (error) {
@@ -197,7 +191,8 @@ export default withStyles(styles)(class Transaction extends Component{
                 process: false,
                 timestamp: this.state.timestamp,
                 coinType: this.state.coinType,
-                coinValue: this.state.currentPrice
+                coinValue: this.state.currentPrice,
+                coinTotal: this.state.currentPrice * parseInt(this.state.sellAmount)
             }).then(function () {
                 console.log("Insertion Succeeded.")
             }).catch(function (error) {
@@ -232,7 +227,9 @@ export default withStyles(styles)(class Transaction extends Component{
                         user_id:snapshot.child(index +"/user_id").val(),
                         process:snapshot.child(index +"/process").val(),
                         timestamp:snapshot.child(index +"/timestamp").val(),
-                        coinValue:snapshot.child(index +"/coinValue").val()
+                        coinType:snapshot.child(index +"/coinType").val(),
+                        coinValue:snapshot.child(index +"/coinValue").val(),
+                        coinTotal:snapshot.child(index +"/coinTotal").val()
                     });
                 }
                 this.setState({
@@ -254,7 +251,9 @@ export default withStyles(styles)(class Transaction extends Component{
                         user_id:snapshot.child(index +"/user_id").val(),
                         process:snapshot.child(index +"/process").val(),
                         timestamp:snapshot.child(index +"/timestamp").val(),
-                        coinValue:snapshot.child(index +"/coinValue").val()
+                        coinType:snapshot.child(index +"/coinType").val(),
+                        coinValue:snapshot.child(index +"/coinValue").val(),
+                        coinTotal:snapshot.child(index +"/coinTotal").val()
                     });
                 }
                 this.setState({
@@ -270,9 +269,9 @@ export default withStyles(styles)(class Transaction extends Component{
         const buyOrderLists = this.state.buyOrders;
         const sellOrderLists = this.state.sellOrders;
         const btc_price = this.state.currentPrice;
-        console.log('bitcoin price= ' + btc_price);
-        console.log('buy orderLists: ' + buyOrderLists);
-        console.log('sell orderLists: ' + sellOrderLists);
+        // console.log('bitcoin price= ' + btc_price);
+        // console.log('buy orderLists: ' + buyOrderLists);
+        // console.log('sell orderLists: ' + sellOrderLists);
         if (type === "buy") {
             console.log("Buy Iteration");
             for (const index in buyOrderLists) {
@@ -329,20 +328,29 @@ export default withStyles(styles)(class Transaction extends Component{
                                 });
                                 firebase.database().ref().update(updates);
 
-                                // copy to a new record in history node
-                                firebase.database().ref('history/').push({
-                                    amount: this.state.buyAmount,
-                                    coinType: this.state.coinType,
-                                    coinValue: this.state.currentPrice,
-                                    price: this.state.buyPrice,
-                                    timestamp: this.state.timestamp,
-                                    type: "Buy",
-                                    user_id: this.state.uid
-                                });
 
-                                // then remove the processed transaction
-                                const processed_transaction = firebase.database().ref('buy/' + oid + '/');
-                                processed_transaction.remove();
+
+                                const sellOrder = firebase.database().ref('buy/' + oid + '/');
+                                sellOrder.on('value', (snapshot) => {
+                                    if (snapshot.val() !== null) {
+                                        // copy to a new record in history node
+                                        firebase.database().ref('history/').push({
+                                            amount: snapshot.child("/amount").val(),
+                                            coinType: snapshot.child("/coinType").val(),
+                                            coinValue: snapshot.child("/coinValue").val(),
+                                            coinTotal: snapshot.child("/coinTotal").val(),
+                                            price: snapshot.child("/price").val(),
+                                            total: snapshot.child("/total").val(),
+                                            timestamp: snapshot.child("/timestamp").val(),
+                                            type: "Buy",
+                                            user_id: snapshot.child("/user_id").val()
+                                        });
+                                        // then remove the processed transaction
+                                        const processed_transaction = firebase.database().ref('buy/' + oid + '/');
+                                        processed_transaction.remove();
+
+                                    }
+                                });
                             }
 
                         }
@@ -401,20 +409,28 @@ export default withStyles(styles)(class Transaction extends Component{
                                 });
                                 firebase.database().ref().update(updates);
 
-                                // copy to a new record in history node
-                                firebase.database().ref('history/').push({
-                                    amount: this.state.sellAmount,
-                                    coinType: this.state.coinType,
-                                    coinValue: this.state.currentPrice,
-                                    price: this.state.sellPrice,
-                                    timestamp: this.state.timestamp,
-                                    type: "Sell",
-                                    user_id: this.state.uid
+                                const sellOrder = firebase.database().ref('sell/' + oid + '/');
+                                sellOrder.on('value', (snapshot) => {
+                                    if (snapshot.val() !== null) {
+                                        // copy to a new record in history node
+                                        firebase.database().ref('history/').push({
+                                            amount: snapshot.child("/amount").val(),
+                                            coinType: snapshot.child("/coinType").val(),
+                                            coinValue: snapshot.child("/coinValue").val(),
+                                            coinTotal: snapshot.child("/coinTotal").val(),
+                                            price: snapshot.child("/price").val(),
+                                            total: snapshot.child("/total").val(),
+                                            timestamp: snapshot.child("/timestamp").val(),
+                                            type: "Sell",
+                                            user_id: snapshot.child("/user_id").val()
+                                        });
+                                        // then remove the processed transaction
+                                        const processed_transaction = firebase.database().ref('sell/' + oid + '/');
+                                        processed_transaction.remove();
+
+                                    }
                                 });
 
-                                // then remove the processed transaction
-                                const processed_transaction = firebase.database().ref('sell/' + oid + '/');
-                                processed_transaction.remove();
                             }
 
                         }
