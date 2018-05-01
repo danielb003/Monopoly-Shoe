@@ -27,6 +27,7 @@ class Dashboard extends Component {
           startDate:null,
           endDate:null,
           user_data: [],
+          coins:[]
       };
 
       this.handleChange = this.handleChange.bind(this);
@@ -49,6 +50,7 @@ class Dashboard extends Component {
       // this.loadTradingStatus();
        this.retrieve_history();
        this.retrieve_userData();
+       this.retrieve_coins();
        this.loadTradingStatus();
    }
 
@@ -178,6 +180,34 @@ class Dashboard extends Component {
         });
     }
 
+    retrieve_coins = () => {
+
+        var user_id = null;
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                user_id = user.uid;
+                const assignedCoins = [];
+                const coinsFb = firebase.database().ref('user/' + user_id +'/coin');
+                coinsFb.on('value', (snapshot) => {
+                    if(snapshot.val() !== null) {
+                        let items = snapshot.val();
+                        for (let key in items) {
+                            if( snapshot.child(key).val()>0 && key!="balance") {
+                                assignedCoins.push({
+                                    name: key,
+                                    amt: snapshot.child(key).val()
+                                });
+                            }
+                        }
+                        this.setState({
+                            coins: assignedCoins
+                        });
+                    }
+                });
+            }
+        });
+    }
+
     handleSubmit(event) {
         // this.loadTimestamp(event);
         // this.loadTimestamp(event).then(() => {
@@ -268,6 +298,22 @@ class Dashboard extends Component {
           null
       );
 
+       const coinState = this.state.coins;
+
+       const coinTableData = coinState ? (
+           this.state.coins.map(function(item){
+               return (
+                   <tbody>
+                   <tr key={item.name}>
+                       <td>{item.name}</td>
+                       <td>{item.amt}</td>
+                   </tr>
+                   </tbody>
+               )
+           })) : (
+           null
+       );
+
 
       //  const userData = this.state.user_data;
       // const portfolioTable = userData ? (
@@ -337,79 +383,16 @@ class Dashboard extends Component {
 
 
                                <table className="table table-bordered">
-                                 <thead className="">
-                                 <tr>
-                                    <th>Coin</th>
-                                    <th>Name</th>
-                                    <th>Total Balance</th>
-                                    <th>Available Balance</th>
-                                    <th>BTC Value</th>
-                                    <th></th>
-                                 </tr>
-                                 </thead>
+                                   {this.state.coins ? (<thead className="">
+                                   <tr>
+                                       <th>Coin</th>
+                                       <th>Amount</th>
+                                       <th>Average Price</th>
+                                   </tr>
+                                   </thead>) : null}
+                                   {coinTableData}
+                               </table>
 
-                                   {/*{portfolioTable}*/}
-                                 <tbody>
-                                 <tr>
-                                    <td><img id="crypto_icon" src={ bitcoin_icon } className="noPad img-responsive"/>
-                                    </td>
-                                    <td>Bitcoin</td>
-                                    <td>2,500.0083</td>
-                                    <td>2,500.0083</td>
-                                    <td>0.01417</td>
-                                    <td>
-                                       <Button size="small" color="primary" >
-                                          Deposit
-                                       </Button>
-                                       <Button size="small" color="secondary" >
-                                          Withdrawal
-                                       </Button>
-                                       <Button size="small" color="default">
-                                          Trade
-                                       </Button>
-                                    </td>
-
-                                 </tr>
-                                 <tr>
-                                    <td><img id="crypto_icon" src={ litecoin_icon } className="noPad img-responsive"/>
-                                    </td>
-                                    <td>Litecoin</td>
-                                    <td>1,327.8269</td>
-                                    <td>1,327.8269</td>
-                                    <td>0.02953</td>
-                                    <td className="noPad">
-                                       <Button size="small" color="primary" >
-                                          Deposit
-                                       </Button>
-                                       <Button size="small" color="secondary" >
-                                          Withdrawal
-                                       </Button>
-                                       <Button size="small" color="default">
-                                          Trade
-                                       </Button>
-                                    </td>
-                                 </tr>
-                                 <tr>
-                                    <td><img id="crypto_icon" src={ ethereum_icon } className="noPad img-responsive"/>
-                                    </td>
-                                    <td>Ethereum</td>
-                                    <td>1,000.5196</td>
-                                    <td>1,000.5196</td>
-                                    <td>0.02936</td>
-                                    <td>
-                                       <Button size="small" color="primary" >
-                                          Deposit
-                                       </Button>
-                                       <Button size="small" color="secondary" >
-                                          Withdrawal
-                                       </Button>
-                                       <Button size="small" color="default">
-                                          Trade
-                                       </Button>
-                                    </td>
-                                 </tr>
-                                 </tbody>
-                              </table>
                            </div>
 
                            <div className="container-fluid noPad">
