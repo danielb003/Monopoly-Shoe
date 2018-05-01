@@ -294,12 +294,9 @@ class Dashboard extends Component {
                      <NavItem class="nav_item" eventKey={1} href="/dashboard">
                         Portfolio
                      </NavItem>
-                      <NavItem class="nav_item" eventKey={2} href="/leaderboard">
-                          Leaderboard
-                      </NavItem>
                   </Nav>
                   <Nav pullRight>
-                     <NavItem class="nav_item" eventKey={3} href="/logout">
+                     <NavItem class="nav_item" eventKey={2} href="/logout">
                         Logout
                      </NavItem>
                   </Nav>
