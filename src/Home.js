@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import CryptoChart from './graph/CryptoChart';
+import Transaction from './graph/Transaction';
 import { app } from "./Constant";
 import './Home.css';
 
@@ -39,16 +40,13 @@ export default class Home extends Component {
                     <NavItem class="nav_item" eventKey={1} href="/dashboard">
                        Portfolio
                     </NavItem>
-                     <NavItem class="nav_item" eventKey={2} href="/leaderboard">
-                         Leaderboard
-                     </NavItem>
                  </Nav>
                  <Nav pullRight>
                     {this.state.authenticated ? (
-                       <NavItem class="nav_item" eventKey={3} href="/logout">
+                       <NavItem class="nav_item" eventKey={2} href="/logout">
                           Logout
                        </NavItem> ) : (
-                       <NavItem class="nav_item" eventKey={3} href="/auth">
+                       <NavItem class="nav_item" eventKey={2} href="/auth">
                           Login
                        </NavItem> )
                     }
