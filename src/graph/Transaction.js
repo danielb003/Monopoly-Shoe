@@ -459,7 +459,7 @@ export default withStyles(styles)(class Transaction extends Component{
         }
         this.setState({
             buyPrice: event.target.value,
-        });
+        }, () => this.handleBuyTotalChange());
     }
 
     handleBuyTotalChange = () => {
@@ -482,7 +482,7 @@ export default withStyles(styles)(class Transaction extends Component{
         }
         this.setState({
             sellPrice: event.target.value
-        });
+        }, () => this.handleSellTotalChange());
     }
 
     handleSellTotalChange = () => {
