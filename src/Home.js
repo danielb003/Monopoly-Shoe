@@ -55,9 +55,9 @@ export default class Home extends Component {
         return (
            <div>
               <Navbar inverse>
-                 <Nav>
+                 <Nav id="nav_box">
                     <NavItem class="nav_item">
-                       <p>Monopoly Shoe</p>
+                       <p>Prolific Trading</p>
                     </NavItem>
                     <NavItem class="nav_item" eventKey={1} href="/dashboard">
                        Portfolio

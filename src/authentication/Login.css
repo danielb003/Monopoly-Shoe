@@ -1,45 +1,55 @@
-#auth_box {
-    border: 1px solid black;
-    width: 400px;
-    height: 498px;
-    margin: 150px auto;
-    border-radius: 10px;
-    box-shadow: 5px 5px 14px -1px rgba(0,0,0,0.75);
-}
 #login_div {
-    height: 281px;
+    height: 100%;
     display: block;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
     background-color: rgb(255,255,255);
 }
 form {
-    height: 242px;
+    min-height: 281px;
     border-bottom-right-radius: 10px;
     border-bottom-left-radius: 10px;
+}
+.form-control:valid~.invalid-feedback {
+    display: none;
 }
 #login-email {
     width: 90%;
     height: 50px;
     font-family: monospace;
     font-size: 16px;
-    margin: 15px 20px;
+    margin: 80px 20px 15px 20px;
     padding: 0px 20px;
     border-radius: 2px;
     background-color: rgb(220,220,220);
     border-style: none;
-    margin-top: 35px;
 }
 #login-password {
     width: 90%;
     height: 50px;
     font-family: monospace;
     font-size: 16px;
-    margin: 15px 20px;
+    margin: 3px 20px 10px 20px;
     padding: 0px 20px;
     border-radius: 2px;
     background-color: rgb(220,220,220);
     border-style: none;
+}
+#help-block-1 {
+    width: 90%;
+    font-family: monospace;
+    margin: 0px 20px;
+    padding: 3px 2px;
+    position: relative;
+    top: -5px;
+    color: rgb(214,21,21);
+}
+#help-block-2 {
+    width: 90%;
+    font-family: monospace;
+    margin: 0px 20px;
+    padding: 3px 2px;
+    color: rgb(214,21,21);
 }
 #login-submit {
     width: 100%;
@@ -51,5 +61,9 @@ form {
     background-color: rgb(91, 177, 255);
     border-style: none;
     cursor: pointer;
-    margin-top: 21px;
+    margin-top: -5px;
+}
+#input_div {
+    max-height: 170px;
+    border: 1px solid rgb(255,255,255);
 }

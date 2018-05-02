@@ -22,7 +22,7 @@ export default class Auth extends Component {
             <div>
                 <div id="container">
                    <Navbar inverse>
-                      <Nav>
+                      <Nav id="nav_box">
                          <NavItem class="nav_item">
                             <p>Prolific Trading</p>
                          </NavItem>

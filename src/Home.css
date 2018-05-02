@@ -1,3 +1,7 @@
+#nav_box {
+    height: 60px;
+}
 .nav_item {
-    margin-top: 5px;
+    position: relative;
+    top: -4px;
 }
