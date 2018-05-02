@@ -40,6 +40,9 @@ export default class Home extends Component {
                     <NavItem class="nav_item" eventKey={1} href="/dashboard">
                        Portfolio
                     </NavItem>
+                     <NavItem class="nav_item" eventKey={2} href="/leaderboard">
+                         Leaderboard
+                      </NavItem>
                  </Nav>
                  <Nav pullRight>
                     {this.state.authenticated ? (

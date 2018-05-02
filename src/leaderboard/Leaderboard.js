@@ -41,7 +41,6 @@ class Leaderboard extends Component {
         this.setState({ tabValue }, () => {
             this.loadHistoryData_andSaveToState();
         });
-        alert(tabValue);
 
     };
 
