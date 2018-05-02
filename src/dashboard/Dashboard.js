@@ -30,7 +30,7 @@ class Dashboard extends Component {
           coins:[]
       };
 
-      this.handleChange = this.handleChange.bind(this);
+      this.handleSwitchChange = this.handleSwitchChange.bind(this);
        this.handleSubmit = this.handleSubmit.bind(this);
        this.startDateChange = this.startDateChange.bind(this);
        this.endDateChange = this.endDateChange.bind(this);
@@ -44,14 +44,14 @@ class Dashboard extends Component {
             this.setState({ authenticated: false })
          }
       });
+
    }
 
    componentDidMount(){
-      // this.loadTradingStatus();
+       this.loadUserIDAndTradingStatus();
        this.retrieve_history();
        this.retrieve_userData();
        this.retrieve_coins();
-       this.loadTradingStatus();
    }
 
    componentWillUnmount(){
@@ -59,11 +59,14 @@ class Dashboard extends Component {
 
    }
 
-    loadTradingStatus = () => {
+    loadUserIDAndTradingStatus = () => {
         var user_id = null;
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 user_id = user.uid;
+                this.setState({
+                    uid : user_id
+                })
                 const userDB = firebase.database().ref('user/' + user_id);
                 var trading = null;
                 userDB.on('value', (snapshot) => {
@@ -71,56 +74,29 @@ class Dashboard extends Component {
                     if (snapshot.val() !== null) {
                         trading = snapshot.child("/trading").val();
                     }
-                    console.log('load trading : ' + trading);
+                    // console.log('load trading : ' + trading);
                     this.setState({
                         openTradingAccount: trading
+                    }, () => {
+                        console.log('load trading : ' + this.state.openTradingAccount);
                     });
                 });
             }
         });
     }
 
-    handleChange = event => {
-        // this.setState({ [name]: event.target.checked }, () => {
-        //     this.setState({
-        //         openTradingAccount: event.target.checked
-        //     })
-        // });
-
-        // });
-
-        // this.setState({ [name]: event.target.checked } , () => {
-        //    this.setState()
-        //     openTradingAccount: event.target.checked
-        // });
-        //  if (this.state.openTradingAccount == false){
-        //      event.target.checked = false;
-        //  }else {
-        //      event.target.checked = true;
-        //  }
+    handleSwitchChange = event => {
         this.setState({
-            // [name]: event.target.checked,
             openTradingAccount: event.target.checked
+        }, () =>{
+            this.updateTrading();
         });
-        this.updateTrading();
+
     }
 
     updateTrading = () => {
-        console.log(this.state.openTradingAccount);
-        var user = firebase.auth().currentUser;
-        const tradingStatus = firebase.database().ref('user/' + user.uid);
-        var tradingDB;
-        tradingStatus.on('value', (snapshot) => {
-            if (snapshot.val() !== null) {
-               tradingDB = snapshot.child("/trading").val();
-            }
-        });
-        console.log('tradingDB: ' + tradingDB);
-                // const sellOrderFB = firebase.database().ref('sell/');
-        // buyOrderFB.on('value', (snapshot) => {
-        //     if(snapshot.val() !== null){
-         console.log('trading status in handle change ' + tradingStatus);
-        firebase.database().ref('user/' + user.uid + '/').update({
+        console.log('trading status in handle change ' + this.state.openTradingAccount);
+        firebase.database().ref('user/' + this.state.uid + '/').update({
             trading: this.state.openTradingAccount
         });
     }
@@ -209,18 +185,8 @@ class Dashboard extends Component {
     }
 
     handleSubmit(event) {
-        // this.loadTimestamp(event);
-        // this.loadTimestamp(event).then(() => {
         event.preventDefault();
         var moment = require('moment');
-      /*  const target = event.target;
-        const value = target.value;
-        const name = target.name;
-
-            this.setState({
-                [name]: value
-            });*/
-
         var momentStartDate=moment(this.state.startDate);
         var momentEndDate=moment(this.state.endDate);
 
@@ -278,6 +244,8 @@ class Dashboard extends Component {
       }
 
       const historyState = this.state.history;
+      const tradingStatus = this.state.openTradingAccount;
+      console.log('trading status ' + tradingStatus);
       const { startDate,endDate, user_data } = this.state;
 
       const historyTableData = historyState ? (
@@ -360,15 +328,15 @@ class Dashboard extends Component {
                            <img id="user_profile" src={profile_img } className="center-block img-responsive img-circle" />
                            <h2> {user_data.fname} {user_data.lname}</h2><br/>
                            <strong>{user_data.email} </strong> <br/><br/>
-                            {user_data.admin ? (<strong>Admin User</strong>) : (<strong>Regular User</strong>)}
+                            {user_data.admin == true && user_data.admin !== null
+                                ? (<strong>Admin User</strong>) : (<strong>Regular User</strong>)}
                             <br/><br/>
                            <strong>Trading Account</strong>
                            <div>
                               <Switch
-                                 checked={user_data.trading}
-                                 onChange={this.handleChange}
-                                 value="Enable"
-                                 color="primary"
+                                  checked={tradingStatus == true ? true : false}
+                                  onChange={this.handleSwitchChange}
+                                  color="primary"
                               />
                            </div>
                         </div>
