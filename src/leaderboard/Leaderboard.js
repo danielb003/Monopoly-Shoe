@@ -29,7 +29,18 @@ class Leaderboard extends Component {
         this.state = {
             tabValue : 0,
             history: [],
-            authenticated: false
+            authenticated: false,
+            user: [],
+            coinPrice: {
+                BTC: 0,
+                EOS: 0,
+                ETH: 0,
+                LTC: 0,
+                NEO: 0,
+                NULS: 0,
+                XMR: 0,
+                XRP: 0
+            }
         }
         this.handleTabChange = this.handleTabChange.bind(this);
     }
@@ -47,6 +58,7 @@ class Leaderboard extends Component {
 
     componentDidMount() {
         this.loadHistoryData_andSaveToState();
+        this.retrieve_currentCryptoPrice();
     }
 
     handleTabChange = (event, tabValue) => {
@@ -90,7 +102,8 @@ class Leaderboard extends Component {
                     this.setState({
                         history: filtered_history
                     }, () => {
-                        console.log(filtered_history)
+                        // console.log(filtered_history)
+                        this.loadUsersFromHistory();
                     });
                 }
                 // Past 1 Week
@@ -120,7 +133,8 @@ class Leaderboard extends Component {
                     this.setState({
                         history: filtered_history
                     }, () => {
-                        console.log(filtered_history)
+                        // console.log(filtered_history)
+                        this.loadUsersFromHistory();
                     });
                 }
                 // Past 1 Month
@@ -150,7 +164,8 @@ class Leaderboard extends Component {
                     this.setState({
                         history: filtered_history
                     }, () => {
-                        console.log(filtered_history)
+                        // console.log(filtered_history)
+                        this.loadUsersFromHistory();
                     });
                 }
                 // All Times
@@ -171,10 +186,10 @@ class Leaderboard extends Component {
                     this.setState({
                         history: filtered_history
                     }, () => {
-                        console.log(filtered_history)
+                        // console.log(filtered_history)
+                        this.loadUsersFromHistory();
                     });
                 }
-
             }
         });
     }
@@ -182,6 +197,124 @@ class Leaderboard extends Component {
     // Loop history data based on specified Timeframe
     // Then save to state
 
+    loadUsersFromHistory = () => {
+        const userLists = [];
+        const historyLists = this.state.history;
+        console.log('historyLists: ' + historyLists);
+        for(const index in historyLists){
+            if(userLists === undefined || userLists.length == 0){
+                // userLists.push({
+                //     uid : historyLists[index]['user_id'],
+                //     data : historyLists[index]
+                // });
+                userLists.push(historyLists[index]['user_id']);
+            }
+            if(!userLists.includes(historyLists[index]['user_id'])){
+                console.log('compared true');
+                // userLists.push({
+                //     uid : historyLists[index]['user_id'],
+                //     data : historyLists[index]
+                // });
+                userLists.push(historyLists[index]['user_id']);
+            }
+        }
+
+        const userState = [];
+        for(const index in historyLists){
+            for(const id in userLists){
+                if(userLists[id] == historyLists[index]['user_id']){
+                    const type = historyLists[index]['type'];
+                    const coinTotal = historyLists[index]['coinTotal'];
+                    const coinType = historyLists[index]['coinType'];
+                    for(const coinIndex in this.state.coinPrice){
+                        if(this.state.coinPrice[coinIndex][coinType]){
+                            console.log('this.state.coinPrice[coinIndex]' + this.state.coinPrice[coinIndex]);
+                            const estCurrentTotal = historyLists[index]['amount'] * this.state.coinPrice[coinIndex][coinType];
+                            console.log('coinTotal: ' + coinTotal + ' | estTotal: ' + estCurrentTotal);
+                            var sumOfProfitLossPercent = 0;
+                            if(type == "Sell"){
+                                const diff = coinTotal - estCurrentTotal;
+                                const ProfitLossPercent = diff / estCurrentTotal;
+                                sumOfProfitLossPercent += ProfitLossPercent;
+                            }else{
+                                const diff = estCurrentTotal - coinTotal;
+                                const ProfitLossPercent = diff / estCurrentTotal;
+                                sumOfProfitLossPercent += ProfitLossPercent;
+                            }
+                            userState.push({
+                                uid: userLists[id],
+                                profitLossPercent: sumOfProfitLossPercent
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        var sum = 0;
+        const userProfit = [];
+
+        var o = {}
+        var result = userState.reduce(function(r, e) {
+            var key = e.uid;
+            console.log('key ' + key + ' e: ' + e)
+            if (!o[key]) {
+                o[key] = e;
+                r.push(o[key]);
+            } else {
+                o[key].profitLossPercent += e.profitLossPercent;
+            }
+            return r;
+        }, []);
+
+        console.log(result);
+        // for(const id in userLists){
+        //     for(const i in sortedUserState){
+        //         if(userLists[id] == userState[i]['uid']){
+        //             sum += userState[i]['profitLossPercent'];
+        //             userProfit.push(userLists[id]);
+        //         }
+        //     }
+        // }
+
+        console.log(userState);
+        // console.log('coinPrice: ' + this.state.coinPrice);
+    }
+
+    retrieve_currentCryptoPrice = () => {
+        this.getData = () => {
+            // filter coin, pass coin from chart
+            const coin = this.state.coinPrice;
+            console.log('coinPrice: ' + coin);
+            const coinStorage = [];
+            const currency = 'AUD';
+            for(const index in coin){
+                const url = 'https://min-api.cryptocompare.com/data/price?fsym=' + index + '&tsyms=' + currency;
+
+                fetch(url).then(r => r.json())
+                    .then((coinData) => {
+                        const price = coinData.AUD;
+
+                        coinStorage.push({
+                            [index]: price
+                        });
+
+                    })
+                    .catch((e) => {
+                        console.log(e);
+                    });
+            }
+            this.setState({
+                // coinType: coin,
+                coinPrice: coinStorage,
+                updatedAt: new Date()
+            }, () => {
+                console.log(this.state.coinPrice);
+            });
+
+        }
+        this.getData();
+        this.refresh = setInterval(() => this.getData(), 90000);
+    }
 
     // loop history [] data from state and get user_id
     // get current crypto value
@@ -203,7 +336,7 @@ class Leaderboard extends Component {
                         <NavItem class="nav_item" href="/">
                             <p>Prolific Trading</p>
                         </NavItem>
-                       {this.state.authenticted ? (
+                       {this.state.authenticated ? (
                         <NavItem class="nav_item" eventKey={1} href="/dashboard">
                             Portfolio
                         </NavItem> ): ( null ) }
