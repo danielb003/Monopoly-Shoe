@@ -6,7 +6,7 @@ import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
 import Tabs, { Tab } from 'material-ui/Tabs';
 import Typography from 'material-ui/Typography';
-import firebase from "firebase";
+import {app} from "../Constant";
 
 function TabContainer(props) {
     return (
@@ -29,8 +29,20 @@ class Leaderboard extends Component {
         this.state = {
             tabValue : 0,
             history: [],
+            authenticated: false
         }
         this.handleTabChange = this.handleTabChange.bind(this);
+    }
+
+    componentWillMount() {
+
+        this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
+            if(user) {
+                this.setState({ authenticated : true })
+            } else {
+                this.setState({ authenticated: false })
+            }
+        });
     }
 
     componentDidMount() {
@@ -45,7 +57,7 @@ class Leaderboard extends Component {
     };
 
     loadHistoryData_andSaveToState = () => {
-        const history = firebase.database().ref('history');
+        const history = app.database().ref('history');
         const filtered_history = []
         history.on('value', (snapshot) => {
             if(snapshot.val() != null){
@@ -199,9 +211,14 @@ class Leaderboard extends Component {
                         </NavItem>
                     </Nav>
                     <Nav pullRight>
-                        <NavItem class="nav_item" eventKey={3} href="/logout">
-                            Logout
-                        </NavItem>
+                        {this.state.authenticated ? (
+                            <NavItem class="nav_item" eventKey={2} href="/logout">
+                                Logout
+                            </NavItem> ) : (
+                            <NavItem class="nav_item" eventKey={2} href="/auth">
+                                Login
+                            </NavItem> )
+                        }
                     </Nav>
                 </Navbar>
 
