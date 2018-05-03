@@ -199,13 +199,14 @@ class Leaderboard extends Component {
         return (
             <div>
                 <Navbar inverse>
-                    <Nav>
+                    <Nav id="nav_box">
                         <NavItem class="nav_item" href="/">
-                            <p>MonopolyShoe</p>
+                            <p>Prolific Trading</p>
                         </NavItem>
+                       {this.state.authenticted ? (
                         <NavItem class="nav_item" eventKey={1} href="/dashboard">
                             Portfolio
-                        </NavItem>
+                        </NavItem> ): ( null ) }
                         <NavItem class="nav_item" eventKey={2} href="/leaderboard">
                             Leaderboard
                         </NavItem>
