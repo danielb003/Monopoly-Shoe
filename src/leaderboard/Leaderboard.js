@@ -254,7 +254,7 @@ class Leaderboard extends Component {
         const userProfit = [];
 
         var o = {}
-        var result = userState.reduce(function(r, e) {
+        var reducedState = userState.reduce(function(r, e) {
             var key = e.uid;
             console.log('key ' + key + ' e: ' + e)
             if (!o[key]) {
@@ -266,7 +266,33 @@ class Leaderboard extends Component {
             return r;
         }, []);
 
-        console.log(result);
+        console.log(reducedState);
+
+        const newUserState = [];
+        for(const index in reducedState){
+            const data = app.database().ref('user/' + reducedState[index]['uid']);
+            data.on('value', (snapshot) => {
+                if(snapshot.val() !== null){
+                    const fn = snapshot.child("/fname").val();
+                    const ln = snapshot.child("/lname").val();
+                    const pl = reducedState[index]['profitLossPercent'];
+
+                    newUserState.push({
+                       uid:  reducedState[index]['uid'],
+                        fname: fn,
+                        lname: ln,
+                        profitLoss: pl
+                    });
+                    this.setState({
+                        user: newUserState
+                    });
+                }
+            });
+        }
+        // if(newUserState.updated)
+        this.setState({
+            user: newUserState
+        });
         // for(const id in userLists){
         //     for(const i in sortedUserState){
         //         if(userLists[id] == userState[i]['uid']){
@@ -329,6 +355,27 @@ class Leaderboard extends Component {
     render(){
         const { classes } = this.props;
         const { tabValue } = this.state;
+        const sortedState = this.state.user.sort(function(a,b) {
+            console.log(a.profitLoss);
+            return  b.profitLoss - a.profitLoss;
+        });
+        const userTableData = sortedState ? (
+            sortedState.map(function(item, index){
+                // this.state.user.sort(function(a,b) {
+                //     return a.profitLoss - b.profitLoss;
+                // });
+                return (
+                    <tbody>
+                    <tr key={item.uid}>
+                        <td>{index+1}</td>
+                        <td>{item.fname} {item.lname}</td>
+                        <td>{item.profitLoss}</td>
+                    </tr>
+                    </tbody>
+                )
+            })) : (
+            null
+        );
         return (
             <div>
                 <Navbar inverse>
@@ -371,45 +418,98 @@ class Leaderboard extends Component {
                                     <Tab label="All Times" />
                                 </Tabs>
                             </AppBar>
-                            {tabValue === 0 && <TabContainer>Last 24 Hours Data</TabContainer>}
-                            {tabValue === 1 && <TabContainer>1 Week Data</TabContainer>}
-                            {tabValue === 2 && <TabContainer>1 Month Data</TabContainer>}
-                            {tabValue === 3 && <TabContainer>All Time Data</TabContainer>}
+                            {/*<table className="table table-bordered text-center">*/}
+                                {/*<thead className>*/}
+                                    {/*<tr>*/}
+                                        {/*<th>Rank</th>*/}
+                                        {/*<th>Trader Name</th>*/}
+                                        {/*<th>Profit</th>*/}
+                                    {/*</tr>*/}
+                                {/*</thead>*/}
+                            {tabValue === 0 && <TabContainer>
+                                <table className="table table-bordered text-center">
+                                    <thead className>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Trader Name</th>
+                                        <th>Profit</th>
+                                    </tr>
+                                    </thead>
+                                {userTableData}
+                                </table>
+                            </TabContainer>}
+                            {tabValue === 1 && <TabContainer>
+                                <table className="table table-bordered text-center">
+                                    <thead className>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Trader Name</th>
+                                        <th>Profit</th>
+                                    </tr>
+                                    </thead>
+                                    {userTableData}
+                                </table>
+                            </TabContainer>}
+                            {tabValue === 2 && <TabContainer>
+                                <table className="table table-bordered text-center">
+                                    <thead className>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Trader Name</th>
+                                        <th>Profit</th>
+                                    </tr>
+                                    </thead>
+                                    {userTableData}
+                                </table>
+                            </TabContainer>}
+                            {tabValue === 3 && <TabContainer>
+                                <table className="table table-bordered text-center">
+                                    <thead className>
+                                    <tr>
+                                        <th>Rank</th>
+                                        <th>Trader Name</th>
+                                        <th>Profit</th>
+                                    </tr>
+                                    </thead>
+                                    {userTableData}
+                                </table>
+                            </TabContainer>}
+                            {/*</table>*/}
                         </div>
 
                         <br/>
-                        <table className="table table-bordered text-center">
-                            <tr>
-                                <th>Rank</th>
-                                <th>Trader Name</th>
-                                <th>Number of Trades</th>
-                                <th>Profit</th>
-                                <th>Market Value</th>
-                            </tr>
-                            <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Test User 1</td>
-                                <td>24</td>
-                                <td>15%</td>
-                                <td>$54.324.41</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Test User 2</td>
-                                <td>33</td>
-                                <td>14.4%</td>
-                                <td>$34.324.41</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Test User 3</td>
-                                <td>15</td>
-                                <td>9.4%</td>
-                                <td>$29.324.41</td>
-                            </tr>
-                            </tbody>
-                        </table>
+                        {/*<table className="table table-bordered text-center">*/}
+                            {/*<tr>*/}
+                                {/*<th>Rank</th>*/}
+                                {/*<th>Trader Name</th>*/}
+                                {/*<th>Number of Trades</th>*/}
+                                {/*<th>Profit</th>*/}
+                                {/*<th>Market Value</th>*/}
+                            {/*</tr>*/}
+                            {/*<tbody>*/}
+                            {/*<tr>*/}
+                                {/*<td>1</td>*/}
+                                {/*<td>Test User 1</td>*/}
+                                {/*<td>24</td>*/}
+                                {/*<td>15%</td>*/}
+                                {/*<td>$54.324.41</td>*/}
+                            {/*</tr>*/}
+                            {/*<tr>*/}
+                                {/*<td>2</td>*/}
+                                {/*<td>Test User 2</td>*/}
+                                {/*<td>33</td>*/}
+                                {/*<td>14.4%</td>*/}
+                                {/*<td>$34.324.41</td>*/}
+                            {/*</tr>*/}
+                            {/*<tr>*/}
+                                {/*<td>3</td>*/}
+                                {/*<td>Test User 3</td>*/}
+                                {/*<td>15</td>*/}
+                                {/*<td>9.4%</td>*/}
+                                {/*<td>$29.324.41</td>*/}
+                            {/*</tr>*/}
+                            {/*</tbody>*/}
+                        {/*</table>*/}
                     </div>
                 </div>
             </div>
