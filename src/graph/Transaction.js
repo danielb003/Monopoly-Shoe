@@ -73,8 +73,6 @@ export default withStyles(styles)(class Transaction extends Component{
         // this.process_orders();
     }
 
-
-
     componentWillReceiveProps(props){
         if (props.coin != this.state.coinType){
             this.setState({
@@ -115,6 +113,7 @@ export default withStyles(styles)(class Transaction extends Component{
         }
         this.getData();
         this.refresh = setInterval(() => this.getData(), 90000);
+        // this.refresh = setInterval(() => this.retrieve_orders(), 10000);
         this.retrieve_orders();
     }
 
@@ -142,33 +141,53 @@ export default withStyles(styles)(class Transaction extends Component{
             return;
         }
 
-        this.setState({
-            timestamp: currentTime
-        }, () => {
-            console.log('current timestamp in save_BuyOrder: ' + this.state.timestamp);
-            firebase.database().ref('buy/').push({
-                price: parseInt(this.state.buyPrice),
-                amount: parseInt(this.state.buyAmount),
-                total: this.state.buyTotal,
-                user_id: this.state.uid,
-                process: false,
-                timestamp: this.state.timestamp,
-                coinType: this.state.coinType,
-                coinValue: this.state.currentPrice,
-                coinTotal: this.state.currentPrice * parseInt(this.state.buyAmount)
-            }).then(function () {
-                console.log("Insertion Succeeded.")
-            }).catch(function (error) {
-                console.log("Buy Order Insertion Failed: " + error.message)
+        this.validate_buy = () => {
+            const userData = firebase.database().ref('user/' + this.state.uid + '/coin');
+            userData.once('value', (snapshot) => {
+                if(snapshot.val() !== null) {
+                    for (const index in snapshot.val()){
+                        // console.log('index BTC: ' + snapshot.child(index).val());
+                        if (index == this.state.coinType){
+                            const coin_bal = snapshot.child('balance').val();
+                            if( coin_bal < this.state.buyTotal){
+                                alert('Not Enough Balance');
+                                return;
+                            }else{
+                                this.setState({
+                                    timestamp: currentTime
+                                }, () => {
+                                    console.log('current timestamp in save_BuyOrder: ' + this.state.timestamp);
+                                    firebase.database().ref('buy/').push({
+                                        price: parseInt(this.state.buyPrice),
+                                        amount: parseInt(this.state.buyAmount),
+                                        total: this.state.buyTotal,
+                                        user_id: this.state.uid,
+                                        process: false,
+                                        timestamp: this.state.timestamp,
+                                        coinType: this.state.coinType,
+                                        coinValue: this.state.currentPrice,
+                                        coinTotal: this.state.currentPrice * parseInt(this.state.buyAmount)
+                                    }).then(function () {
+                                        console.log("Insertion Succeeded.");
+                                    }).catch(function (error) {
+                                        console.log("Buy Order Insertion Failed: " + error.message);
+                                    });
+                                    this.setState({
+                                        buyAmount: '',
+                                        buyPrice: '',
+                                        buyTotal: ''
+                                    });
+                                    alert('Buy order is successfully submitted');
+                                });
+                            }
+                        }
+                    }
+                }
             });
-            this.setState({
-                buyAmount: '',
-                buyPrice: '',
-                buyTotal: ''
-            });
-            alert('Buy order is successfully submitted');
-        });
-
+            // return true;
+        }
+        this.validate_buy();
+        this.retrieve_orders();
     }
 
     save_SellOrder = (event) => {
@@ -191,31 +210,54 @@ export default withStyles(styles)(class Transaction extends Component{
             return;
         }
 
-        this.setState({
-            timestamp: currentTime
-        }, () => {
-            firebase.database().ref('sell/').push({
-                price: parseInt(this.state.sellPrice),
-                amount: parseInt(this.state.sellAmount),
-                total: this.state.sellTotal,
-                user_id: this.state.uid,
-                process: false,
-                timestamp: this.state.timestamp,
-                coinType: this.state.coinType,
-                coinValue: this.state.currentPrice,
-                coinTotal: this.state.currentPrice * parseInt(this.state.sellAmount)
-            }).then(function () {
-                console.log("Insertion Succeeded.")
-            }).catch(function (error) {
-                console.log("Sell Order Insertion Failed: " + error.message)
+        this.validate_sell = () => {
+            const userData = firebase.database().ref('user/' + this.state.uid + '/coin');
+            userData.once('value', (snapshot) => {
+                if(snapshot.val() !== null) {
+                    for (const index in snapshot.val()){
+                        if (index == this.state.coinType){
+                            // console.log('index == coinType: ' + index);
+                            const coin_amt = snapshot.child(this.state.coinType).val();
+                            // console.log('coin Amt: ' + coin_amt);
+                            // console.log('this.state.sellAmount: ' + this.state.sellAmount);
+                            if( coin_amt < this.state.sellAmount){
+                                alert('Not Enough Coin');
+                                return;
+                            }else{
+                                console.log('sellPrice:' + this.state.sellPrice);
+                                this.setState({
+                                    timestamp: currentTime
+                                }, () => {
+                                    firebase.database().ref('sell/').push({
+                                        price: parseInt(this.state.sellPrice),
+                                        amount: parseInt(this.state.sellAmount),
+                                        total: this.state.sellTotal,
+                                        user_id: this.state.uid,
+                                        process: false,
+                                        timestamp: this.state.timestamp,
+                                        coinType: this.state.coinType,
+                                        coinValue: this.state.currentPrice,
+                                        coinTotal: this.state.currentPrice * parseInt(this.state.sellAmount)
+                                    }).then(function () {
+                                        console.log("Insertion Succeeded.")
+                                    }).catch(function (error) {
+                                        console.log("Sell Order Insertion Failed: " + error.message)
+                                    });
+                                    this.setState({
+                                        sellAmount: '',
+                                        sellPrice: '',
+                                        sellTotal: ''
+                                    });
+                                    alert('Sell order is successfully submitted');
+                                });
+                            }
+                        }
+                    }
+                }
             });
-            this.setState({
-                sellAmount: '',
-                sellPrice: '',
-                sellTotal: ''
-            });
-            alert('Sell order is successfully submitted');
-        });
+        }
+        this.validate_sell();
+        this.retrieve_orders();
     }
 
     retrieve_orders = () => {
