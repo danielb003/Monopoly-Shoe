@@ -166,6 +166,7 @@ export default withStyles(styles)(class Transaction extends Component{
                 buyPrice: '',
                 buyTotal: ''
             });
+            alert('Buy order is successfully submitted');
         });
 
     }
@@ -176,10 +177,20 @@ export default withStyles(styles)(class Transaction extends Component{
         var currentTime = moment();
         currentTime = currentTime.format();
         console.log('current timestamp: ' + currentTime);
-        if (this.state.sellTotal == null || 0){
+        if (this.state.sellTotal == null ||
+            this.state.sellTotal == 0){
             alert("Sell Total is 0!");
             return;
         }
+        if (this.state.sellPrice < this.state.currentPrice){
+            alert("Sell Price cannot be less than $" + this.state.currentPrice + " AUD");
+            this.setState({
+                sellPrice : this.state.currentPrice,
+                sellTotal : this.state.currentPrice *  this.state.sellAmount
+            })
+            return;
+        }
+
         this.setState({
             timestamp: currentTime
         }, () => {
@@ -203,6 +214,7 @@ export default withStyles(styles)(class Transaction extends Component{
                 sellPrice: '',
                 sellTotal: ''
             });
+            alert('Sell order is successfully submitted');
         });
     }
 
