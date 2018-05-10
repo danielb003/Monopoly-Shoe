@@ -34,6 +34,7 @@ class Dashboard extends Component {
        this.handleSubmit = this.handleSubmit.bind(this);
        this.startDateChange = this.startDateChange.bind(this);
        this.endDateChange = this.endDateChange.bind(this);
+
    }
 
    componentWillMount() {
@@ -184,6 +185,8 @@ class Dashboard extends Component {
         });
     }
 
+
+    
     handleSubmit(event) {
         event.preventDefault();
         var moment = require('moment');
@@ -399,6 +402,9 @@ class Dashboard extends Component {
                                        <div className="filter">
                                            <Button id="filter-button" color="primary" type="submit" >
                                            <p>Filter</p>
+                                           </Button>
+                                           <Button id="clearFilter-button" color="primary" type="button" onClick={this.retrieve_history} >
+                                               <p>Clear</p>
                                            </Button>
                                        </div>
 
