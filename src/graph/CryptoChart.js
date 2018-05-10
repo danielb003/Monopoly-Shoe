@@ -11,12 +11,18 @@ const styles = theme => ({
     custom: {
         fontSize: 16,
         color:"#f8f8ff",
-        margin: theme.spacing.unit
+        margin: theme.spacing.unit,
+        '&:focus': {
+            boxShadow: '0 0 0 0.2rem rgba(240,248,255,.5)',
+        }
 
 },
     custom2: {
         fontSize: 16,
-        margin: theme.spacing.unit
+        margin: theme.spacing.unit,
+        '&:focus': {
+            boxShadow: '0 0 0 0.2rem rgba(245,245,245,.5)',
+        }
     }
 
 });
