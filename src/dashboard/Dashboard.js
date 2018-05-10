@@ -200,7 +200,7 @@ class Dashboard extends Component {
                         var historyDate = snapshot.child(index + "/timestamp").val();
                         historyDate = historyDate.substring(0, 10);
                         var momentDate = moment(historyDate);
-                        if(moment(momentDate).isBetween(momentStartDate,momentEndDate)) {
+                        if(moment(momentDate).isBetween(momentStartDate,momentEndDate,null, '[]')) {
 
                             assignedFilHistory.push({
                                 id: index,
