@@ -4,6 +4,22 @@ import LineChart from './LineChart';
 import ToolTip from './ToolTip';
 import InfoBox from './InfoBox';
 import Transaction from './Transaction';
+import Button from 'material-ui/Button';
+import {withStyles} from "material-ui/styles/index";
+
+const styles = theme => ({
+    custom: {
+        fontSize: 16,
+        color:"#f8f8ff",
+        margin: theme.spacing.unit
+
+},
+    custom2: {
+        fontSize: 16,
+        margin: theme.spacing.unit
+    }
+
+});
 
 class CryptoChart extends Component {
    constructor(props) {
@@ -112,11 +128,12 @@ class CryptoChart extends Component {
    }
    render() {
        const isAuth = this.props.auth;
+       const { classes } = this.props;
       return (
             <div className='container-fluid'>
                   <div className='row'>
                   <div className='text-center'>
-                        {this.state.limits.map((pair, index) => <button key={index} onClick={() => this.onTimeClick(pair.value, pair.longname)}>{pair.name}</button>)}
+                        {this.state.limits.map((pair, index) => <Button className={classes.custom} size="medium" key={index} onClick={() => this.onTimeClick(pair.value, pair.longname)}>{pair.name}</Button>)}
                   </div>
                   </div>  
                   <div className='row'>
@@ -138,7 +155,8 @@ class CryptoChart extends Component {
                   </div>
                   <div className='row'>
                   <div className='text-center'>
-                        {this.state.pairs.map((pair, index) => <button key={index} onClick={() => this.onCoinClick(pair.name)}>{pair.name}</button>)}
+                        {this.state.pairs.map((pair, index) => <Button className={classes.custom2}  size="medium"  variant="raised"
+                                                                       color="primary" key={index} onClick={() => this.onCoinClick(pair.name)}>{pair.name}</Button>)}
                   </div>
                   </div>
                 {
@@ -149,4 +167,4 @@ class CryptoChart extends Component {
    }
 }
 
-export default CryptoChart;
+export default withStyles(styles)(CryptoChart);
