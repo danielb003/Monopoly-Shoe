@@ -13,7 +13,7 @@ export default class Home extends Component {
 
       this.state = {
          authenticated: false,
-          tradingStatus: false
+         tradingStatus: false
       };
    }
 
@@ -32,61 +32,61 @@ export default class Home extends Component {
       this.removeAuthListener()
    }
 
-    loadTradingStatus = () => {
-        var user_id = null;
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                user_id = user.uid;
-                const userDB = firebase.database().ref('user/' + user_id);
-                var trading = null;
-                userDB.on('value', (snapshot) => {
-                    if (snapshot.val() !== null) {
-                        trading = snapshot.child("/trading").val();
-                    }
-                    this.setState({
-                        tradingStatus: trading
-                    });
-                });
-            }
-        });
-    }
+   loadTradingStatus() {
+      var user_id = null;
+      firebase.auth().onAuthStateChanged((user) => {
+         if (user) {
+            user_id = user.uid;
+            const userDB = firebase.database().ref('user/' + user_id);
+            var trading = null;
+            userDB.on('value', (snapshot) => {
+               if (snapshot.val() !== null) {
+                  trading = snapshot.child("/trading").val();
+               }
+               this.setState({
+                  tradingStatus: trading
+               });
+            });
+         }
+      });
+   }
 
-    render() {
-        return (
-           <div>
-              <Navbar inverse>
-                 <Nav id="nav_box">
-                    <NavItem class="nav_item">
-                       <p>Prolific Trading</p>
-                    </NavItem>
-                    {this.state.authenticated ? (
-                       <NavItem class="nav_item" eventKey={1} href="/dashboard">
-                       Portfolio
-                       </NavItem>
-                    ) : ( null ) }
-                     <NavItem class="nav_item" eventKey={2} href="/leaderboard">
-                         Leaderboard
-                      </NavItem>
-                 </Nav>
-                 <Nav pullRight>
-                    {this.state.authenticated ? (
-                       <NavItem class="nav_item" eventKey={2} href="/logout">
-                          Logout
-                       </NavItem> ) : (
-                       <NavItem class="nav_item" eventKey={2} href="/auth">
-                          Login
-                       </NavItem> )
-                    }
-                 </Nav>
-              </Navbar>
-              {this.state.authenticated && this.state.tradingStatus ? (
-              <div className='crypto_chart'>
-                 <CryptoChart auth={true}/>
-              </div> ) : (
-                 <div className='crypto_chart'>
-                    <CryptoChart />
-                 </div> ) }
-           </div>
-        )
-    }
+   render() {
+      return (
+         <div>
+            <Navbar inverse>
+               <Nav id="nav_box">
+                  <NavItem class="nav_item">
+                     <p>Prolific Trading</p>
+                  </NavItem>
+                  {this.state.authenticated ? (
+                     <NavItem class="nav_item" eventKey={1} href="/dashboard">
+                        Portfolio
+                     </NavItem>
+                  ) : ( null ) }
+                  <NavItem class="nav_item" eventKey={2} href="/leaderboard">
+                     Leaderboard
+                  </NavItem>
+               </Nav>
+               <Nav pullRight>
+                  {this.state.authenticated ? (
+                     <NavItem class="nav_item" eventKey={2} href="/logout">
+                        Logout
+                     </NavItem> ) : (
+                     <NavItem class="nav_item" eventKey={2} href="/auth">
+                        Login
+                     </NavItem> )
+                  }
+               </Nav>
+            </Navbar>
+            {this.state.authenticated && this.state.tradingStatus ? (
+               <div className='crypto_chart'>
+                  <CryptoChart auth={true}/>
+               </div> ) : (
+               <div className='crypto_chart'>
+                  <CryptoChart />
+               </div> ) }
+         </div>
+      )
+   }
 }
