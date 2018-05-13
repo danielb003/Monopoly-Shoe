@@ -27,6 +27,8 @@ class Dashboard extends Component {
           startDate:null,
           endDate:null,
           user_data: [],
+          open_buy_orders: [],
+          open_sell_orders: [],
           coins:[]
       };
 
@@ -53,6 +55,8 @@ class Dashboard extends Component {
        this.retrieve_history();
        this.retrieve_userData();
        this.retrieve_coins();
+       this.retrieve_open_buy_orders();
+       this.retrieve_open_sell_orders();
    }
 
    componentWillUnmount(){
@@ -185,6 +189,61 @@ class Dashboard extends Component {
         });
     }
 
+    retrieve_open_buy_orders = () => {
+
+        const assignedOpenBuys = [];
+        const openBuyFB = firebase.database().ref('buy/');
+        openBuyFB.on('value', (snapshot) => {
+            if(snapshot.val() !== null){
+
+                for(const index in snapshot.val()) {
+                    if (snapshot.child(index + "/user_id").val() == firebase.auth().currentUser.uid) {
+                        assignedOpenBuys.push({
+                            id: index,
+                            amount: snapshot.child(index + "/amount").val(),
+                            coinType: snapshot.child(index + "/coinType").val(),
+                            type: snapshot.child(index + "/type").val(),
+                            price: snapshot.child(index + "/price").val(),
+                            user_id: snapshot.child(index + "/user_id").val(),
+                            timestamp: snapshot.child(index + "/timestamp").val(),
+                            coinValue: snapshot.child(index + "/coinValue").val()
+                        });
+                    }
+                }
+                this.setState({
+                    open_buy_orders: assignedOpenBuys
+                });
+            }
+        });
+    }
+
+    retrieve_open_sell_orders = () => {
+
+        const assignedOpenSells = [];
+        const openSellFB = firebase.database().ref('sell/');
+        openSellFB.on('value', (snapshot) => {
+            if(snapshot.val() !== null){
+
+                for(const index in snapshot.val()) {
+                    if (snapshot.child(index + "/user_id").val() == firebase.auth().currentUser.uid) {
+                        assignedOpenSells.push({
+                            id: index,
+                            amount: snapshot.child(index + "/amount").val(),
+                            coinType: snapshot.child(index + "/coinType").val(),
+                            type: snapshot.child(index + "/type").val(),
+                            price: snapshot.child(index + "/price").val(),
+                            user_id: snapshot.child(index + "/user_id").val(),
+                            timestamp: snapshot.child(index + "/timestamp").val(),
+                            coinValue: snapshot.child(index + "/coinValue").val()
+                        });
+                    }
+                }
+                this.setState({
+                    open_sell_orders: assignedOpenSells
+                });
+            }
+        });
+    }
 
 
     handleSubmit(event) {
@@ -259,6 +318,44 @@ class Dashboard extends Component {
                   <td>{item.timestamp.substring(0, 10)}</td>
                   <td>{item.coinType}</td>
                   <td>{item.type}</td>
+                  <td>{item.price}</td>
+                  <td>{item.amount}</td>
+                  <td>{item.coinValue}</td>
+              </tr>
+              </tbody>
+          )
+      })) : (
+          null
+      );
+
+      const openBuyOrdersState = this.state.open_buy_orders;
+
+      const openBuyTableData = openBuyOrdersState ? (
+          this.state.open_buy_orders.map(function(item){
+          return (
+              <tbody>
+              <tr key={item.id}>
+                  <td>{item.timestamp.substring(0, 10)}</td>
+                  <td>{item.coinType}</td>
+                  <td>{item.price}</td>
+                  <td>{item.amount}</td>
+                  <td>{item.coinValue}</td>
+              </tr>
+              </tbody>
+          )
+      })) : (
+          null
+      );
+
+      const openSellOrdersState = this.state.open_sell_orders;
+
+      const openSellTableData = openSellOrdersState ? (
+          this.state.open_sell_orders.map(function(item){
+          return (
+              <tbody>
+              <tr key={item.id}>
+                  <td>{item.timestamp.substring(0, 10)}</td>
+                  <td>{item.coinType}</td>
                   <td>{item.price}</td>
                   <td>{item.amount}</td>
                   <td>{item.coinValue}</td>
@@ -368,6 +465,41 @@ class Dashboard extends Component {
                                </table>
 
                            </div>
+                          
+                           <div className="container-fluid noPad">
+                              <h4 id="heading" className="pull-left">Open Buy Orders</h4>
+
+                                 <table className="table table-bordered">
+                                   {this.state.open_buy_orders ? (<thead className="">
+                                   <tr>
+                                       <th>Date</th>
+                                       <th>Coin</th>
+                                       <th>Price</th>
+                                       <th>Amount</th>
+                                       <th>Value</th>
+                                   </tr>
+                                   </thead>) : null}
+                                   {openBuyTableData}
+                               </table>
+                            </div>
+  
+                            <div className="container-fluid noPad">
+                              <h4 id="heading" className="pull-left">Open Sell Orders</h4>
+
+                                 <table className="table table-bordered">
+                                   {this.state.open_sell_orders ? (<thead className="">
+                                   <tr>
+                                       <th>Date</th>
+                                       <th>Coin</th>
+                                       <th>Price</th>
+                                       <th>Amount</th>
+                                       <th>Value</th>
+                                   </tr>
+                                   </thead>) : null}
+                                   {openSellTableData}
+                               </table>
+                            </div>
+
 
                            <div className="container-fluid noPad">
                               <h4 id="heading" className="pull-left">Transaction History</h4>
