@@ -56,7 +56,7 @@ export default class Home extends Component {
                   <NavItem class="nav_item">
                      <p>Prolific Trading</p>
                   </NavItem>
-                  {this.state.authenticated ? (
+                  {this.state.authenticated && this.state.tradingStatus? (
                      <NavItem class="nav_item" eventKey={1} href="/dashboard">
                         Portfolio
                      </NavItem>
