@@ -89,7 +89,7 @@ export default class Login extends Component {
             errorCode = error.code;
             var errorMessage = error.message;
          })
-         this.changeStates = true;
+         /*this.changeStates = true;*/
       }
 
       console.table([{

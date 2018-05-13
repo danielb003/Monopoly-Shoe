@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import CryptoChart from './graph/CryptoChart';
-import Transaction from './graph/Transaction';
 import { app } from "./Constant";
 import './Home.css';
-import firebase from "firebase";
-
 
 export default class Home extends Component {
    constructor() {
@@ -34,10 +31,10 @@ export default class Home extends Component {
 
    loadTradingStatus() {
       var user_id = null;
-      firebase.auth().onAuthStateChanged((user) => {
+      app.auth().onAuthStateChanged((user) => {
          if (user) {
             user_id = user.uid;
-            const userDB = firebase.database().ref('user/' + user_id);
+            const userDB = app.database().ref('user/' + user_id);
             var trading = null;
             userDB.on('value', (snapshot) => {
                if (snapshot.val() !== null) {

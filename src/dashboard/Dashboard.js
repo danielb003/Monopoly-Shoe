@@ -11,7 +11,6 @@ import Switch from 'material-ui/Switch';
 import Button from 'material-ui/Button';
 import { app } from '../Constant';
 import CryptoChart from '../graph/CryptoChart';
-import firebase from 'firebase';
 import TextField from 'material-ui/TextField';
 
 
@@ -27,8 +26,7 @@ class Dashboard extends Component {
          startDate:null,
          endDate:null,
          user_data: [],
-         coins:[],
-         adminStatus: false
+         coins:[]
       };
 
       this.handleSwitchChange = this.handleSwitchChange.bind(this);
@@ -44,7 +42,7 @@ class Dashboard extends Component {
 
             var user_id, admin = false;
             user_id = user.uid;
-            const userData = firebase.database().ref('user/' + user_id);
+            const userData = app.database().ref('user/' + user_id);
             userData.on('value', (snapshot) => {
                if(snapshot.val() !== null) {
                   console.log('admin: ' + snapshot.child('admin').val());
@@ -76,13 +74,13 @@ class Dashboard extends Component {
 
    loadUserIDAndTradingStatus = () => {
       var user_id = null;
-      firebase.auth().onAuthStateChanged((user) => {
+      app.auth().onAuthStateChanged((user) => {
          if (user) {
             user_id = user.uid;
             this.setState({
                uid : user_id
             })
-            const userDB = firebase.database().ref('user/' + user_id);
+            const userDB = app.database().ref('user/' + user_id);
             var trading = null;
             userDB.on('value', (snapshot) => {
 
@@ -111,7 +109,7 @@ class Dashboard extends Component {
 
    updateTrading = () => {
       console.log('trading status in handle change ' + this.state.openTradingAccount);
-      firebase.database().ref('user/' + this.state.uid + '/').update({
+      app.database().ref('user/' + this.state.uid + '/').update({
          trading: this.state.openTradingAccount
       });
    }
@@ -119,12 +117,12 @@ class Dashboard extends Component {
    retrieve_history = () => {
 
       const assignedHistory = [];
-      const historyFB = firebase.database().ref('history/');
+      const historyFB = app.database().ref('history/');
       historyFB.on('value', (snapshot) => {
          if(snapshot.val() !== null){
 
             for(const index in snapshot.val()) {
-               if (snapshot.child(index + "/user_id").val() == firebase.auth().currentUser.uid) {
+               if (snapshot.child(index + "/user_id").val() == app.auth().currentUser.uid) {
                   assignedHistory.push({
                      id: index,
                      amount: snapshot.child(index + "/amount").val(),
@@ -147,11 +145,11 @@ class Dashboard extends Component {
 
    retrieve_userData = () => {
       var user_id = null, admin = false;
-      firebase.auth().onAuthStateChanged((user) => {
+      app.auth().onAuthStateChanged((user) => {
          if (user) {
             user_id = user.uid;
             const user_details = [];
-            const userData = firebase.database().ref('user/' + user_id);
+            const userData = app.database().ref('user/' + user_id);
             userData.on('value', (snapshot) => {
                if(snapshot.val() !== null) {
                   console.log('admin: ' + snapshot.child('admin').val());
@@ -178,11 +176,11 @@ class Dashboard extends Component {
    retrieve_coins = () => {
 
       var user_id = null;
-      firebase.auth().onAuthStateChanged((user) => {
+      app.auth().onAuthStateChanged((user) => {
          if (user) {
             user_id = user.uid;
             const assignedCoins = [];
-            const coinsFb = firebase.database().ref('user/' + user_id +'/coin');
+            const coinsFb = app.database().ref('user/' + user_id +'/coin');
             coinsFb.on('value', (snapshot) => {
                if(snapshot.val() !== null) {
                   let items = snapshot.val();
@@ -210,12 +208,12 @@ class Dashboard extends Component {
       var momentEndDate=moment(this.state.endDate);
 
       const assignedFilHistory = [];
-      const historyFB = firebase.database().ref('history/');
+      const historyFB = app.database().ref('history/');
       historyFB.on('value', (snapshot) => {
          if(snapshot.val() !== null){
 
             for(const index in snapshot.val()) {
-               if (snapshot.child(index + "/user_id").val() == firebase.auth().currentUser.uid) {
+               if (snapshot.child(index + "/user_id").val() == app.auth().currentUser.uid) {
                   var historyDate = snapshot.child(index + "/timestamp").val();
                   historyDate = historyDate.substring(0, 10);
                   var momentDate = moment(historyDate);
@@ -300,10 +298,6 @@ class Dashboard extends Component {
          })) : (
          null
       );
-
-      if(this.state.adminStatus) {
-         return <Redirect to='/admin'/>
-      }
 
       //  const userData = this.state.user_data;
       // const portfolioTable = userData ? (

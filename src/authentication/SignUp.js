@@ -20,7 +20,7 @@ export default class SignUp extends Component {
             method: 'matches',
             args: [/(^[A-Za-z\'\,\-]{2,}$)/],
             validWhen: true,
-            message: 'First name contains invalid characters'
+            message: 'First name is not valid'
          },
          {
             field: 'lname',
@@ -33,7 +33,7 @@ export default class SignUp extends Component {
             method: 'matches',
             args: [/(^[A-Za-z\'\,\-]{2,}$)/],
             validWhen: true,
-            message: 'Last name contains invalid characters'
+            message: 'Last name is not valid'
          },
          {
             field: 'email',
