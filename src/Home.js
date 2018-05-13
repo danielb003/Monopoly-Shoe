@@ -56,11 +56,19 @@ export default class Home extends Component {
                   <NavItem class="nav_item">
                      <p>Prolific Trading</p>
                   </NavItem>
-                  {this.state.authenticated && this.state.tradingStatus? (
+                  {this.state.authenticated && this.state.tradingStatus ? (
                      <NavItem class="nav_item" eventKey={1} href="/dashboard">
                         Portfolio
                      </NavItem>
-                  ) : ( null ) }
+                  ) : this.state.authenticated && !this.state.tradingStatus ? (
+                     <NavItem class="nav_item" eventKey={1} href="/admin">
+                        Admin
+                     </NavItem>
+                  ) : !this.state.authenticated && !this.state.tradingStatus ? (
+                     <NavItem class="nav_item" eventKey={1} href="/">
+                        Market
+                     </NavItem>
+                  ) : null }
                   <NavItem class="nav_item" eventKey={2} href="/leaderboard">
                      Leaderboard
                   </NavItem>
