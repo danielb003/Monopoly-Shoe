@@ -1,7 +1,20 @@
 table th{
+    font-size: 2em;
     background-color: cornflowerblue;
     color: white;
     text-align: center;
+}
+
+table td{
+    font-size: 2em;
+}
+
+#profit{
+    color: green;
+}
+
+#loss{
+    color: red;
 }
 
 #leaderboard{
@@ -15,6 +28,12 @@ table th{
     font-size: 20px;
 }
 
-Tab{
-    font-size: 2em;
+@media (min-width: 960px){
+    span .MuiTab-label-60{
+        font-size: 1.2rem;
+    }
 }
+span .MuiTab-label-60{
+    font-size: 1.2rem;
+}
+

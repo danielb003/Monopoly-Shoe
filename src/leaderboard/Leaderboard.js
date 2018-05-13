@@ -229,44 +229,46 @@ class Leaderboard extends Component {
                     for(const coinIndex in this.state.coinPrice){
                         if(this.state.coinPrice[coinIndex][coinType]){
                             console.log('this.state.coinPrice[coinIndex]' + this.state.coinPrice[coinIndex]);
+                            // estimate total given the current crypto-value market
                             const estCurrentTotal = historyLists[index]['amount'] * this.state.coinPrice[coinIndex][coinType];
                             console.log('coinTotal: ' + coinTotal + ' | estTotal: ' + estCurrentTotal);
-                            var sumOfProfitLossPercent = 0;
+                            var profitLoss_Percent = 0;
                             if(type == "Sell"){
                                 const diff = coinTotal - estCurrentTotal;
-                                const ProfitLossPercent = diff / estCurrentTotal;
-                                sumOfProfitLossPercent += ProfitLossPercent;
+                                profitLoss_Percent = diff / estCurrentTotal;
                             }else{
+                                // Buy Type
                                 const diff = estCurrentTotal - coinTotal;
-                                const ProfitLossPercent = diff / estCurrentTotal;
-                                sumOfProfitLossPercent += ProfitLossPercent;
+                                profitLoss_Percent = diff / estCurrentTotal;
                             }
                             userState.push({
                                 uid: userLists[id],
-                                profitLossPercent: sumOfProfitLossPercent
+                                profitLossPercent: profitLoss_Percent
                             });
                         }
                     }
                 }
             }
         }
-        var sum = 0;
-        const userProfit = [];
+        // console.log(userState);
 
-        var o = {}
-        var reducedState = userState.reduce(function(r, e) {
-            var key = e.uid;
-            console.log('key ' + key + ' e: ' + e)
-            if (!o[key]) {
-                o[key] = e;
-                r.push(o[key]);
+        // Add up all the profit/loss and get the final result percentage
+        var reducedState = [];
+        userState.forEach(function(value) {
+            var existing = reducedState.filter(function(v, i) {
+                return v.uid == value.uid;
+            });
+            if (existing.length) {
+                var existingIndex = reducedState.indexOf(existing[0]);
+                reducedState[existingIndex].profitLossPercent += value.profitLossPercent;
             } else {
-                o[key].profitLossPercent += e.profitLossPercent;
+                reducedState.push(value);
             }
-            return r;
-        }, []);
+        });
 
-        console.log(reducedState);
+
+        // console.log('reduced State: ')
+        // console.log(reducedState);
 
         const newUserState = [];
         for(const index in reducedState){
@@ -275,7 +277,7 @@ class Leaderboard extends Component {
                 if(snapshot.val() !== null){
                     const fn = snapshot.child("/fname").val();
                     const ln = snapshot.child("/lname").val();
-                    const pl = reducedState[index]['profitLossPercent'];
+                    const pl = reducedState[index]['profitLossPercent'].toFixed(4);
 
                     newUserState.push({
                        uid:  reducedState[index]['uid'],
@@ -293,17 +295,7 @@ class Leaderboard extends Component {
         this.setState({
             user: newUserState
         });
-        // for(const id in userLists){
-        //     for(const i in sortedUserState){
-        //         if(userLists[id] == userState[i]['uid']){
-        //             sum += userState[i]['profitLossPercent'];
-        //             userProfit.push(userLists[id]);
-        //         }
-        //     }
-        // }
-
-        console.log(userState);
-        // console.log('coinPrice: ' + this.state.coinPrice);
+        console.log(newUserState);
     }
 
     retrieve_currentCryptoPrice = () => {
@@ -323,7 +315,6 @@ class Leaderboard extends Component {
                         coinStorage.push({
                             [index]: price
                         });
-
                     })
                     .catch((e) => {
                         console.log(e);
@@ -342,40 +333,39 @@ class Leaderboard extends Component {
         this.refresh = setInterval(() => this.getData(), 90000);
     }
 
-    // loop history [] data from state and get user_id
-    // get current crypto value
-    // calculate profit/loss for each history node
-    // sum up profit/loss and calculate in %
-    // assign this profit field to user state
-
-
-    // Loop the user data from state
-    // Then display, ordered by profit and assign Rank
-
-    render(){
-        const { classes } = this.props;
-        const { tabValue } = this.state;
-        const sortedState = this.state.user.sort(function(a,b) {
+    render() {
+        const {classes} = this.props;
+        const {tabValue} = this.state;
+        // sort the ranking based on highest profit
+        const sortedState = this.state.user.sort(function (a, b) {
             console.log(a.profitLoss);
-            return  b.profitLoss - a.profitLoss;
+            return b.profitLoss - a.profitLoss;
         });
+
         const userTableData = sortedState ? (
             sortedState.map(function(item, index){
-                // this.state.user.sort(function(a,b) {
-                //     return a.profitLoss - b.profitLoss;
-                // });
                 return (
                     <tbody>
-                    <tr key={item.uid}>
-                        <td>{index+1}</td>
-                        <td>{item.fname} {item.lname}</td>
-                        <td>{item.profitLoss}</td>
-                    </tr>
+                    {item.profitLoss > 0 ?
+                        <tr key={item.uid} id="profit">
+                            <td>{index+1}</td>
+                            <td>{item.fname} {item.lname}</td>
+                            <td>{item.profitLoss}</td>
+                        </tr>
+                    :
+                        <tr key={item.uid} id="loss">
+                            <td>{index+1}</td>
+                            <td>{item.fname} {item.lname}</td>
+                            <td>{item.profitLoss}</td>
+                        </tr>
+                    }
                     </tbody>
                 )
             })) : (
             null
         );
+
+
         return (
             <div>
                 <Navbar inverse>
@@ -418,98 +408,70 @@ class Leaderboard extends Component {
                                     <Tab label="All Times" />
                                 </Tabs>
                             </AppBar>
-                            {/*<table className="table table-bordered text-center">*/}
-                                {/*<thead className>*/}
-                                    {/*<tr>*/}
-                                        {/*<th>Rank</th>*/}
-                                        {/*<th>Trader Name</th>*/}
-                                        {/*<th>Profit</th>*/}
-                                    {/*</tr>*/}
-                                {/*</thead>*/}
+
                             {tabValue === 0 && <TabContainer>
                                 <table className="table table-bordered text-center">
-                                    <thead className>
-                                    <tr>
-                                        <th>Rank</th>
-                                        <th>Trader Name</th>
-                                        <th>Profit</th>
-                                    </tr>
-                                    </thead>
-                                {userTableData}
+                                    {userTableData == '' ?
+                                        <h2>No Data within 24 hours</h2>
+                                        :
+                                        (<thead className>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Trader Name</th>
+                                            <th>Profit</th>
+                                        </tr>
+                                        </thead>) }
+                                    {userTableData}
                                 </table>
                             </TabContainer>}
                             {tabValue === 1 && <TabContainer>
                                 <table className="table table-bordered text-center">
-                                    <thead className>
-                                    <tr>
-                                        <th>Rank</th>
-                                        <th>Trader Name</th>
-                                        <th>Profit</th>
-                                    </tr>
-                                    </thead>
+                                    {userTableData == '' ?
+                                        <h2>No Data within 1 week</h2>
+                                        :
+                                        (<thead className>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Trader Name</th>
+                                            <th>Profit</th>
+                                        </tr>
+                                        </thead>) }
                                     {userTableData}
+                                    {/*{userTableData}*/}
                                 </table>
                             </TabContainer>}
                             {tabValue === 2 && <TabContainer>
                                 <table className="table table-bordered text-center">
-                                    <thead className>
-                                    <tr>
-                                        <th>Rank</th>
-                                        <th>Trader Name</th>
-                                        <th>Profit</th>
-                                    </tr>
-                                    </thead>
+                                    {userTableData == '' ?
+                                        <h2>No Data within 1 month</h2>
+                                        :
+                                        (<thead className>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Trader Name</th>
+                                            <th>Profit</th>
+                                        </tr>
+                                        </thead>) }
                                     {userTableData}
                                 </table>
                             </TabContainer>}
                             {tabValue === 3 && <TabContainer>
                                 <table className="table table-bordered text-center">
-                                    <thead className>
-                                    <tr>
-                                        <th>Rank</th>
-                                        <th>Trader Name</th>
-                                        <th>Profit</th>
-                                    </tr>
-                                    </thead>
+                                    {userTableData == '' ?
+                                        <h2>No Data</h2>
+                                        :
+                                        (<thead className>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Trader Name</th>
+                                            <th>Profit</th>
+                                        </tr>
+                                        </thead>) }
                                     {userTableData}
                                 </table>
                             </TabContainer>}
-                            {/*</table>*/}
                         </div>
-
                         <br/>
-                        {/*<table className="table table-bordered text-center">*/}
-                            {/*<tr>*/}
-                                {/*<th>Rank</th>*/}
-                                {/*<th>Trader Name</th>*/}
-                                {/*<th>Number of Trades</th>*/}
-                                {/*<th>Profit</th>*/}
-                                {/*<th>Market Value</th>*/}
-                            {/*</tr>*/}
-                            {/*<tbody>*/}
-                            {/*<tr>*/}
-                                {/*<td>1</td>*/}
-                                {/*<td>Test User 1</td>*/}
-                                {/*<td>24</td>*/}
-                                {/*<td>15%</td>*/}
-                                {/*<td>$54.324.41</td>*/}
-                            {/*</tr>*/}
-                            {/*<tr>*/}
-                                {/*<td>2</td>*/}
-                                {/*<td>Test User 2</td>*/}
-                                {/*<td>33</td>*/}
-                                {/*<td>14.4%</td>*/}
-                                {/*<td>$34.324.41</td>*/}
-                            {/*</tr>*/}
-                            {/*<tr>*/}
-                                {/*<td>3</td>*/}
-                                {/*<td>Test User 3</td>*/}
-                                {/*<td>15</td>*/}
-                                {/*<td>9.4%</td>*/}
-                                {/*<td>$29.324.41</td>*/}
-                            {/*</tr>*/}
-                            {/*</tbody>*/}
-                        {/*</table>*/}
                     </div>
                 </div>
             </div>
