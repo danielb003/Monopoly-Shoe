@@ -3,14 +3,24 @@
 }
 
 form#filter {
-    min-height: 10px;
-}
+   min-height: 100%;
 
+}
+/*
 .filter{
-    height: 100%;
+   !* height: 100%;*!
 }
 
 #filter-button{
-    height: 100%;
+  height: 100%;
 
+}*/
+
+#filter-button,#clearFilter-button{
+
+    display: inline-block;
+    float: left;
+
+  /* padding-top: 20px;*/
+   /* padding-bottom: 2%;*/
 }

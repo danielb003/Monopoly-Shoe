@@ -217,7 +217,7 @@ export default class Dashboard extends Component {
                   var historyDate = snapshot.child(index + "/timestamp").val();
                   historyDate = historyDate.substring(0, 10);
                   var momentDate = moment(historyDate);
-                  if(moment(momentDate).isBetween(momentStartDate,momentEndDate)) {
+                  if(moment(momentDate).isBetween(momentStartDate,momentEndDate,null,'[]')) {
 
                      assignedFilHistory.push({
                         id: index,
@@ -387,7 +387,7 @@ export default class Dashboard extends Component {
 
                            <div className="col-md-12 white-bg table-bordered">
                               <form id="filter" onSubmit={this.handleSubmit} noValidate>
-                                 <div className="col-md-3">
+                                 <div className="col-md-5">
                                     <h4>Start Date</h4>
                                     <TextField
                                        id="startDate"
@@ -399,7 +399,7 @@ export default class Dashboard extends Component {
                                        }}
                                     />
                                  </div>
-                                 <div className="col-md-3">
+                                 <div className="col-md-5">
                                     <h4>End Date</h4>
                                     <TextField
                                        id="endDate"
@@ -412,10 +412,13 @@ export default class Dashboard extends Component {
                                        }}
                                     />
                                  </div>
-                                 <div className="filter">
+                                 <div className="col-md-2">
                                     <Button id="filter-button" color="primary" type="submit" >
                                        <p>Filter</p>
                                     </Button>
+                                     <Button id="clearFilter-button" color="primary" type="button" onClick={this.retrieve_history}>
+                                         <p>Clear</p>
+                                     </Button>
                                  </div>
 
                               </form>
