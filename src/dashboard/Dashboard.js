@@ -26,7 +26,7 @@ export default class Dashboard extends Component {
          startDate:null,
          endDate:null,
          user_data: [],
-         coins:[]
+         coins: []
       };
 
       this.handleSwitchChange = this.handleSwitchChange.bind(this);
@@ -260,11 +260,11 @@ export default class Dashboard extends Component {
          return <Redirect to='/'/>
       }
 
-      const historyState = this.state.history;
       const tradingStatus = this.state.openTradingAccount;
       console.log('trading status ' + tradingStatus);
       const { startDate,endDate, user_data } = this.state;
 
+      const historyState = this.state.history;
       const historyTableData = historyState ? (
          this.state.history.map(function(item){
             return (
@@ -284,7 +284,6 @@ export default class Dashboard extends Component {
       );
 
       const coinState = this.state.coins;
-
       const coinTableData = coinState ? (
          this.state.coins.map(function(item){
             return (
@@ -444,3 +443,4 @@ export default class Dashboard extends Component {
       )
    }
 }
+

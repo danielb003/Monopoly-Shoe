@@ -79,15 +79,15 @@ export default class Login extends Component {
    handleLogin(event) {
       event.preventDefault()
 
-      var errorCode = null;
       const validation = this.validator.validate(this.state);
       this.setState({validation});
       this.submitted = true;
 
       if (validation.isValid) {
          app.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(function (error) {
-            errorCode = error.code;
+            var errorCode = error.code;
             var errorMessage = error.message;
+            alert("Email or password entered was incorrect or doesn't exist.");
          })
          /*this.changeStates = true;*/
       }
