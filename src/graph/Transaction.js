@@ -52,6 +52,14 @@ export default withStyles(styles)(class Transaction extends Component{
         this.handleSellPriceChange = this.handleSellPriceChange.bind(this);
         this.handleSellAmountChange = this.handleSellAmountChange.bind(this);
         this.loadTimestamp = this.loadTimestamp.bind(this);
+        this.loadUserID = this.loadUserID.bind(this);
+        this.retrieve_orders = this.retrieve_orders.bind(this);
+        this.retrieve_currentPrice = this.retrieve_currentPrice.bind(this);
+        this.process_orders = this.process_orders.bind(this);
+        this.save_BuyOrder = this.save_BuyOrder.bind(this);
+        this.save_SellOrder = this.save_SellOrder.bind(this);
+        this.handleBuyTotalChange = this.handleBuyTotalChange.bind(this);
+        this.handleSellTotalChange = this.handleSellTotalChange.bind(this);
 
         // this.handleSubmit = this.handleSubmit.bind(this);
         // this.save_BuyOrder = this.save_BuyOrder
@@ -81,7 +89,7 @@ export default withStyles(styles)(class Transaction extends Component{
         }
     }
 
-    loadUserID = () => {
+    loadUserID() {
         var authData = firebase.auth().currentUser;
         if (authData) {
             this.setState({
@@ -90,7 +98,7 @@ export default withStyles(styles)(class Transaction extends Component{
         }
     }
 
-    retrieve_currentPrice = () => {
+    retrieve_currentPrice() {
         this.getData = () => {
             // filter coin, pass coin from chart
             const coin = this.state.coinType;
@@ -128,7 +136,7 @@ export default withStyles(styles)(class Transaction extends Component{
         event.preventDefault();
     }
 
-    save_BuyOrder = (event) => {
+    save_BuyOrder(event) {
         // this.loadTimestamp(event);
         // this.loadTimestamp(event).then(() => {
         event.preventDefault();
@@ -190,7 +198,7 @@ export default withStyles(styles)(class Transaction extends Component{
         this.retrieve_orders();
     }
 
-    save_SellOrder = (event) => {
+    save_SellOrder(event) {
         event.preventDefault();
         var moment = require('moment');
         var currentTime = moment();
@@ -260,7 +268,7 @@ export default withStyles(styles)(class Transaction extends Component{
         this.retrieve_orders();
     }
 
-    retrieve_orders = () => {
+    retrieve_orders() {
         // get api value for various crypto values
         // if buy/sell order reach specified amount, process it
         // loop all orders and process it
@@ -319,7 +327,7 @@ export default withStyles(styles)(class Transaction extends Component{
 
     }
 
-    process_orders = (type) => {
+    process_orders(type) {
         const buyOrderLists = this.state.buyOrders;
         const sellOrderLists = this.state.sellOrders;
         const btc_price = this.state.currentPrice;
@@ -516,7 +524,7 @@ export default withStyles(styles)(class Transaction extends Component{
         }, () => this.handleBuyTotalChange());
     }
 
-    handleBuyTotalChange = () => {
+    handleBuyTotalChange (){
         this.setState({
             buyTotal: this.state.buyAmount * this.state.buyPrice
         });
@@ -539,7 +547,7 @@ export default withStyles(styles)(class Transaction extends Component{
         }, () => this.handleSellTotalChange());
     }
 
-    handleSellTotalChange = () => {
+    handleSellTotalChange () {
         this.setState({
             sellTotal: this.state.sellAmount * this.state.sellPrice
         });

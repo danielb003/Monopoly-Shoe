@@ -307,7 +307,6 @@ class Leaderboard extends Component {
             const currency = 'AUD';
             for(const index in coin){
                 const url = 'https://min-api.cryptocompare.com/data/price?fsym=' + index + '&tsyms=' + currency;
-
                 fetch(url).then(r => r.json())
                     .then((coinData) => {
                         const price = coinData.AUD;
