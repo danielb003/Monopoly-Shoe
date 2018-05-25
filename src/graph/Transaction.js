@@ -52,14 +52,6 @@ export default withStyles(styles)(class Transaction extends Component{
         this.handleSellPriceChange = this.handleSellPriceChange.bind(this);
         this.handleSellAmountChange = this.handleSellAmountChange.bind(this);
         this.loadTimestamp = this.loadTimestamp.bind(this);
-        this.loadUserID = this.loadUserID.bind(this);
-        this.retrieve_orders = this.retrieve_orders.bind(this);
-        this.retrieve_currentPrice = this.retrieve_currentPrice.bind(this);
-        this.process_orders = this.process_orders.bind(this);
-        this.save_BuyOrder = this.save_BuyOrder.bind(this);
-        this.save_SellOrder = this.save_SellOrder.bind(this);
-        this.handleBuyTotalChange = this.handleBuyTotalChange.bind(this);
-        this.handleSellTotalChange = this.handleSellTotalChange.bind(this);
 
         // this.handleSubmit = this.handleSubmit.bind(this);
         // this.save_BuyOrder = this.save_BuyOrder
@@ -89,8 +81,8 @@ export default withStyles(styles)(class Transaction extends Component{
         }
     }
 
-    loadUserID() {
-        var authData = firebase.auth().currentUser;
+    loadUserID = () => {
+        let authData = firebase.auth().currentUser;
         if (authData) {
             this.setState({
                 uid : authData.uid
@@ -98,7 +90,7 @@ export default withStyles(styles)(class Transaction extends Component{
         }
     }
 
-    retrieve_currentPrice() {
+    retrieve_currentPrice = () => {
         this.getData = () => {
             // filter coin, pass coin from chart
             const coin = this.state.coinType;
@@ -125,9 +117,11 @@ export default withStyles(styles)(class Transaction extends Component{
         this.retrieve_orders();
     }
 
+    
+
     loadTimestamp(event){
-        var moment = require('moment');
-        var currentTime = moment();
+        let moment = require('moment');
+        let currentTime = moment();
         currentTime = currentTime.format();
         console.log('current timestamp: ' + currentTime);
         this.setState({
@@ -136,12 +130,12 @@ export default withStyles(styles)(class Transaction extends Component{
         event.preventDefault();
     }
 
-    save_BuyOrder(event) {
+    save_BuyOrder = (event) => {
         // this.loadTimestamp(event);
         // this.loadTimestamp(event).then(() => {
         event.preventDefault();
-        var moment = require('moment');
-        var currentTime = moment();
+        let moment = require('moment');
+        let currentTime = moment();
         currentTime = currentTime.format();
         console.log('current timestamp: ' + currentTime);
         if (this.state.buyTotal == null || 0){
@@ -198,10 +192,10 @@ export default withStyles(styles)(class Transaction extends Component{
         this.retrieve_orders();
     }
 
-    save_SellOrder(event) {
+    save_SellOrder = (event) => {
         event.preventDefault();
-        var moment = require('moment');
-        var currentTime = moment();
+        let moment = require('moment');
+        let currentTime = moment();
         currentTime = currentTime.format();
         console.log('current timestamp: ' + currentTime);
         if (this.state.sellTotal == null ||
@@ -268,8 +262,8 @@ export default withStyles(styles)(class Transaction extends Component{
         this.retrieve_orders();
     }
 
-    retrieve_orders() {
-        // get api value for various crypto values
+    retrieve_orders = () => {
+        // get api value for letious crypto values
         // if buy/sell order reach specified amount, process it
         // loop all orders and process it
         const assignedBuyOrder = [];
@@ -327,7 +321,7 @@ export default withStyles(styles)(class Transaction extends Component{
 
     }
 
-    process_orders(type) {
+    process_orders = (type) => {
         const buyOrderLists = this.state.buyOrders;
         const sellOrderLists = this.state.sellOrders;
         const btc_price = this.state.currentPrice;
@@ -343,25 +337,27 @@ export default withStyles(styles)(class Transaction extends Component{
                     // console.log('bitcoin price= ' + btc_price);
                     // process the money:
                     // deduct money from user's balance and increase their btc coin
-                    var buy_total = buyOrderLists[index]["total"];
-                    var buy_amount = buyOrderLists[index]["amount"];
-                    var uid = buyOrderLists[index]["user_id"];
+                    let buy_total = buyOrderLists[index]["total"];
+                    let buy_amount = buyOrderLists[index]["amount"];
+                    let uid = buyOrderLists[index]["user_id"];
                     // this.handleUserTransaction(uid, buy_total, buy_amount, "buy");
 
                     const user = firebase.database().ref('user/' + uid);
                     user.on('value', (snapshot) => {
-                        var final_user_coin = null;
-                        var final_user_balance = null;
+                        let final_user_coin = null;
+                        let final_user_balance = null;
+                        let final_user_coin_amount_spent = null;
                         if (snapshot.val() !== null) {
-                            var user_coin = snapshot.child("/coin/" + this.state.coinType).val();
-                            var user_balance = snapshot.child("/coin/balance").val();
-                            // console.log("user_coin: " + user_coin);
-                            // console.log("user_balance: " + user_balance);
+                            let user_coin = snapshot.child("/coin/" + this.state.coinType).val();
+                            let user_balance = snapshot.child("/coin/balance").val();
+                            let user_coin_amount_spent = snapshot.child("/coin/amount/" + this.state.coinType).val();
+
                             final_user_coin = user_coin + buy_amount;
                             final_user_balance = user_balance - buy_total;
+                            final_user_coin_amount_spent = buy_total;//user_coin_amount_spent + buy_total;
 
-                            var oid = null;
-                            var status = null;
+                            let oid = null;
+                            let status = null;
                             const buyOrderFB = firebase.database().ref('buy/');
                             buyOrderFB.on('value', (snapshot) => {
                                 if(snapshot.val() !== null){
@@ -380,9 +376,10 @@ export default withStyles(styles)(class Transaction extends Component{
                             // console.log("status " + status);
                             if (status === false) {
 
-                                var updates = {};
+                                let updates = {};
                                 updates['user/' + uid + '/coin/' + this.state.coinType] = final_user_coin;
                                 updates['user/' + uid + '/coin/balance'] = final_user_balance;
+                                updates['user/' + uid + '/coin/amount/' + this.state.coinType] = final_user_coin_amount_spent;
 
                                 // update only one field and does not overwrite other fields
                                 firebase.database().ref('buy/' + oid + '/').update({
@@ -426,25 +423,25 @@ export default withStyles(styles)(class Transaction extends Component{
 
                 if (btc_price >= sellOrderLists[index]["price"]){
 
-                    var sell_total = sellOrderLists[index]["total"];
-                    var sell_amount = sellOrderLists[index]["amount"];
-                    var uid = sellOrderLists[index]["user_id"];
+                    let sell_total = sellOrderLists[index]["total"];
+                    let sell_amount = sellOrderLists[index]["amount"];
+                    let uid = sellOrderLists[index]["user_id"];
                     // this.handleUserTransaction(uid, buy_total, buy_amount, "buy");
 
                     const user = firebase.database().ref('user/' + uid);
                     user.on('value', (snapshot) => {
-                        var final_user_coin = null;
-                        var final_user_balance = null;
+                        let final_user_coin = null;
+                        let final_user_balance = null;
                         if (snapshot.val() !== null) {
-                            var user_coin = snapshot.child("/coin/" + this.state.coinType).val();
-                            var user_balance = snapshot.child("/coin/balance").val();
+                            let user_coin = snapshot.child("/coin/" + this.state.coinType).val();
+                            let user_balance = snapshot.child("/coin/balance").val();
                             // console.log("user_coin: " + user_coin);
                             // console.log("user_balance: " + user_balance);
                             final_user_coin = user_coin - sell_amount;
                             final_user_balance = user_balance + sell_total;
 
-                            var oid = null;
-                            var status = null;
+                            let oid = null;
+                            let status = null;
                             const sellOrderFB = firebase.database().ref('sell/');
                             sellOrderFB.on('value', (snapshot) => {
                                 if(snapshot.val() !== null){
@@ -462,7 +459,7 @@ export default withStyles(styles)(class Transaction extends Component{
                             // console.log("oid " + oid);
                             // console.log("status " + status);
                             if (status === false) {
-                                var updates = {};
+                                let updates = {};
                                 updates['user/' + uid + '/coin/' + this.state.coinType] = final_user_coin;
                                 updates['user/' + uid + '/coin/balance'] = final_user_balance;
 
@@ -524,7 +521,7 @@ export default withStyles(styles)(class Transaction extends Component{
         }, () => this.handleBuyTotalChange());
     }
 
-    handleBuyTotalChange (){
+    handleBuyTotalChange = () => {
         this.setState({
             buyTotal: this.state.buyAmount * this.state.buyPrice
         });
@@ -547,7 +544,7 @@ export default withStyles(styles)(class Transaction extends Component{
         }, () => this.handleSellTotalChange());
     }
 
-    handleSellTotalChange () {
+    handleSellTotalChange = () => {
         this.setState({
             sellTotal: this.state.sellAmount * this.state.sellPrice
         });
@@ -690,6 +687,4 @@ export default withStyles(styles)(class Transaction extends Component{
 }
 
 )
-
-// export default Transaction;
 

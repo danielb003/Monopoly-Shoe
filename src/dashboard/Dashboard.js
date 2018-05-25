@@ -26,7 +26,10 @@ export default class Dashboard extends Component {
          startDate:null,
          endDate:null,
          user_data: [],
-         coins: []
+         coins:[],
+         open_buy_orders: [],
+         open_sell_orders: [],
+         pairs: [{name: "BTC"},{name: "LTC"},{name: "ETH"},{name: "NULS"},{name: "XRP"},{name: "XMR"},{name: "NEO"},{name: "EOS"}],
       };
 
       this.handleSwitchChange = this.handleSwitchChange.bind(this);
@@ -38,10 +41,12 @@ export default class Dashboard extends Component {
    componentWillMount() {
       this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
          if(user) {
-            this.setState({ authenticated: true })
-
-            var user_id, admin = false;
+            let user_id, admin = false;
             user_id = user.uid;
+            this.setState({ 
+                authenticated: true
+            })
+
             const userData = app.database().ref('user/' + user_id);
             userData.on('value', (snapshot) => {
                if(snapshot.val() !== null) {
@@ -49,12 +54,14 @@ export default class Dashboard extends Component {
                   admin = snapshot.child('admin').val();
 
                   this.setState({
-                     adminStatus: admin,
+                     adminStatus: admin
                   });
                }
             });
          } else {
-            this.setState({ authenticated: false })
+            this.setState({ 
+                authenticated: false
+            })
          }
       });
 
@@ -62,18 +69,103 @@ export default class Dashboard extends Component {
 
    componentDidMount(){
       this.loadUserIDAndTradingStatus();
+      this.loadCurrentPrice();
       this.retrieve_history();
       this.retrieve_userData();
       this.retrieve_coins();
+      this.retrieve_open_buy_orders();
+      this.retrieve_open_sell_orders();
    }
 
    componentWillUnmount(){
       this.removeAuthListener();
 
    }
+   loadCurrentPrice() {
+    
+
+    app.auth().onAuthStateChanged((user) => {
+        if (user) {
+            let user_id = user.uid;
+            const currentPriceFb = app.database().ref('user/' + user_id + '/coin/current_prices/');
+            this.state.pairs.map((pair, index) => {
+                if (pair != undefined)
+                {
+                    let currency = "AUD";
+                    let url = 'https://min-api.cryptocompare.com/data/price?fsym=' + pair.name + '&tsyms=' + currency;
+                    fetch(url).then(r => r.json())
+                    .then((coinData) => {
+                        currentPriceFb.child(pair.name).set(
+                            coinData.AUD
+                        );
+                    })
+                    .catch((e) => {
+                    console.log(e);
+                    });
+                }
+            });
+        }
+    });
+  }
+ 
+   retrieve_open_buy_orders = () => {
+    
+            const assignedOpenBuys = [];
+            const openBuyFB = app.database().ref('buy/');
+            openBuyFB.on('value', (snapshot) => {
+                if(snapshot.val() !== null){
+    
+                    for(const index in snapshot.val()) {
+                        if (snapshot.child(index + "/user_id").val() == app.auth().currentUser.uid) {
+                            assignedOpenBuys.push({
+                                id: index,
+                                amount: snapshot.child(index + "/amount").val(),
+                                coinType: snapshot.child(index + "/coinType").val(),
+                                type: snapshot.child(index + "/type").val(),
+                                price: snapshot.child(index + "/price").val(),
+                                user_id: snapshot.child(index + "/user_id").val(),
+                                timestamp: snapshot.child(index + "/timestamp").val(),
+                                coinValue: snapshot.child(index + "/coinValue").val()
+                            });
+                        }
+                    }
+                    this.setState({
+                        open_buy_orders: assignedOpenBuys
+                    });
+                }
+            });
+        }
+    
+        retrieve_open_sell_orders = () => {
+    
+            const assignedOpenSells = [];
+            const openSellFB = app.database().ref('sell/');
+            openSellFB.on('value', (snapshot) => {
+                if(snapshot.val() !== null){
+    
+                    for(const index in snapshot.val()) {
+                        if (snapshot.child(index + "/user_id").val() == app.auth().currentUser.uid) {
+                            assignedOpenSells.push({
+                                id: index,
+                                amount: snapshot.child(index + "/amount").val(),
+                                coinType: snapshot.child(index + "/coinType").val(),
+                                type: snapshot.child(index + "/type").val(),
+                                price: snapshot.child(index + "/price").val(),
+                                user_id: snapshot.child(index + "/user_id").val(),
+                                timestamp: snapshot.child(index + "/timestamp").val(),
+                                coinValue: snapshot.child(index + "/coinValue").val()
+                            });
+                        }
+                    }
+                    this.setState({
+                        open_sell_orders: assignedOpenSells
+                    });
+                }
+            });
+        }
 
    loadUserIDAndTradingStatus = () => {
-      var user_id = null;
+      let user_id = null;
       app.auth().onAuthStateChanged((user) => {
          if (user) {
             user_id = user.uid;
@@ -81,13 +173,12 @@ export default class Dashboard extends Component {
                uid : user_id
             })
             const userDB = app.database().ref('user/' + user_id);
-            var trading = null;
+            let trading = null;
             userDB.on('value', (snapshot) => {
 
                if (snapshot.val() !== null) {
                   trading = snapshot.child("/trading").val();
                }
-               // console.log('load trading : ' + trading);
                this.setState({
                   openTradingAccount: trading
                }, () => {
@@ -144,7 +235,7 @@ export default class Dashboard extends Component {
    }
 
    retrieve_userData = () => {
-      var user_id = null, admin = false;
+      let user_id = null, admin = false;
       app.auth().onAuthStateChanged((user) => {
          if (user) {
             user_id = user.uid;
@@ -152,7 +243,6 @@ export default class Dashboard extends Component {
             const userData = app.database().ref('user/' + user_id);
             userData.on('value', (snapshot) => {
                if(snapshot.val() !== null) {
-                  console.log('admin: ' + snapshot.child('admin').val());
                   admin = snapshot.child('admin').val();
                   user_details.push({
                      admin: snapshot.child('admin').val(),
@@ -174,38 +264,59 @@ export default class Dashboard extends Component {
    }
 
    retrieve_coins = () => {
-
-      var user_id = null;
-      app.auth().onAuthStateChanged((user) => {
-         if (user) {
-            user_id = user.uid;
-            const assignedCoins = [];
-            const coinsFb = app.database().ref('user/' + user_id +'/coin');
-            coinsFb.on('value', (snapshot) => {
-               if(snapshot.val() !== null) {
-                  let items = snapshot.val();
-                  for (let key in items) {
-                     if( snapshot.child(key).val()>0 && key!="balance") {
-                        assignedCoins.push({
-                           name: key,
-                           amt: snapshot.child(key).val()
+        let user_id = null;
+        app.auth().onAuthStateChanged((user) => {
+            if (user) {
+                user_id = user.uid;
+                let assignedCoins = [];
+                const user_coin_ref = app.database().ref('user/' + user_id +'/coin');
+                user_coin_ref.once('value', (snapshot) => {
+                if(snapshot.val() !== null) {
+                    let items = snapshot.val();
+                    for (let key in items) {
+                            if( snapshot.child(key).val()>0) {
+                                if (key=="balance") {
+                                    assignedCoins.push({
+                                        name: "Balance in AUD",
+                                        amt: snapshot.child(key).val(),
+                                        averagePrice: 1,
+                                        cost: "N/A",
+                                        currentPrice: 1,
+                                        totalWorth: snapshot.child(key).val(),
+                                        profitLoss: "N/A"
+                                    });
+                                }
+                                else {
+                                    let current_price = snapshot.child('/current_prices/' + key).val();
+                                    let current_amount = snapshot.child(key).val();
+                                    let current_cost = snapshot.child('/amount/' + key).val();
+                                    //console.log(key + " " + current_price + " " + current_amount + " " + current_cost);
+                                    assignedCoins.push({
+                                        name: key,
+                                        amt: current_amount,
+                                        averagePrice: current_cost / current_amount,
+                                        cost: current_cost,
+                                        currentPrice: current_price,
+                                        totalWorth: current_amount * current_price,
+                                        profitLoss: (current_amount * current_price) - current_cost
+                                    });
+                                } 
+                            }  
+                        this.setState({
+                            coins: assignedCoins
                         });
-                     }
-                  }
-                  this.setState({
-                     coins: assignedCoins
-                  });
-               }
-            });
-         }
-      });
-   }
+                    }
+                }
+                });
+            }
+        });
+    }
 
    handleSubmit(event) {
       event.preventDefault();
-      var moment = require('moment');
-      var momentStartDate=moment(this.state.startDate);
-      var momentEndDate=moment(this.state.endDate);
+      let moment = require('moment');
+      let momentStartDate=moment(this.state.startDate);
+      let momentEndDate=moment(this.state.endDate);
 
       const assignedFilHistory = [];
       const historyFB = app.database().ref('history/');
@@ -214,9 +325,9 @@ export default class Dashboard extends Component {
 
             for(const index in snapshot.val()) {
                if (snapshot.child(index + "/user_id").val() == app.auth().currentUser.uid) {
-                  var historyDate = snapshot.child(index + "/timestamp").val();
+                  let historyDate = snapshot.child(index + "/timestamp").val();
                   historyDate = historyDate.substring(0, 10);
-                  var momentDate = moment(historyDate);
+                  let momentDate = moment(historyDate);
                   if(moment(momentDate).isBetween(momentStartDate,momentEndDate)) {
 
                      assignedFilHistory.push({
@@ -260,11 +371,11 @@ export default class Dashboard extends Component {
          return <Redirect to='/'/>
       }
 
+      const historyState = this.state.history;
       const tradingStatus = this.state.openTradingAccount;
       console.log('trading status ' + tradingStatus);
       const { startDate,endDate, user_data } = this.state;
 
-      const historyState = this.state.history;
       const historyTableData = historyState ? (
          this.state.history.map(function(item){
             return (
@@ -283,14 +394,59 @@ export default class Dashboard extends Component {
          null
       );
 
+      const openBuyOrdersState = this.state.open_buy_orders;
+
+      const openBuyTableData = openBuyOrdersState ? (
+          this.state.open_buy_orders.map(function(item){
+          return (
+              <tbody>
+              <tr key={item.id}>
+                  <td>{item.timestamp.substring(0, 10)}</td>
+                  <td>{item.coinType}</td>
+                  <td>{item.price}</td>
+                  <td>{item.amount}</td>
+                  <td>{item.coinValue}</td>
+              </tr>
+              </tbody>
+          )
+      })) : (
+          null
+      );
+
+      const openSellOrdersState = this.state.open_sell_orders;
+
+      const openSellTableData = openSellOrdersState ? (
+          this.state.open_sell_orders.map(function(item){
+          return (
+              <tbody>
+              <tr key={item.id}>
+                  <td>{item.timestamp.substring(0, 10)}</td>
+                  <td>{item.coinType}</td>
+                  <td>{item.price}</td>
+                  <td>{item.amount}</td>
+                  <td>{item.coinValue}</td>
+              </tr>
+              </tbody>
+          )
+      })) : (
+          null
+      );
+
+
       const coinState = this.state.coins;
+
       const coinTableData = coinState ? (
          this.state.coins.map(function(item){
             return (
                <tbody>
-               <tr key={item.name}>
+               <tr key={item.id}>
                   <td>{item.name}</td>
                   <td>{item.amt}</td>
+                  <td>{item.cost}</td>
+                  <td>{item.totalWorth}</td>
+                  <td>{item.averagePrice}</td>
+                  <td>{item.currentPrice}</td>
+                  <td>{item.profitLoss}</td>
                </tr>
                </tbody>
             )
@@ -317,18 +473,18 @@ export default class Dashboard extends Component {
          <div>
             <Navbar inverse>
                <Nav id="nav_box">
-                  <NavItem class="nav_item" href="/">
+                  <NavItem className="nav_item" href="/">
                      <p>Prolific Trading</p>
                   </NavItem>
-                  <NavItem class="nav_item" eventKey={1} href="/">
+                  <NavItem className="nav_item" eventKey={1} href="/">
                      Market
                   </NavItem>
-                  <NavItem class="nav_item" eventKey={2} href="/leaderboard">
+                  <NavItem className="nav_item" eventKey={2} href="/leaderboard">
                      Leaderboard
                   </NavItem>
                </Nav>
                <Nav pullRight>
-                  <NavItem class="nav_item" eventKey={2} href="/logout">
+                  <NavItem className="nav_item" eventKey={2} href="/logout">
                      Logout
                   </NavItem>
                </Nav>
@@ -373,13 +529,50 @@ export default class Dashboard extends Component {
                               <tr>
                                  <th>Coin</th>
                                  <th>Amount</th>
+                                 <th>Total Cost</th>
+                                 <th>Total Worth</th>
                                  <th>Average Price</th>
+                                 <th>Current Price</th>
+                                 <th>Profit/Loss</th>
                               </tr>
                               </thead>) : null}
                               {coinTableData}
                            </table>
 
                         </div>
+                        <div className="container-fluid noPad">
+                              <h4 id="heading" className="pull-left">Open Buy Orders</h4>
+
+                                 <table className="table table-bordered">
+                                   {this.state.open_buy_orders ? (<thead className="">
+                                   <tr>
+                                       <th>Date</th>
+                                       <th>Coin</th>
+                                       <th>Price</th>
+                                       <th>Amount</th>
+                                       <th>Value</th>
+                                   </tr>
+                                   </thead>) : null}
+                                   {openBuyTableData}
+                               </table>
+                            </div>
+  
+                            <div className="container-fluid noPad">
+                              <h4 id="heading" className="pull-left">Open Sell Orders</h4>
+
+                                 <table className="table table-bordered">
+                                   {this.state.open_sell_orders ? (<thead className="">
+                                   <tr>
+                                       <th>Date</th>
+                                       <th>Coin</th>
+                                       <th>Price</th>
+                                       <th>Amount</th>
+                                       <th>Value</th>
+                                   </tr>
+                                   </thead>) : null}
+                                   {openSellTableData}
+                               </table>
+                            </div>
 
                         <div className="container-fluid noPad">
                            <h4 id="heading" className="pull-left">Transaction History</h4>
@@ -443,4 +636,3 @@ export default class Dashboard extends Component {
       )
    }
 }
-
