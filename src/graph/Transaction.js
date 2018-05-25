@@ -691,3 +691,5 @@ export default withStyles(styles)(class Transaction extends Component{
 
 )
 
+// export default Transaction;
+

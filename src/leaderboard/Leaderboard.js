@@ -43,6 +43,9 @@ class Leaderboard extends Component {
             }
         }
         this.handleTabChange = this.handleTabChange.bind(this);
+        this.loadHistoryData_andSaveToState = this.loadHistoryData_andSaveToState.bind(this);
+        this.loadUsersFromHistory = this.loadUsersFromHistory.bind(this);
+        this.retrieve_currentCryptoPrice = this.retrieve_currentCryptoPrice.bind(this);
     }
 
     componentWillMount() {
@@ -61,14 +64,14 @@ class Leaderboard extends Component {
         this.retrieve_currentCryptoPrice();
     }
 
-    handleTabChange = (event, tabValue) => {
+    handleTabChange(event, tabValue){
         this.setState({ tabValue }, () => {
             this.loadHistoryData_andSaveToState();
         });
 
     };
 
-    loadHistoryData_andSaveToState = () => {
+    loadHistoryData_andSaveToState() {
         const history = app.database().ref('history');
         const filtered_history = []
         history.on('value', (snapshot) => {
@@ -197,7 +200,7 @@ class Leaderboard extends Component {
     // Loop history data based on specified Timeframe
     // Then save to state
 
-    loadUsersFromHistory = () => {
+    loadUsersFromHistory() {
         const userLists = [];
         const historyLists = this.state.history;
         console.log('historyLists: ' + historyLists);
@@ -298,7 +301,7 @@ class Leaderboard extends Component {
         console.log(newUserState);
     }
 
-    retrieve_currentCryptoPrice = () => {
+    retrieve_currentCryptoPrice(){
         this.getData = () => {
             // filter coin, pass coin from chart
             const coin = this.state.coinPrice;
