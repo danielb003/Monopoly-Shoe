@@ -40,12 +40,15 @@ export default class Login extends Component {
          redirect: false,
          email: '',
          password: '',
+         loginError: false,
          validation: this.validator.valid()
       };
 
       this.submitted = false;
+      this.changeStates = false;
       this.handleChange = this.handleChange.bind(this);
       this.handleLogin = this.handleLogin.bind(this);
+      this.changeState = this.changeState.bind(this);
    }
 
    componentWillMount() {
@@ -82,9 +85,11 @@ export default class Login extends Component {
 
       if (validation.isValid) {
          app.auth().signInWithEmailAndPassword(this.state.email, this.state.password).catch(function (error) {
-         var errorCode = error.code;
-         var errorMessage = error.message;
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            alert("Email or password entered was incorrect or doesn't exist.");
          })
+         /*this.changeStates = true;*/
       }
 
       console.table([{
@@ -94,18 +99,30 @@ export default class Login extends Component {
       }])
    }
 
+   changeState() {
+      this.setState({loginError: true})
+   }
+
    render() {
       let validation = this.submitted ?
-                        this.validator.validate(this.state) :
-                        this.state.validation;
+         this.validator.validate(this.state) :
+         this.state.validation;
 
       if(this.state.redirect) {
-         return <Redirect to='/dashboard'/>
+         return <Redirect to='/loading'/>
       }
+
+      var loginError = this.state.loginError;
+      console.log(loginError);
 
       return (
          <div id="login_div">
             <form onSubmit={this.handleLogin}>
+               {this.changeStates ? (
+                  <div id="login_error">
+                     <p>Email or password was not valid.</p>
+                  </div>
+               ) : ( null ) }
                <div className={validation.email.isInvalid && 'has-error'} id="input_div">
                   <input id="login-email"
                          className="form-control"
@@ -126,7 +143,7 @@ export default class Login extends Component {
                          onChange={this.handleChange} required/>
                   <span id="help-block-2">{validation.password.message}</span>
                </div>
-                  <br/>
+               <br/>
                <input id="login-submit" type="submit" value="Log In"></input>
             </form>
          </div>

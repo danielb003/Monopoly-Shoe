@@ -13,6 +13,19 @@ form {
 .form-control:valid~.invalid-feedback {
     display: none;
 }
+#login_error {
+    width: 90%;
+    height: 50px;
+    color: rgb(214,21,21);
+    margin: 0px auto -30px auto;
+    padding-top: 37px;
+}
+#login_error p {
+    font-family: monospace;
+    font-size: 16px;
+    color: rgb(214,21,21);
+    padding: 20px 0px 0px 40px;
+}
 #login-email {
     width: 90%;
     height: 50px;

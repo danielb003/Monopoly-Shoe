@@ -10,30 +10,30 @@ export default class SignUp extends Component {
 
       this.validator = new FormValidator([
          {
-           field: 'fname',
-           method: 'isEmpty',
-           validWhen: false,
-           message: 'First name is required.'
+            field: 'fname',
+            method: 'isEmpty',
+            validWhen: false,
+            message: 'First name is required.'
          },
          {
-           field: 'fname',
-           method: 'matches',
-           args: [/(^[A-Za-z\'\,\-]{2,}$)/],
+            field: 'fname',
+            method: 'matches',
+            args: [/(^[A-Za-z\'\,\-]{2,}$)/],
             validWhen: true,
-            message: 'First name contains invalid characters'
+            message: 'First name is not valid'
          },
          {
-           field: 'lname',
-           method: 'isEmpty',
-           validWhen: false,
-           message: 'Last name is required.'
+            field: 'lname',
+            method: 'isEmpty',
+            validWhen: false,
+            message: 'Last name is required.'
          },
          {
-           field: 'lname',
-           method: 'matches',
-           args: [/(^[A-Za-z\'\,\-]{2,}$)/],
+            field: 'lname',
+            method: 'matches',
+            args: [/(^[A-Za-z\'\,\-]{2,}$)/],
             validWhen: true,
-            message: 'Last name contains invalid characters'
+            message: 'Last name is not valid'
          },
          {
             field: 'email',
@@ -89,43 +89,43 @@ export default class SignUp extends Component {
    }
 
    componentWillUnmount() {
-       this.removeAuthListener();
+      this.removeAuthListener();
 
-       app.auth().onAuthStateChanged((user) => {
-          if(user){
-              var authData = app.auth().currentUser;
-              if (authData) {
-                  console.log(authData.uid);
-              }
-              var uid = authData.uid;
-              const user = app.database().ref('user/' + this.state.pushID);
-              user.on('value', (snapshot) => {
-                  if (snapshot.val() !== null) {
+      app.auth().onAuthStateChanged((user) => {
+         if(user){
+            var authData = app.auth().currentUser;
+            if (authData) {
+               console.log(authData.uid);
+            }
+            var uid = authData.uid;
+            const user = app.database().ref('user/' + this.state.pushID);
+            user.on('value', (snapshot) => {
+               if (snapshot.val() !== null) {
 
-                      user.remove();
-                      app.database().ref('user/' + uid).set({
-                          fname: this.state.fname,
-                          lname: this.state.lname,
-                          email: this.state.email,
-                          password: this.state.password,
-                          admin: this.state.admin,
-                          trading: false
-                      });
-                      app.database().ref('user/' + uid + '/coin').set({
-                          BTC: 0,
-                          EOS: 0,
-                          ETH: 0,
-                          LTC: 0,
-                          NEO: 0,
-                          NULS: 0,
-                          XMR: 0,
-                          XRP: 0,
-                          balance: 1000000
-                      });
-                  }
-              });
-          }
-       });
+                  user.remove();
+                  app.database().ref('user/' + uid).set({
+                     fname: this.state.fname,
+                     lname: this.state.lname,
+                     email: this.state.email,
+                     password: this.state.password,
+                     admin: this.state.admin,
+                     trading: false
+                  });
+                  app.database().ref('user/' + uid + '/coin').set({
+                     BTC: 0,
+                     EOS: 0,
+                     ETH: 0,
+                     LTC: 0,
+                     NEO: 0,
+                     NULS: 0,
+                     XMR: 0,
+                     XRP: 0,
+                     balance: 1000000
+                  });
+               }
+            });
+         }
+      });
 
 
    }
@@ -171,23 +171,23 @@ export default class SignUp extends Component {
          redirect: this.state.redirect
       }])
 
-       const usersRef = app.database().ref('user');
+      const usersRef = app.database().ref('user');
 
-       const user = {
-           fname: this.state.fname,
-           lname: this.state.lname,
-           email: this.state.email,
-           password: this.state.password,
-           admin: this.state.admin,
-           trading: false
-       }
+      const user = {
+         fname: this.state.fname,
+         lname: this.state.lname,
+         email: this.state.email,
+         password: this.state.password,
+         admin: this.state.admin,
+         trading: false
+      }
 
-       // set user's uid as push key
-       var push_id = usersRef.push(user).key;
-       this.setState({
-           pushID: push_id
-       });
-       app.database().ref().child('user').child(push_id).set(user);
+      // set user's uid as push key
+      var push_id = usersRef.push(user).key;
+      this.setState({
+         pushID: push_id
+      });
+      app.database().ref().child('user').child(push_id).set(user);
 
    }
 

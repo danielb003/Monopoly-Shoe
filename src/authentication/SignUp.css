@@ -62,3 +62,7 @@
     cursor: pointer;
     margin-top: 21px;
 }
+#input_div {
+    max-height: 170px;
+    border: 1px solid rgb(255,255,255);
+}
