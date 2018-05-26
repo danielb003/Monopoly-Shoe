@@ -259,19 +259,24 @@ class Leaderboard extends Component {
         var reducedState = [];
         userState.forEach(function(value) {
             var existing = reducedState.filter(function(v, i) {
-                return v.uid == value.uid;
+                return (v.uid == value.uid);
             });
             if (existing.length) {
                 var existingIndex = reducedState.indexOf(existing[0]);
+                if (isNaN(reducedState[existingIndex].count)){
+                    reducedState[existingIndex].count = 0;
+                }
                 reducedState[existingIndex].profitLossPercent += value.profitLossPercent;
+                reducedState[existingIndex].count += 1;
             } else {
                 reducedState.push(value);
             }
         });
+        // console.log("COUNT*****")
+        // console.log(reducedState)
 
-
-        // console.log('reduced State: ')
-        // console.log(reducedState);
+        console.log('reduced State: ')
+        console.log(reducedState);
 
         const newUserState = [];
         for(const index in reducedState){
@@ -280,13 +285,17 @@ class Leaderboard extends Component {
                 if(snapshot.val() !== null){
                     const fn = snapshot.child("/fname").val();
                     const ln = snapshot.child("/lname").val();
-                    const pl = reducedState[index]['profitLossPercent'].toFixed(4);
-
+                    if (!reducedState[index]['count']) {
+                        reducedState[index]['count'] = 1;
+                    }
+                    const pl = ((reducedState[index]['profitLossPercent'] * 100) / reducedState[index]['count']).toFixed(2);
+                    const num = reducedState[index]['count'];
                     newUserState.push({
-                       uid:  reducedState[index]['uid'],
+                        uid:  reducedState[index]['uid'],
                         fname: fn,
                         lname: ln,
-                        profitLoss: pl
+                        profitLoss: pl,
+                        trade: num
                     });
                     this.setState({
                         user: newUserState
@@ -352,13 +361,15 @@ class Leaderboard extends Component {
                         <tr key={item.uid} id="profit">
                             <td>{index+1}</td>
                             <td>{item.fname} {item.lname}</td>
-                            <td>{item.profitLoss}</td>
+                            <td>{item.trade}</td>
+                            <td>{item.profitLoss} %</td>
                         </tr>
                     :
                         <tr key={item.uid} id="loss">
                             <td>{index+1}</td>
                             <td>{item.fname} {item.lname}</td>
-                            <td>{item.profitLoss}</td>
+                            <td>{item.trade}</td>
+                            <td>{item.profitLoss} %</td>
                         </tr>
                     }
                     </tbody>
@@ -429,6 +440,7 @@ class Leaderboard extends Component {
                                         <tr>
                                             <th>Rank</th>
                                             <th>Trader Name</th>
+                                            <th>Trades</th>
                                             <th>Profit</th>
                                         </tr>
                                         </thead>) }
@@ -444,6 +456,7 @@ class Leaderboard extends Component {
                                         <tr>
                                             <th>Rank</th>
                                             <th>Trader Name</th>
+                                            <th>Trades</th>
                                             <th>Profit</th>
                                         </tr>
                                         </thead>) }
@@ -460,6 +473,7 @@ class Leaderboard extends Component {
                                         <tr>
                                             <th>Rank</th>
                                             <th>Trader Name</th>
+                                            <th>Trades</th>
                                             <th>Profit</th>
                                         </tr>
                                         </thead>) }
@@ -475,6 +489,7 @@ class Leaderboard extends Component {
                                         <tr>
                                             <th>Rank</th>
                                             <th>Trader Name</th>
+                                            <th>Trades</th>
                                             <th>Profit</th>
                                         </tr>
                                         </thead>) }

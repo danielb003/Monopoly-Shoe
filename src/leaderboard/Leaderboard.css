@@ -29,11 +29,10 @@ table td{
 }
 
 @media (min-width: 960px){
-    span .MuiTab-label-60{
-        font-size: 1.2rem;
+    span .MuiTab-label-60 .MuiTab-label-56{
+        font-size: 1.2em;
     }
 }
-span .MuiTab-label-60{
-    font-size: 1.2rem;
+span .MuiTab-label-60 .MuiTab-label-56{
+    font-size: 1.2em;
 }
-

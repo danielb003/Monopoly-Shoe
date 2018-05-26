@@ -13,11 +13,11 @@ import { expect } from 'chai';
 // global.document = doc
 // global.window = doc.defaultView
 
-describe('Component: Transaction', () =>{
+describe('Component: Leaderboard', () =>{
     it('tests something', () => {
         let wrapper;
 
-        // beforeEach(() => { wrapper = shallow(<Transaction />);});
+        beforeEach(() => { wrapper = shallow(<Board/>);});
         expect(true).to.equal(true);
         // expect(wrapper.find({ sellTotal: null })).to.have.length(0);
         // const wrapper = shallow((
