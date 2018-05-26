@@ -111,7 +111,7 @@ export default class SignUp extends Component {
                      admin: this.state.admin,
                      trading: false
                   });
-                  app.database().ref('user/' + uid + '/coin').set({
+                  app.database().ref('portfolio/' + uid + '/assets').set({
                      BTC: 0,
                      EOS: 0,
                      ETH: 0,
@@ -121,6 +121,16 @@ export default class SignUp extends Component {
                      XMR: 0,
                      XRP: 0,
                      balance: 1000000
+                  });
+                  app.database().ref('portfolio/' + uid + '/amount_spent').set({
+                     BTC: 0,
+                     EOS: 0,
+                     ETH: 0,
+                     LTC: 0,
+                     NEO: 0,
+                     NULS: 0,
+                     XMR: 0,
+                     XRP: 0
                   });
                }
             });
@@ -154,7 +164,7 @@ export default class SignUp extends Component {
          app.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).catch(function (error) {
             var errorCode = error.code;
             var errorMessage = error.message;
-            if (errorCode == 'auth/weak-password') {
+            if (errorCode === 'auth/weak-password') {
                alert('The password is too weak.');
             } else {
                alert(errorMessage);

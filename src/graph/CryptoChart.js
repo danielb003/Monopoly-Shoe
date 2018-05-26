@@ -62,26 +62,26 @@ class CryptoChart extends Component {
 
       fetch(url).then( r => r.json())
             .then((coinData) => {
-            const sortedData = [];
-            let count = 0;
+                  const sortedData = [];
+                  let count = 0;
 
-            for (let i in coinData.Data){
-                  // Create a new JavaScript Date object based on the timestamp
-                  // multiplied by 1000 so that the argument is in milliseconds, not seconds.
-                  var date = new Date(coinData.Data[i].time*1000);
-                  sortedData.push({
-                        d: date.toDateString(),
-                        p: coinData.Data[i].close.toLocaleString('en-AU',{ style: 'currency', currency: this.state.currency }),
-                        x: count, //previous days
-                        y: coinData.Data[i].close // numerical price
-                  });   
-                  count++;
-            }
-            this.setState({
-                  firstPrice: sortedData[0].y,
-                  data: sortedData,
-                  fetchingData: false
-            })
+                  for (let i in coinData.Data){
+                        // Create a new JavaScript Date object based on the timestamp
+                        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+                        var date = new Date(coinData.Data[i].time*1000);
+                        sortedData.push({
+                              d: date.toDateString(),
+                              p: coinData.Data[i].close.toLocaleString('en-AU',{ style: 'currency', currency: this.state.currency }),
+                              x: count, //previous days
+                              y: coinData.Data[i].close // numerical price
+                        });   
+                        count++;
+                  }
+                  this.setState({
+                        firstPrice: sortedData[0].y,
+                        data: sortedData,
+                        fetchingData: false
+                  })
             })
             .catch((e) => {
             console.log(e);
@@ -144,7 +144,7 @@ class CryptoChart extends Component {
                   </div>  
                   <div className='row'>
                   { !this.state.fetchingData ?
-                              <InfoBox firstPrice={this.state.firstPrice} currentPrice={this.state.currentPrice} monthChangeD={this.state.monthChangeD} monthChangeP={this.state.monthChangeP} updatedAt={this.state.updatedAt} coin={this.state.coin} currency={this.state.currency} limitname={this.state.limitname} />
+                              <InfoBox currentPrice={this.state.currentPrice} monthChangeD={this.state.monthChangeD} monthChangeP={this.state.monthChangeP} updatedAt={this.state.updatedAt} coin={this.state.coin} currency={this.state.currency} limitname={this.state.limitname} />
                   : null }
                   </div>
                   <div className='row'>
