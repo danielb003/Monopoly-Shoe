@@ -1,3 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Component: Leaderboard tests something on leaderboard 1`] = `undefined`;
+exports[`Component: Leaderboard tests something on leaderboard 1`] = `
+<Leaderboard
+  classes={
+    Object {
+      "root": "Leaderboard-root-1",
+    }
+  }
+/>
+`;

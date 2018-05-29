@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { shallow, configure, mount, render } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
+// import { shallow, configure, mount, render } from 'enzyme';
+// import Adapter from 'enzyme-adapter-react-16';
 
 // React 16 Enzyme Adapter
-configure({adapter: new Adapter()});
+// configure({adapter: new Adapter()});
 
 import Leaderboard from "../src/leaderboard/Leaderboard";
 // import { expect } from 'chai';
