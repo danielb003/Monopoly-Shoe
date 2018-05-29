@@ -5,7 +5,6 @@ import Adapter from 'enzyme-adapter-react-16';
 configure({adapter: new Adapter()});
 
 import { Transaction } from "../src/graph/Transaction";
-import { Board } from "../src/leaderboard/Leaderboard";
 import { expect } from 'chai';
 
 // import jsdom from 'jsdom'
@@ -14,10 +13,12 @@ import { expect } from 'chai';
 // global.window = doc.defaultView
 
 describe('Component: Transaction', () =>{
-    it('tests something', () => {
+    it('tests something on transaction', () => {
         let wrapper;
 
-        // beforeEach(() => { wrapper = shallow(<Transaction />);});
+        beforeEach(() => { wrapper = shallow(<Transaction />);});
+
+
         expect(true).to.equal(true);
         // expect(wrapper.find({ sellTotal: null })).to.have.length(0);
         // const wrapper = shallow((

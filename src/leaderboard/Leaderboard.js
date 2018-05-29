@@ -275,8 +275,8 @@ class Leaderboard extends Component {
         // console.log("COUNT*****")
         // console.log(reducedState)
 
-        console.log('reduced State: ')
-        console.log(reducedState);
+        // console.log('reduced State: ')
+        // console.log(reducedState);
 
         const newUserState = [];
         for(const index in reducedState){
