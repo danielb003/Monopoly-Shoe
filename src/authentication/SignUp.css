@@ -10,19 +10,18 @@
     height: 50px;
     font-family: monospace;
     font-size: 16px;
-    margin: 15px 20px;
+    margin: 80px 20px 15px 20px;
     padding: 0px 20px;
     border-radius: 2px;
     background-color: rgb(220,220,220);
     border-style: none;
-    margin-top: 35px;
 }
 #lastname {
     width: 90%;
     height: 50px;
     font-family: monospace;
     font-size: 16px;
-    margin: 15px 20px;
+    margin: 2px 20px 15px 20px;
     padding: 0px 20px;
     border-radius: 2px;
     background-color: rgb(220,220,220);
@@ -33,7 +32,7 @@
     height: 50px;
     font-family: monospace;
     font-size: 16px;
-    margin: 15px 20px;
+    margin: 2px 20px 15px 20px;
     padding: 0px 20px;
     border-radius: 2px;
     background-color: rgb(220,220,220);
@@ -44,11 +43,20 @@
     height: 50px;
     font-family: monospace;
     font-size: 16px;
-    margin: 15px 20px;
+    margin: 2px 20px 15px 20px;
     padding: 0px 20px;
     border-radius: 2px;
     background-color: rgb(220,220,220);
     border-style: none;
+}
+#help-block-1 {
+    width: 90%;
+    font-family: monospace;
+    margin: 0px 20px;
+    padding: 3px 2px;
+    position: relative;
+    top: -5px;
+    color: rgb(214,21,21);
 }
 #submit {
     width: 100%;
