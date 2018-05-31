@@ -6,3 +6,7 @@ Enzyme.configure({ adapter: new Adapter() });
 global.shallow = shallow;
 global.render = render;
 global.mount = mount;
+
+// prevent error on fetch syntax during testing
+import "babel-polyfill";
+import 'isomorphic-fetch';

@@ -1,0 +1,350 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Component: Dashboard tests something on Dashboard 1`] = `
+<div>
+  <Uncontrolled(Navbar)
+    bsStyle="default"
+    inverse={true}
+  >
+    <Nav
+      bsClass="nav"
+      id="nav_box"
+      justified={false}
+      pullLeft={false}
+      pullRight={false}
+      stacked={false}
+    >
+      <NavItem
+        active={false}
+        className="nav_item"
+        disabled={false}
+        href="/"
+      >
+        <p>
+          Prolific Trading
+        </p>
+      </NavItem>
+      <NavItem
+        active={false}
+        className="nav_item"
+        disabled={false}
+        eventKey={1}
+        href="/"
+      >
+        Market
+      </NavItem>
+      <NavItem
+        active={false}
+        className="nav_item"
+        disabled={false}
+        eventKey={2}
+        href="/leaderboard"
+      >
+        Leaderboard
+      </NavItem>
+    </Nav>
+    <Nav
+      bsClass="nav"
+      justified={false}
+      pullLeft={false}
+      pullRight={true}
+      stacked={false}
+    >
+      <NavItem
+        active={false}
+        className="nav_item"
+        disabled={false}
+        eventKey={2}
+        href="/logout"
+      >
+        Logout
+      </NavItem>
+    </Nav>
+  </Uncontrolled(Navbar)>
+  <div
+    className="container "
+  >
+    <div
+      className="row"
+    >
+      <div
+        className="col-md-3 noPad_left"
+      >
+        <div
+          className="text-center"
+        >
+          <h1
+            className="display-4"
+          >
+              
+          </h1>
+        </div>
+        <div
+          className="card center-block noPad_left"
+        >
+          <img
+            className="center-block img-responsive img-circle"
+            id="user_profile"
+            src={null}
+          />
+          <h2>
+             
+             
+          </h2>
+          <br />
+          <strong>
+             
+          </strong>
+           
+          <br />
+          <br />
+          <strong>
+            Regular User
+          </strong>
+          <br />
+          <br />
+          <strong>
+            Trading Account
+          </strong>
+          <div>
+            <WithStyles(Switch)
+              checked={false}
+              color="primary"
+              onChange={[Function]}
+            />
+          </div>
+        </div>
+      </div>
+      <div
+        className="col-md-9 noPad"
+      >
+        <div
+          className="text-center"
+        >
+          <h1
+            className="display-4"
+            id="dashboard"
+          >
+            DASHBOARD
+          </h1>
+        </div>
+        <div
+          className="container col-md-12 noPad"
+        >
+          <div
+            className="container-fluid noPad"
+          >
+            <h4
+              className="pull-left"
+              id="heading"
+            >
+              Portfolio
+            </h4>
+            <table
+              className="table table-bordered"
+            >
+              <thead
+                className=""
+              >
+                <tr>
+                  <th>
+                    Coin
+                  </th>
+                  <th>
+                    Amount
+                  </th>
+                  <th>
+                    Total Cost
+                  </th>
+                  <th>
+                    Total Worth
+                  </th>
+                  <th>
+                    Average Price
+                  </th>
+                  <th>
+                    Current Price
+                  </th>
+                  <th>
+                    Profit/Loss
+                  </th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div
+            className="container-fluid noPad"
+          >
+            <h4
+              className="pull-left"
+              id="heading"
+            >
+              Open Buy Orders
+            </h4>
+            <table
+              className="table table-bordered"
+            >
+              <thead
+                className=""
+              >
+                <tr>
+                  <th>
+                    Date
+                  </th>
+                  <th>
+                    Coin
+                  </th>
+                  <th>
+                    Price
+                  </th>
+                  <th>
+                    Amount
+                  </th>
+                  <th>
+                    Value
+                  </th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div
+            className="container-fluid noPad"
+          >
+            <h4
+              className="pull-left"
+              id="heading"
+            >
+              Open Sell Orders
+            </h4>
+            <table
+              className="table table-bordered"
+            >
+              <thead
+                className=""
+              >
+                <tr>
+                  <th>
+                    Date
+                  </th>
+                  <th>
+                    Coin
+                  </th>
+                  <th>
+                    Price
+                  </th>
+                  <th>
+                    Amount
+                  </th>
+                  <th>
+                    Value
+                  </th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+          <div
+            className="container-fluid noPad"
+          >
+            <h4
+              className="pull-left"
+              id="heading"
+            >
+              Transaction History
+            </h4>
+            <div
+              className="col-md-12 white-bg table-bordered"
+            >
+              <form
+                id="filter"
+                noValidate={true}
+                onSubmit={[Function]}
+              >
+                <div
+                  className="col-md-3"
+                >
+                  <h4>
+                    Start Date
+                  </h4>
+                  <TextField
+                    InputLabelProps={
+                      Object {
+                        "shrink": true,
+                      }
+                    }
+                    id="startDate"
+                    onChange={[Function]}
+                    required={false}
+                    select={false}
+                    type="date"
+                  />
+                </div>
+                <div
+                  className="col-md-3"
+                >
+                  <h4>
+                    End Date
+                  </h4>
+                  <TextField
+                    InputLabelProps={
+                      Object {
+                        "shrink": true,
+                      }
+                    }
+                    id="endDate"
+                    onChange={[Function]}
+                    required={false}
+                    select={false}
+                    type="date"
+                    value={null}
+                  />
+                </div>
+                <div
+                  className="filter"
+                >
+                  <WithStyles(Button)
+                    color="primary"
+                    id="filter-button"
+                    type="submit"
+                  >
+                    <p>
+                      Filter
+                    </p>
+                  </WithStyles(Button)>
+                </div>
+              </form>
+            </div>
+            <table
+              className="table table-bordered"
+            >
+              <thead
+                className=""
+              >
+                <tr>
+                  <th>
+                    Date
+                  </th>
+                  <th>
+                    Coin
+                  </th>
+                  <th>
+                    Type
+                  </th>
+                  <th>
+                    Price
+                  </th>
+                  <th>
+                    Amount
+                  </th>
+                  <th>
+                    Value
+                  </th>
+                </tr>
+              </thead>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

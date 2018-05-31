@@ -68,7 +68,6 @@ class Leaderboard extends Component {
         this.setState({ tabValue }, () => {
             this.loadHistoryData_andSaveToState();
         });
-
     };
 
     loadHistoryData_andSaveToState() {
@@ -383,32 +382,32 @@ class Leaderboard extends Component {
             <div>
                 <Navbar inverse>
                     <Nav id="nav_box">
-                        <NavItem class="nav_item" href="/">
+                        <NavItem className="nav_item" href="/">
                             <p>Prolific Trading</p>
                         </NavItem>
                        {this.state.authenticated && this.state.tradingStatus ? (
-                          <NavItem class="nav_item" eventKey={1} href="/dashboard">
+                          <NavItem className="nav_item" eventKey={1} href="/dashboard">
                              Portfolio
                           </NavItem>
                        ) : this.state.authenticated && !this.state.tradingStatus ? (
-                          <NavItem class="nav_item" eventKey={1} href="/admin">
+                          <NavItem className="nav_item" eventKey={1} href="/admin">
                              Admin
                           </NavItem>
                        ) : !this.state.authenticated && !this.state.tradingStatus ? (
-                          <NavItem class="nav_item" eventKey={1} href="/">
+                          <NavItem className="nav_item" eventKey={1} href="/">
                              Market
                           </NavItem>
                        ) : null }
-                        <NavItem class="nav_item" eventKey={2} href="/leaderboard">
+                        <NavItem className="nav_item" eventKey={2} href="/leaderboard">
                             Leaderboard
                         </NavItem>
                     </Nav>
                     <Nav pullRight>
                         {this.state.authenticated ? (
-                            <NavItem class="nav_item" eventKey={2} href="/logout">
+                            <NavItem className="nav_item" eventKey={2} href="/logout">
                                 Logout
                             </NavItem> ) : (
-                            <NavItem class="nav_item" eventKey={2} href="/auth">
+                            <NavItem className="nav_item" eventKey={2} href="/auth">
                                 Login
                             </NavItem> )
                         }

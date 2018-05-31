@@ -1,5 +1,229 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Component: Leaderboard tests clicking the tab on AppBar 1`] = `
+<Leaderboard
+  classes={
+    Object {
+      "root": "Leaderboard-root-1",
+    }
+  }
+/>
+`;
+
+exports[`Component: Leaderboard tests if only one table is rendered at a time 1`] = `
+<div>
+  <nav
+    class="navbar navbar-inverse"
+  >
+    <div
+      class="container"
+    >
+      <ul
+        class="nav navbar-nav"
+        id="nav_box"
+      >
+        <li
+          class="nav_item"
+          role="presentation"
+        >
+          <a
+            href="/"
+          >
+            <p>
+              Prolific Trading
+            </p>
+          </a>
+        </li>
+        <li
+          class="nav_item"
+          role="presentation"
+        >
+          <a
+            href="/"
+          >
+            Market
+          </a>
+        </li>
+        <li
+          class="nav_item"
+          role="presentation"
+        >
+          <a
+            href="/leaderboard"
+          >
+            Leaderboard
+          </a>
+        </li>
+      </ul>
+      <ul
+        class="nav navbar-nav navbar-right"
+      >
+        <li
+          class="nav_item"
+          role="presentation"
+        >
+          <a
+            href="/auth"
+          >
+            Login
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <div
+    class="container"
+  >
+    <div
+      class="col-md-12"
+    >
+      <h3
+        id="leaderboard"
+      >
+        Leaderboard
+      </h3>
+      <div
+        class="Leaderboard-root-1"
+      >
+        <header
+          class="MuiPaper-root-10 MuiPaper-elevation4-16 MuiAppBar-root-2 MuiAppBar-positionStatic-6 MuiAppBar-colorPrimary-8"
+        >
+          <div
+            class="MuiTabs-root-37"
+          >
+            <div
+              class="MuiTabs-flexContainer-38"
+            >
+              <div
+                class="MuiTabs-scroller-39 MuiTabs-fixed-40"
+                role="tablist"
+                style="margin-bottom:0"
+              >
+                <div
+                  class="MuiTabs-flexContainer-38"
+                >
+                  <button
+                    aria-selected="true"
+                    class="MuiButtonBase-root-58 MuiTab-root-46 MuiTab-textColorInherit-48 MuiTab-selected-51"
+                    role="tab"
+                    tabindex="0"
+                    type="button"
+                  >
+                    <span
+                      class="MuiTab-wrapper-54"
+                    >
+                      <span
+                        class="MuiTab-labelContainer-55"
+                      >
+                        <span
+                          class="MuiTab-label-56"
+                        >
+                          24 HRS
+                        </span>
+                      </span>
+                    </span>
+                    <span
+                      class="TabIndicator-root-61 TabIndicator-colorSecondary-63 MuiTabs-indicator-45"
+                    />
+                    <span
+                      class="MuiTouchRipple-root-64"
+                    />
+                  </button>
+                  <button
+                    aria-selected="false"
+                    class="MuiButtonBase-root-58 MuiTab-root-46 MuiTab-textColorInherit-48"
+                    role="tab"
+                    tabindex="0"
+                    type="button"
+                  >
+                    <span
+                      class="MuiTab-wrapper-54"
+                    >
+                      <span
+                        class="MuiTab-labelContainer-55"
+                      >
+                        <span
+                          class="MuiTab-label-56"
+                        >
+                          1 Week
+                        </span>
+                      </span>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root-64"
+                    />
+                  </button>
+                  <button
+                    aria-selected="false"
+                    class="MuiButtonBase-root-58 MuiTab-root-46 MuiTab-textColorInherit-48"
+                    role="tab"
+                    tabindex="0"
+                    type="button"
+                  >
+                    <span
+                      class="MuiTab-wrapper-54"
+                    >
+                      <span
+                        class="MuiTab-labelContainer-55"
+                      >
+                        <span
+                          class="MuiTab-label-56"
+                        >
+                          1 Month
+                        </span>
+                      </span>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root-64"
+                    />
+                  </button>
+                  <button
+                    aria-selected="false"
+                    class="MuiButtonBase-root-58 MuiTab-root-46 MuiTab-textColorInherit-48"
+                    role="tab"
+                    tabindex="0"
+                    type="button"
+                  >
+                    <span
+                      class="MuiTab-wrapper-54"
+                    >
+                      <span
+                        class="MuiTab-labelContainer-55"
+                      >
+                        <span
+                          class="MuiTab-label-56"
+                        >
+                          All Times
+                        </span>
+                      </span>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root-64"
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div
+          class="MuiTypography-root-71 MuiTypography-body1-80"
+          style="padding:24px"
+        >
+          <h2>
+            No Data within 24 hours
+          </h2>
+          <table
+            class="table table-bordered text-center"
+          />
+        </div>
+      </div>
+      <br />
+    </div>
+  </div>
+</div>
+`;
+
 exports[`Component: Leaderboard tests something on leaderboard 1`] = `
 <Leaderboard
   classes={
