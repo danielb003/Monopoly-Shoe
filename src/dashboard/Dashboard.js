@@ -22,7 +22,7 @@ class Dashboard extends Component {
           openTradingAccount: null,
           uid: null,
           history:[],
-          sstartDate:null,
+          startDate:null,
           endDate:null,
           user_data: [],
           coins:[],
