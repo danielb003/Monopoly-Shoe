@@ -626,7 +626,7 @@ class Transaction extends Component{
                                 </form>
                             </div>
                         </div>
-                        <div className="col-md-6 noPad">
+                        <div className="col-md-6 pad-box">
                             <div className="sell-box pull-left">
                                 <h2 className="text-center">SELLING</h2>
                                 <p>Price:</p>

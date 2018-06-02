@@ -386,15 +386,15 @@ class Leaderboard extends Component {
                         <NavItem className="nav_item" href="/">
                             <p>Prolific Trading</p>
                         </NavItem>
-                       {this.state.authenticated && this.state.tradingStatus ? (
+                       {this.state.authenticated && !this.state.adminStatus ? (
                           <NavItem className="nav_item" eventKey={1} href="/dashboard">
                              Portfolio
                           </NavItem>
-                       ) : this.state.authenticated && !this.state.tradingStatus ? (
+                       ) : this.state.authenticated && this.state.adminStatus ? (
                           <NavItem className="nav_item" eventKey={1} href="/admin">
                              Admin
                           </NavItem>
-                       ) : !this.state.authenticated && !this.state.tradingStatus ? (
+                       ) : !this.state.authenticated && !this.state.adminStatus ? (
                           <NavItem className="nav_item" eventKey={1} href="/">
                              Market
                           </NavItem>

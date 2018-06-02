@@ -63,7 +63,7 @@ export default class Home extends Component {
                      <NavItem class="nav_item" eventKey={1} href="/dashboard">
                         Portfolio
                      </NavItem>
-                  ) : this.state.authenticated && !this.state.adminStatus ? (
+                  ) : this.state.authenticated && this.state.adminStatus ? (
                      <NavItem class="nav_item" eventKey={1} href="/admin">
                         Admin
                      </NavItem>
@@ -87,7 +87,7 @@ export default class Home extends Component {
                   }
                </Nav>
             </Navbar>
-            {this.state.authenticated && this.state.tradingStatus ? (
+            {this.state.authenticated && this.state.tradingStatus && !this.state.adminStatus ? (
                <div className='crypto_chart'>
                   <CryptoChart auth={true}/>
                </div> ) : (

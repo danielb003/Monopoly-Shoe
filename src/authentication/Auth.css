@@ -43,6 +43,10 @@
     color: rgb(130,130,130);
     border-bottom: 2px solid rgb(130,130,130);
 }
+#tabs button:focus {
+    color: rgb(130,130,130);
+    border-bottom: 2px solid rgb(130,130,130);
+}
 #login_tab {
     width: 50%;
 }

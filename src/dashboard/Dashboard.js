@@ -10,7 +10,6 @@ import litecoin_icon from './../img/litecoin_icon.png';
 import Switch from 'material-ui/Switch';
 import Button from 'material-ui/Button';
 import { app } from '../Constant';
-import CryptoChart from '../graph/CryptoChart';
 import TextField from 'material-ui/TextField';
 
 
@@ -116,31 +115,31 @@ class Dashboard extends Component {
  
    retrieve_open_buy_orders() {
     
-            const assignedOpenBuys = [];
-            const openBuyFB = app.database().ref('buy/');
-            openBuyFB.on('value', (snapshot) => {
-                if(snapshot.val() !== null){
-    
-                    for(const index in snapshot.val()) {
-                        if (snapshot.child(index + "/user_id").val() == app.auth().currentUser.uid) {
-                            assignedOpenBuys.push({
-                                id: index,
-                                amount: snapshot.child(index + "/amount").val(),
-                                coinType: snapshot.child(index + "/coinType").val(),
-                                type: snapshot.child(index + "/type").val(),
-                                price: snapshot.child(index + "/price").val(),
-                                user_id: snapshot.child(index + "/user_id").val(),
-                                timestamp: snapshot.child(index + "/timestamp").val(),
-                                coinValue: snapshot.child(index + "/coinValue").val()
-                            });
-                        }
-                    }
-                    this.setState({
-                        open_buy_orders: assignedOpenBuys
-                    });
-                }
+      const assignedOpenBuys = [];
+      const openBuyFB = app.database().ref('buy/');
+      openBuyFB.on('value', (snapshot) => {
+         if(snapshot.val() !== null){
+
+            for(const index in snapshot.val()) {
+               if (snapshot.child(index + "/user_id").val() == app.auth().currentUser.uid) {
+                  assignedOpenBuys.push({
+                     id: index,
+                     amount: snapshot.child(index + "/amount").val(),
+                     coinType: snapshot.child(index + "/coinType").val(),
+                     type: snapshot.child(index + "/type").val(),
+                     price: snapshot.child(index + "/price").val(),
+                     user_id: snapshot.child(index + "/user_id").val(),
+                     timestamp: snapshot.child(index + "/timestamp").val(),
+                     coinValue: snapshot.child(index + "/coinValue").val()
+                  });
+               }
+            }
+            this.setState({
+               open_buy_orders: assignedOpenBuys
             });
-        }
+         }
+      });
+   }
     
     retrieve_open_sell_orders() {
 
