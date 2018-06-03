@@ -276,6 +276,7 @@ exports[`Component: Dashboard tests something on Dashboard 1`] = `
                     required={false}
                     select={false}
                     type="date"
+                    value={null}
                   />
                 </div>
                 <div

@@ -351,7 +351,7 @@ class Leaderboard extends Component {
             console.log(a.profitLoss);
             return b.profitLoss - a.profitLoss;
         });
-
+        // console.log(this.state.user);
         const userTableData = sortedState ? (
             sortedState.map(function(item, index){
                 return (
@@ -435,7 +435,7 @@ class Leaderboard extends Component {
                                     {userTableData == '' ?
                                         <h2>No Data within 24 hours</h2>
                                         :
-                                        (<thead className>
+                                        (<thead>
                                         <tr>
                                             <th>Rank</th>
                                             <th>Trader Name</th>
@@ -451,7 +451,7 @@ class Leaderboard extends Component {
                                     {userTableData == '' ?
                                         <h2>No Data within 1 week</h2>
                                         :
-                                        (<thead className>
+                                        (<thead>
                                         <tr>
                                             <th>Rank</th>
                                             <th>Trader Name</th>
@@ -468,7 +468,7 @@ class Leaderboard extends Component {
                                     {userTableData == '' ?
                                         <h2>No Data within 1 month</h2>
                                         :
-                                        (<thead className>
+                                        (<thead>
                                         <tr>
                                             <th>Rank</th>
                                             <th>Trader Name</th>
@@ -484,7 +484,7 @@ class Leaderboard extends Component {
                                     {userTableData == '' ?
                                         <h2>No Data</h2>
                                         :
-                                        (<thead className>
+                                        (<thead>
                                         <tr>
                                             <th>Rank</th>
                                             <th>Trader Name</th>

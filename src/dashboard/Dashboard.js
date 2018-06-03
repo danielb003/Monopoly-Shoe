@@ -460,21 +460,6 @@ class Dashboard extends Component {
          null
       );
 
-      //  const userData = this.state.user_data;
-      // const portfolioTable = userData ? (
-      //     this.state.user_data.map(function(item){
-      //         return (
-      //             <tbody>
-      //             <tr key={item.id}>
-      //                 {/*<td>{item.image}</td>*/}
-      //                 {/*<td>{item.totalBalance}</td>*/}
-      //                 {/*<td>{item.availableBalance}</td>*/}
-      //                 {/*<td>{item.BTC value}</td>*/}
-      //             </tr>
-      //             </tbody>
-      //         )
-      // })) : ( null );
-
       return (
          <div>
             <Navbar inverse>
