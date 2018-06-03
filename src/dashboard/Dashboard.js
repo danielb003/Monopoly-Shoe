@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem, NavDropdown, NavbarBrand, MenuItem} from 'react-bootstrap';
-import { Redirect } from 'react-router-dom'
+import { Redirect } from 'react-router-dom';
 import './../App.css';
 import './Dashboard.css';
 import profile_img from './../img/profile-img.png';
