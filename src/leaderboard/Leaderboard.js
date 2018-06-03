@@ -82,11 +82,11 @@ class Leaderboard extends Component {
                     for(const index in snapshot.val()){
                         const timestamp = snapshot.child(index +"/timestamp").val();
                         const parseTimestramp = moment(timestamp);
-                        console.log('currentTime :' + currentTime.format());
-                        console.log('parseTimestramp :' + parseTimestramp.format());
+                        // console.log('currentTime :' + currentTime.format());
+                        // console.log('parseTimestramp :' + parseTimestramp.format());
 
                         const hoursDiff = currentTime.diff(parseTimestramp, 'hours');
-                        console.log('diff ' + hoursDiff);
+                        // console.log('diff ' + hoursDiff);
                         if (hoursDiff <= 24){
                             filtered_history.push({
                                 user_id: snapshot.child(index + "/user_id").val(),
@@ -113,11 +113,11 @@ class Leaderboard extends Component {
                     for(const index in snapshot.val()){
                         const timestamp = snapshot.child(index +"/timestamp").val();
                         const parseTimestramp = moment(timestamp);
-                        console.log('currentTime :' + currentTime.format());
-                        console.log('parseTimestramp :' + parseTimestramp.format());
+                        // console.log('currentTime :' + currentTime.format());
+                        // console.log('parseTimestramp :' + parseTimestramp.format());
 
                         const weeksDiff = currentTime.diff(parseTimestramp, 'weeks');
-                        console.log('weeksDiff ' + weeksDiff);
+                        // console.log('weeksDiff ' + weeksDiff);
                         if (weeksDiff < 1){
                             filtered_history.push({
                                 user_id: snapshot.child(index + "/user_id").val(),
@@ -144,11 +144,11 @@ class Leaderboard extends Component {
                     for(const index in snapshot.val()){
                         const timestamp = snapshot.child(index +"/timestamp").val();
                         const parseTimestramp = moment(timestamp);
-                        console.log('currentTime :' + currentTime.format());
-                        console.log('parseTimestramp :' + parseTimestramp.format());
+                        // console.log('currentTime :' + currentTime.format());
+                        // console.log('parseTimestramp :' + parseTimestramp.format());
 
                         const monthsDiff = currentTime.diff(parseTimestramp, 'months');
-                        console.log('monthsDiff ' + monthsDiff);
+                        // console.log('monthsDiff ' + monthsDiff);
                         if (monthsDiff < 1){
                             filtered_history.push({
                                 user_id: snapshot.child(index + "/user_id").val(),
@@ -385,15 +385,15 @@ class Leaderboard extends Component {
                         <NavItem className="nav_item" href="/">
                             <p>Prolific Trading</p>
                         </NavItem>
-                       {this.state.authenticated && this.state.tradingStatus ? (
+                       {this.state.authenticated && !this.state.adminStatus ? (
                           <NavItem className="nav_item" eventKey={1} href="/dashboard">
                              Portfolio
                           </NavItem>
-                       ) : this.state.authenticated && !this.state.tradingStatus ? (
+                       ) : this.state.authenticated && !this.state.adminStatus ? (
                           <NavItem className="nav_item" eventKey={1} href="/admin">
                              Admin
                           </NavItem>
-                       ) : !this.state.authenticated && !this.state.tradingStatus ? (
+                       ) : !this.state.authenticated && !this.state.adminStatus ? (
                           <NavItem className="nav_item" eventKey={1} href="/">
                              Market
                           </NavItem>
