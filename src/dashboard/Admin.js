@@ -175,6 +175,7 @@ export default class Admin extends Component {
                <tr key={item.fname} id="table_row">
                   <td onClick={() => this.retrieve_history(item.fname, item.lname)}>{item.fname}</td>
                   <td onClick={() => this.retrieve_history(item.fname, item.lname)}>{item.lname}</td>
+                  <td id="edit_header"><a href={"https://console.firebase.google.com/u/0/project/pp1-project-5de58/authentication/users"} target="_blank">Go</a></td>
                </tr>
                </tbody>
             )
@@ -231,6 +232,7 @@ export default class Admin extends Component {
                               <tr>
                                  <th>First Name</th>
                                  <th>Last Name</th>
+                                 <th>Edit User</th>
                               </tr>
                               </thead>) : null}
                               {userTableData}

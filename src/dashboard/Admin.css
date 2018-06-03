@@ -2,3 +2,22 @@
     color: red;
     cursor: pointer;
 }
+#table_row a {
+    border: 1px solid rgb(255, 231, 22);
+    padding: 8px 30px;
+    position: relative;
+    left: 55px;
+    background-color: rgb(255, 231, 22);
+    color: black;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 22px;
+    transition: border 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+#table_row a:hover {
+    border: 1px solid rgb(224, 207, 17);
+    background-color: rgb(224, 207, 17);
+}
+#edit_header {
+    width: 220px;
+}
