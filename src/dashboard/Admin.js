@@ -91,7 +91,7 @@ export default class Admin extends Component {
             for(const index in snapshot.val()) {
                if (snapshot.child(index + '/fname').val()) {
                   assignedUser.push({
-                     id: snapshot.child(index).val(),
+                     id: index,
                      fname: snapshot.child(index + '/fname').val(),
                      lname: snapshot.child(index + '/lname').val()
                   });
@@ -105,11 +105,12 @@ export default class Admin extends Component {
       });
    }
 
-   retrieve_history(fname, lname){
-      const userFB = app.database().ref('user/');
+   retrieve_history(user_id){
+   
+    const userFB = app.database().ref('user/' + user_id);
       userFB.on('value', (snapshot) => {
-         if(snapshot.val() === fname || snapshot.val() === lname) {
-
+         if(snapshot.val() !== null) {
+             
          }
       })
 
@@ -119,7 +120,7 @@ export default class Admin extends Component {
          if(snapshot.val() !== null){
 
             for(const index in snapshot.val()) {
-               if (snapshot.child(index + "/user_id").val()) {
+               if (snapshot.child(index + "/user_id").val() === user_id) {
                   assignedHistory.push({
                      id: index,
                      amount: snapshot.child(index + "/amount").val(),
@@ -150,9 +151,8 @@ export default class Admin extends Component {
 
       const historyState = this.state.history;
       const historyTableData = historyState ? (
-         this.state.history.map(function(item){
+         this.state.history.map((item) => {
             return (
-               <tbody>
                <tr key={item.id}>
                   <td>{item.timestamp.substring(0, 10)}</td>
                   <td>{item.coinType}</td>
@@ -161,7 +161,6 @@ export default class Admin extends Component {
                   <td>{item.amount}</td>
                   <td>{item.coinValue}</td>
                </tr>
-               </tbody>
             )
          })) : (
          null
@@ -169,15 +168,13 @@ export default class Admin extends Component {
 
       const userState = this.state.all_users;
       const userTableData = userState ? (
-         this.state.all_users.map(function(item){
+         this.state.all_users.map((item) => {
             return (
-               <tbody>
-               <tr key={item.fname} id="table_row">
-                  <td onClick={() => this.retrieve_history(item.fname, item.lname)}>{item.fname}</td>
-                  <td onClick={() => this.retrieve_history(item.fname, item.lname)}>{item.lname}</td>
+               <tr key={item.id} id="table_row">
+                  <td onClick={() => this.retrieve_history(item.id)}>{item.fname}</td>
+                  <td onClick={() => this.retrieve_history(item.id)}>{item.lname}</td>
                   <td id="edit_header"><a href={"https://console.firebase.google.com/u/0/project/pp1-project-5de58/authentication/users"} target="_blank">Go</a></td>
                </tr>
-               </tbody>
             )
          })) : (
          null
@@ -187,18 +184,18 @@ export default class Admin extends Component {
          <div>
             <Navbar inverse>
                <Nav id="nav_box">
-                  <NavItem class="nav_item" href="/">
+                  <NavItem className="nav_item" href="/">
                      <p>Prolific Trading</p>
                   </NavItem>
-                  <NavItem class="nav_item" eventKey={1} href="/">
+                  <NavItem className="nav_item" eventKey={1} href="/">
                      Market
                   </NavItem>
-                  <NavItem class="nav_item" eventKey={2} href="/leaderboard">
+                  <NavItem className="nav_item" eventKey={2} href="/leaderboard">
                      Leaderboard
                   </NavItem>
                </Nav>
                <Nav pullRight>
-                  <NavItem class="nav_item" eventKey={2} href="/logout">
+                  <NavItem className="nav_item" eventKey={2} href="/logout">
                      Logout
                   </NavItem>
                </Nav>
@@ -229,13 +226,15 @@ export default class Admin extends Component {
 
                            <table className="table table-bordered">
                               {this.state.all_users ? (<thead className="">
-                              <tr>
+                              <tr key="header">
                                  <th>First Name</th>
                                  <th>Last Name</th>
                                  <th>Edit User</th>
                               </tr>
                               </thead>) : null}
-                              {userTableData}
+                              <tbody>
+                                {userTableData}
+                              </tbody>
                            </table>
 
                         </div>
@@ -245,7 +244,7 @@ export default class Admin extends Component {
 
                            <table className="table table-bordered">
                               {this.state.history ? (<thead className="">
-                              <tr>
+                              <tr key="header">
                                  <th>Date</th>
                                  <th>Coin</th>
                                  <th>Type</th>
@@ -254,7 +253,9 @@ export default class Admin extends Component {
                                  <th>Value</th>
                               </tr>
                               </thead>) : null}
-                              {historyTableData}
+                              <tbody>
+                                {historyTableData}
+                              </tbody>
                            </table>
                         </div>
                      </div>
