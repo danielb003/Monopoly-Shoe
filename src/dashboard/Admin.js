@@ -105,6 +105,41 @@ export default class Admin extends Component {
       });
    }
 
+   retrieve_history(fname, lname){
+      const userFB = app.database().ref('user/');
+      userFB.on('value', (snapshot) => {
+         if(snapshot.val() === fname || snapshot.val() === lname) {
+
+         }
+      })
+
+      const assignedHistory = [];
+      const historyFB = app.database().ref('history/');
+      historyFB.on('value', (snapshot) => {
+         if(snapshot.val() !== null){
+
+            for(const index in snapshot.val()) {
+               if (snapshot.child(index + "/user_id").val()) {
+                  assignedHistory.push({
+                     id: index,
+                     amount: snapshot.child(index + "/amount").val(),
+                     coinType: snapshot.child(index + "/coinType").val(),
+                     type: snapshot.child(index + "/type").val(),
+                     price: snapshot.child(index + "/price").val(),
+                     user_id: snapshot.child(index + "/user_id").val(),
+                     timestamp: snapshot.child(index + "/timestamp").val(),
+                     coinValue: snapshot.child(index + "/coinValue").val()
+                  });
+               }
+            }
+
+            this.setState({
+               history: assignedHistory
+            });
+         }
+      });
+   }
+
    expandTable = () => {
       console.log("expand exists")
    }
@@ -113,14 +148,33 @@ export default class Admin extends Component {
       const tradingStatus = this.state.openTradingAccount;
       const { user_data } = this.state;
 
+      const historyState = this.state.history;
+      const historyTableData = historyState ? (
+         this.state.history.map(function(item){
+            return (
+               <tbody>
+               <tr key={item.id}>
+                  <td>{item.timestamp.substring(0, 10)}</td>
+                  <td>{item.coinType}</td>
+                  <td>{item.type}</td>
+                  <td>{item.price}</td>
+                  <td>{item.amount}</td>
+                  <td>{item.coinValue}</td>
+               </tr>
+               </tbody>
+            )
+         })) : (
+         null
+      );
+
       const userState = this.state.all_users;
       const userTableData = userState ? (
          this.state.all_users.map(function(item){
             return (
                <tbody>
                <tr key={item.fname} id="table_row">
-                  <td>{item.fname}</td>
-                  <td>{item.lname}</td>
+                  <td onClick={() => this.retrieve_history(item.fname, item.lname)}>{item.fname}</td>
+                  <td onClick={() => this.retrieve_history(item.fname, item.lname)}>{item.lname}</td>
                </tr>
                </tbody>
             )
@@ -182,6 +236,24 @@ export default class Admin extends Component {
                               {userTableData}
                            </table>
 
+                        </div>
+
+                        <div className="container-fluid noPad">
+                           <h4 id="heading" className="pull-left">User History</h4>
+
+                           <table className="table table-bordered">
+                              {this.state.history ? (<thead className="">
+                              <tr>
+                                 <th>Date</th>
+                                 <th>Coin</th>
+                                 <th>Type</th>
+                                 <th>Price</th>
+                                 <th>Amount</th>
+                                 <th>Value</th>
+                              </tr>
+                              </thead>) : null}
+                              {historyTableData}
+                           </table>
                         </div>
                      </div>
                   </div>

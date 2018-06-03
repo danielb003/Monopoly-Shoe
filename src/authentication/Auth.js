@@ -38,7 +38,7 @@ export default class Auth extends Component {
                             <p>Prolific Trading</p>
                         </div>
                         <div id="tabs">
-                            <button id="login_tab" onClick={() => this.handleClick('login')}>Log In</button>
+                            <button id="login_tab" onClick={() => this.handleClick('login')} autoFocus>Log In</button>
                             <button id="signup_tab" onClick={() => this.handleClick('signup')}>Sign Up</button>
                         </div>
                         <div id="pane">

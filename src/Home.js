@@ -10,7 +10,8 @@ export default class Home extends Component {
 
       this.state = {
          authenticated: false,
-         tradingStatus: false
+         tradingStatus: false,
+         adminStatus: false
       };
    }
 
@@ -35,13 +36,15 @@ export default class Home extends Component {
          if (user) {
             user_id = user.uid;
             const userDB = app.database().ref('user/' + user_id);
-            var trading = null;
+            var trading = null, admin = null;
             userDB.on('value', (snapshot) => {
                if (snapshot.val() !== null) {
                   trading = snapshot.child("/trading").val();
+                  admin = snapshot.child("/admin").val();
                }
                this.setState({
-                  tradingStatus: trading
+                  tradingStatus: trading,
+                  adminStatus: admin
                });
             });
          }
@@ -56,15 +59,15 @@ export default class Home extends Component {
                   <NavItem class="nav_item">
                      <p>Prolific Trading</p>
                   </NavItem>
-                  {this.state.authenticated && this.state.tradingStatus ? (
+                  {this.state.authenticated && !this.state.adminStatus ? (
                      <NavItem class="nav_item" eventKey={1} href="/dashboard">
                         Portfolio
                      </NavItem>
-                  ) : this.state.authenticated && !this.state.tradingStatus ? (
+                  ) : this.state.authenticated && this.state.adminStatus ? (
                      <NavItem class="nav_item" eventKey={1} href="/admin">
                         Admin
                      </NavItem>
-                  ) : !this.state.authenticated && !this.state.tradingStatus ? (
+                  ) : !this.state.authenticated && !this.state.adminStatus ? (
                      <NavItem class="nav_item" eventKey={1} href="/">
                         Market
                      </NavItem>
@@ -84,7 +87,7 @@ export default class Home extends Component {
                   }
                </Nav>
             </Navbar>
-            {this.state.authenticated && this.state.tradingStatus ? (
+            {this.state.authenticated && this.state.tradingStatus && !this.state.adminStatus ? (
                <div className='crypto_chart'>
                   <CryptoChart auth={true}/>
                </div> ) : (

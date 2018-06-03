@@ -1,5 +1,5 @@
 #container {
-    border: 1px solid red;
+
 }
 .nav_item {
     margin-top: 10px;
@@ -40,6 +40,10 @@
     transition: color 0.3s ease-in-out, border-bottom 0.3s ease-in-out;
 }
 #tabs button:hover {
+    color: rgb(130,130,130);
+    border-bottom: 2px solid rgb(130,130,130);
+}
+#tabs button:focus {
     color: rgb(130,130,130);
     border-bottom: 2px solid rgb(130,130,130);
 }

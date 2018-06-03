@@ -2,8 +2,8 @@ div.buy-box, div.sell-box{
     padding: 5px 20px 5px 20px;
     color: black;
     background-color:rgba(255,255,255,0.8);
-    width: 80%;
-    margin:auto;
+    width: 420px;
+    margin: 0px auto;
 
     -moz-border-radius: 5px;
     -ms-border-radius: 5px;
@@ -24,13 +24,15 @@ div.buy-box p, div.sell-box p{
 }
 
 div.pad-box{
-    padding: 0px 5px 0px 0px;
-    margin: auto;
+    width: 50%;
+    padding: 0px 0px 0px 0px;
+    margin: 120px auto;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
     -ms-border-radius: 5px;
     -o-border-radius: 5px;
     border-radius: 5px;
+    display: inline-flex;
 }
 
 div.noPad{
@@ -43,13 +45,26 @@ div.noPad{
 
 #buy-button{
     width: 100%;
-    background-color: cornflowerblue;
+    background-color: rgb(30, 206, 86);
     color: white;
+    margin: 10px 0px 15px 0px;
+    transition: background-color 0.2s ease-in-out;
+}
+#buy-button:hover {
+    background-color: rgb(23, 168, 69);
 }
 #sell-button{
     width: 100%;
-    background-color: mediumvioletred;
+    background-color: rgb(224, 54, 42);
     color: white;
+    margin: 10px 0px 15px 0px;
+    transition: background-color 0.2s ease-in-out;
+}
+#sell-button:hover {
+    background-color: rgb(191, 41, 22);
+}
+#sell-button h3, #buy-button h3 {
+    margin-top: 12px;
 }
 div.container{
     -webkit-box-shadow: 0 1px 2px rgba(0,0,0,0.15);
@@ -60,4 +75,10 @@ div.container{
     -ms-border-radius: 10px;
     -o-border-radius: 10px;
     border-radius: 10px;
+}
+div.pull-right {
+    margin-left: 140px;
+}
+div.pull-left {
+    margin-right: 140px;
 }
