@@ -171,7 +171,7 @@ class Transaction extends Component{
                                     console.log('trying to buy ' + current_coin_type);
                                     console.log('coin value current price is ' + coin_current_price);
                                     firebase.database().ref('buy/').push({
-                                        price: parseInt(this.state.buyPrice),
+                                        price: this.state.buyPrice,
                                         amount: parseInt(this.state.buyAmount),
                                         total: this.state.buyTotal,
                                         user_id: this.state.uid,
