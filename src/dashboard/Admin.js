@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, NavDropdown, NavbarBrand, MenuItem} from 'react-bootstrap';
+import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import './Admin.css';
 import profile_img from './../img/profile-img.png';
-import Switch from 'material-ui/Switch';
 import { app } from "../Constant";
 
 export default class Admin extends Component {
@@ -210,7 +209,7 @@ export default class Admin extends Component {
                         <img id="user_profile" src={profile_img } className="center-block img-responsive img-circle" />
                         <h2> {user_data.fname} {user_data.lname}</h2><br/>
                         <strong>{user_data.email} </strong> <br/><br/>
-                        {user_data.admin == true && user_data.admin !== null
+                        {user_data.admin === true && user_data.admin !== null
                            ? (<strong>Admin User</strong>) : (<strong>Regular User</strong>)}
                         <br/><br/>
                      </div>

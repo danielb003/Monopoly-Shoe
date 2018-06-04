@@ -6,11 +6,18 @@ form#filter {
     min-height: 10px;
 }
 
-.filter{
+.filter {
     height: 100%;
 }
 
-#filter-button{
+#filter-button {
     height: 100%;
+}
 
+.profit-loss-positive {
+    color: green;
+}
+
+.profit-loss-negative {
+    color: red;
 }
