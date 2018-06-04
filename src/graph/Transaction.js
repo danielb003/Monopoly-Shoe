@@ -120,7 +120,7 @@ class Transaction extends Component{
             });
         }
         this.getData();
-        this.refresh = setInterval(() => this.getData(), 90000);
+        this.refresh = setInterval(() => this.process_orders(), 90000);
     }
 
     
