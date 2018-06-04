@@ -43,6 +43,7 @@ class Transaction extends Component{
             buyTotal: null,
             sellTotal: null,
             timestamp: null,
+            pairs: [{name: "BTC"},{name: "LTC"},{name: "ETH"},{name: "NULS"},{name: "XRP"},{name: "XMR"},{name: "NEO"},{name: "EOS"}],
             coinType: 'BTC',
             uid: null
         }
@@ -81,7 +82,7 @@ class Transaction extends Component{
     }
 
     componentWillReceiveProps(props){
-        if (props.coin != this.state.coinType){
+        if (props.coin !== this.state.coinType){
             this.setState({
                 coinType : props.coin
             }, () => this.retrieve_currentPrice());
@@ -100,28 +101,26 @@ class Transaction extends Component{
     retrieve_currentPrice() {
         this.getData = () => {
             // filter coin, pass coin from chart
-            const coin = this.state.coinType;
-            const currency = 'AUD';
-            const url = 'https://min-api.cryptocompare.com/data/price?fsym=' + coin + '&tsyms=' + currency;
-
-            fetch(url).then(r => r.json())
-                .then((coinData) => {
-                    const price = coinData.AUD;
-
-                    this.setState({
-                        // coinType: coin,
-                        currentPrice: coinData.AUD,
-                        updatedAt: new Date()
+            const currentPriceFb = app.database().ref('portfolio/' + this.state.uid + '/current_prices/');
+            this.state.pairs.map((pair, index) => {
+                if (pair !== undefined)
+                {
+                    let currency = "AUD";
+                    let url = 'https://min-api.cryptocompare.com/data/price?fsym=' + pair.name + '&tsyms=' + currency;
+                    fetch(url).then(r => r.json())
+                    .then((coinData) => {
+                        currentPriceFb.child(pair.name).set(
+                            coinData.AUD
+                        );
                     })
-                })
-                .catch((e) => {
+                    .catch((e) => {
                     console.log(e);
-                });
+                    });
+                }
+            });
         }
         this.getData();
         this.refresh = setInterval(() => this.getData(), 90000);
-        // this.refresh = setInterval(() => this.retrieve_orders(), 10000);
-        this.retrieve_orders();
     }
 
     
@@ -137,7 +136,7 @@ class Transaction extends Component{
         event.preventDefault();
     }
 
-    save_BuyOrder(event) {
+    save_BuyOrder = (event) => {
         // this.loadTimestamp(event);
         // this.loadTimestamp(event).then(() => {
         event.preventDefault();
@@ -145,27 +144,32 @@ class Transaction extends Component{
         let currentTime = moment();
         currentTime = currentTime.format();
         console.log('current timestamp: ' + currentTime);
-        if (this.state.buyTotal == null || 0){
+        if (this.state.buyTotal === null || 0){
             alert("Buy Total is 0!");
             return;
         }
-
         this.validate_buy = () => {
-            const userData = firebase.database().ref('user/' + this.state.uid + '/coin');
-            userData.once('value', (snapshot) => {
+            this.retrieve_currentPrice();
+            const current_coin_type = this.state.coinType;
+            const portfolioData = firebase.database().ref('portfolio/' + this.state.uid);
+            portfolioData.once('value', (snapshot) => {
                 if(snapshot.val() !== null) {
-                    for (const index in snapshot.val()){
-                        // console.log('index BTC: ' + snapshot.child(index).val());
-                        if (index == this.state.coinType){
-                            const coin_bal = snapshot.child('balance').val();
+                    const coin_bal = snapshot.child('/assets/balance').val();
+                    const coin_current_price = snapshot.child("/current_prices/" + current_coin_type).val();
+                    for (const index in snapshot.child('/assets/').val()){
+                        if (index === current_coin_type){
                             if( coin_bal < this.state.buyTotal){
                                 alert('Not Enough Balance');
                                 return;
-                            }else{
+                            }
+                            else
+                            {
                                 this.setState({
                                     timestamp: currentTime
                                 }, () => {
-                                    console.log('current timestamp in save_BuyOrder: ' + this.state.timestamp);
+                                //console.log('current timestamp in save_BuyOrder: ' + this.state.timestamp);
+                                    console.log('trying to buy ' + current_coin_type);
+                                    console.log('coin value current price is ' + coin_current_price);
                                     firebase.database().ref('buy/').push({
                                         price: parseInt(this.state.buyPrice),
                                         amount: parseInt(this.state.buyAmount),
@@ -173,20 +177,20 @@ class Transaction extends Component{
                                         user_id: this.state.uid,
                                         process: false,
                                         timestamp: this.state.timestamp,
-                                        coinType: this.state.coinType,
-                                        coinValue: this.state.currentPrice,
-                                        coinTotal: this.state.currentPrice * parseInt(this.state.buyAmount)
-                                    }).then(function () {
-                                        console.log("Insertion Succeeded.");
+                                        coinType: current_coin_type,
+                                        coinValue: coin_current_price,
+                                        coinTotal: coin_current_price * parseInt(this.state.buyAmount)
                                     }).catch(function (error) {
                                         console.log("Buy Order Insertion Failed: " + error.message);
+                                        alert('Buy order failed, please try again');
                                     });
+                                    console.log("Insertion Succeeded.");
+                                    alert('Buy order is successfully submitted');
                                     this.setState({
                                         buyAmount: '',
                                         buyPrice: '',
                                         buyTotal: ''
                                     });
-                                    alert('Buy order is successfully submitted');
                                 });
                             }
                         }
@@ -199,34 +203,43 @@ class Transaction extends Component{
         this.retrieve_orders();
     }
 
-    save_SellOrder(event){
+     save_SellOrder = (event) => {
         event.preventDefault();
         let moment = require('moment');
         let currentTime = moment();
         currentTime = currentTime.format();
+        this.retrieve_currentPrice();
+        let current_coin_type = this.state.coinType
+        const portfolioData = firebase.database().ref('portfolio/' + this.state.uid);
         console.log('current timestamp: ' + currentTime);
-        if (this.state.sellTotal == null ||
-            this.state.sellTotal == 0){
+        if (this.state.sellTotal === null ||
+            this.state.sellTotal === 0){
             alert("Sell Total is 0!");
             return;
-        }
-        if (this.state.sellPrice < this.state.currentPrice){
-            alert("Sell Price cannot be less than $" + this.state.currentPrice + " AUD");
-            this.setState({
-                sellPrice : this.state.currentPrice,
-                sellTotal : this.state.currentPrice *  this.state.sellAmount
-            })
-            return;
-        }
+        }            
+        portfolioData.once('value', (snapshot) => {
+            if(snapshot.val() !== null) {
+                if (this.state.sellPrice < snapshot.child("/current_prices/" + current_coin_type).val()){
+                    alert("Sell Price cannot be less than $" + snapshot.child("/current_prices/" + current_coin_type).val() + " AUD");
+                    this.setState({
+                        sellPrice : snapshot.child("/current_prices/" + current_coin_type).val(),
+                        sellTotal : snapshot.child("/current_prices/" + current_coin_type).val() *  this.state.sellAmount
+                    })
+                    return;
+                }
+            }
+        });
 
         this.validate_sell = () => {
-            const userData = firebase.database().ref('user/' + this.state.uid + '/coin');
-            userData.once('value', (snapshot) => {
+            this.retrieve_currentPrice();
+            let current_coin_type = this.state.coinType
+            const portfolioData = firebase.database().ref('portfolio/' + this.state.uid);
+            portfolioData.once('value', (snapshot) => {
                 if(snapshot.val() !== null) {
-                    for (const index in snapshot.val()){
-                        if (index == this.state.coinType){
+                    for (const index in snapshot.child('/assets/').val()){
+                        if (index === current_coin_type){
                             // console.log('index == coinType: ' + index);
-                            const coin_amt = snapshot.child(this.state.coinType).val();
+                            const coin_amt = snapshot.child(current_coin_type).val();
                             // console.log('coin Amt: ' + coin_amt);
                             // console.log('this.state.sellAmount: ' + this.state.sellAmount);
                             if( coin_amt < this.state.sellAmount){
@@ -245,8 +258,8 @@ class Transaction extends Component{
                                         process: false,
                                         timestamp: this.state.timestamp,
                                         coinType: this.state.coinType,
-                                        coinValue: this.state.currentPrice,
-                                        coinTotal: this.state.currentPrice * parseInt(this.state.sellAmount)
+                                        coinValue: snapshot.child("/current_prices/" + current_coin_type).val(),
+                                        coinTotal: snapshot.child("/current_prices/" + current_coin_type).val() * parseInt(this.state.sellAmount)
                                     }).then(function () {
                                         console.log("Insertion Succeeded.")
                                     }).catch(function (error) {
@@ -328,183 +341,163 @@ class Transaction extends Component{
 
     }
 
-    process_orders(type) {
+   process_orders = (type) => {
         const buyOrderLists = this.state.buyOrders;
         const sellOrderLists = this.state.sellOrders;
-        const btc_price = this.state.currentPrice;
-        // console.log('bitcoin price= ' + btc_price);
-        // console.log('buy orderLists: ' + buyOrderLists);
-        // console.log('sell orderLists: ' + sellOrderLists);
         if (type === "buy") {
             console.log("Buy Iteration");
             for (const index in buyOrderLists) {
-                // console.log('price: ' + orderLists[index]["price"]);
-                if (btc_price <= buyOrderLists[index]["price"]) {
-                    // console.log('user price= ' + buyOrderLists[index]["price"]);
-                    // console.log('bitcoin price= ' + btc_price);
+                let current_coin_type = buyOrderLists[index]["coinType"];
                     // process the money:
                     // deduct money from user's balance and increase their btc coin
                     let buy_total = buyOrderLists[index]["total"];
                     let buy_amount = buyOrderLists[index]["amount"];
                     let uid = buyOrderLists[index]["user_id"];
-                    // this.handleUserTransaction(uid, buy_total, buy_amount, "buy");
-
-                    const user = firebase.database().ref('user/' + uid);
+                    const user = firebase.database().ref('portfolio/' + uid);
                     user.on('value', (snapshot) => {
-                        let final_user_coin = null;
-                        let final_user_balance = null;
-                        let final_user_coin_amount_spent = null;
                         if (snapshot.val() !== null) {
-                            let user_coin = snapshot.child("/coin/" + this.state.coinType).val();
-                            let user_balance = snapshot.child("/coin/balance").val();
-                            let user_coin_amount_spent = snapshot.child("/coin/amount/" + this.state.coinType).val();
+                            let final_user_coin = null;
+                            let final_user_balance = null;
+                            let final_user_coin_amount_spent = null;
+                            if (snapshot.child("/current_prices/" + current_coin_type).val() <= buyOrderLists[index]["price"]) {
+                                let user_coin = snapshot.child("/assets/" + current_coin_type).val();
+                                let user_balance = snapshot.child("/assets/balance").val();
+                                let user_coin_amount_spent = snapshot.child("/amount_spent/" + current_coin_type).val();
 
-                            final_user_coin = user_coin + buy_amount;
-                            final_user_balance = user_balance - buy_total;
-                            final_user_coin_amount_spent = buy_total;//user_coin_amount_spent + buy_total;
+                                final_user_coin = user_coin + buy_amount;
+                                final_user_balance = user_balance - buy_total;
+                                final_user_coin_amount_spent = user_coin_amount_spent + buy_total;
 
-                            let oid = null;
-                            let status = null;
-                            const buyOrderFB = firebase.database().ref('buy/');
-                            buyOrderFB.on('value', (snapshot) => {
-                                if(snapshot.val() !== null){
-
-                                    for(const indexJ in snapshot.val()){
-                                        // console.log("indexJ " + indexJ);
-
-                                        if (indexJ === buyOrderLists[index]["id"] ){
-                                            oid = indexJ;
-                                            status = snapshot.child(indexJ +"/process").val()
+                                let oid = null;
+                                let status = null;
+                                const buyOrderFB = firebase.database().ref('buy/');
+                                buyOrderFB.on('value', (snapshot) => {
+                                    if(snapshot.val() !== null){
+                                        for(const indexJ in snapshot.val()){
+                                            if (indexJ === buyOrderLists[index]["id"] ){
+                                                oid = indexJ;
+                                                status = snapshot.child(indexJ +"/process").val()
+                                            }
                                         }
                                     }
+                                });
+                                if (status === false) {
+
+                                    let updates = {};
+                                    updates['portfolio/' + uid + '/assets/' + current_coin_type] = final_user_coin;
+                                    updates['portfolio/' + uid + '/assets/balance'] = final_user_balance;
+                                    updates['portfolio/' + uid + '/amount_spent/' + current_coin_type] = final_user_coin_amount_spent;
+
+                                    // update only one field and does not overwrite other fields
+                                    firebase.database().ref('buy/' + oid + '/').update({
+                                        process: true
+                                    });
+                                    firebase.database().ref().update(updates);
+
+                                    const buyOrder = firebase.database().ref('buy/' + oid + '/');
+                                    buyOrder.on('value', (snapshot) => {
+                                        if (snapshot.val() !== null) {
+                                            // copy to a new record in history node
+                                            firebase.database().ref('history/').push({
+                                                amount: snapshot.child("/amount").val(),
+                                                coinType: snapshot.child("/coinType").val(),
+                                                coinValue: snapshot.child("/coinValue").val(),
+                                                coinTotal: snapshot.child("/coinTotal").val(),
+                                                price: snapshot.child("/price").val(),
+                                                total: snapshot.child("/total").val(),
+                                                timestamp: snapshot.child("/timestamp").val(),
+                                                type: "Buy",
+                                                user_id: snapshot.child("/user_id").val()
+                                            });
+                                            // then remove the processed transaction
+                                            const processed_transaction = firebase.database().ref('buy/' + oid + '/');
+                                            processed_transaction.remove();
+
+                                        }
+                                    });
                                 }
-                            });
-                            // console.log("oid " + oid);
-                            // console.log("status " + status);
-                            if (status === false) {
-
-                                let updates = {};
-                                updates['user/' + uid + '/coin/' + this.state.coinType] = final_user_coin;
-                                updates['user/' + uid + '/coin/balance'] = final_user_balance;
-                                updates['user/' + uid + '/coin/amount/' + this.state.coinType] = final_user_coin_amount_spent;
-
-                                // update only one field and does not overwrite other fields
-                                firebase.database().ref('buy/' + oid + '/').update({
-                                    process: true
-                                });
-                                firebase.database().ref().update(updates);
-
-
-
-                                const buyOrder = firebase.database().ref('buy/' + oid + '/');
-                                buyOrder.on('value', (snapshot) => {
-                                    if (snapshot.val() !== null) {
-                                        // copy to a new record in history node
-                                        firebase.database().ref('history/').push({
-                                            amount: snapshot.child("/amount").val(),
-                                            coinType: snapshot.child("/coinType").val(),
-                                            coinValue: snapshot.child("/coinValue").val(),
-                                            coinTotal: snapshot.child("/coinTotal").val(),
-                                            price: snapshot.child("/price").val(),
-                                            total: snapshot.child("/total").val(),
-                                            timestamp: snapshot.child("/timestamp").val(),
-                                            type: "Buy",
-                                            user_id: snapshot.child("/user_id").val()
-                                        });
-                                        // then remove the processed transaction
-                                        const processed_transaction = firebase.database().ref('buy/' + oid + '/');
-                                        processed_transaction.remove();
-
-                                    }
-                                });
                             }
-
                         }
                     });
                 }
             }
-
-        }else if (type === "sell"){
-            console.log("Sell Iteration");
-            for(const index in sellOrderLists){
-
-                if (btc_price >= sellOrderLists[index]["price"]){
+            else if (type === "sell"){
+                console.log("Sell Iteration");
+                for(const index in sellOrderLists){
 
                     let sell_total = sellOrderLists[index]["total"];
                     let sell_amount = sellOrderLists[index]["amount"];
                     let uid = sellOrderLists[index]["user_id"];
-                    // this.handleUserTransaction(uid, buy_total, buy_amount, "buy");
 
-                    const user = firebase.database().ref('user/' + uid);
+                    const user = firebase.database().ref('portfolio/' + uid);
                     user.on('value', (snapshot) => {
+                        let current_coin_type = this.state.coinType
                         let final_user_coin = null;
                         let final_user_balance = null;
+                        let final_user_coin_amount_spent = null;
                         if (snapshot.val() !== null) {
-                            let user_coin = snapshot.child("/coin/" + this.state.coinType).val();
-                            let user_balance = snapshot.child("/coin/balance").val();
-                            // console.log("user_coin: " + user_coin);
-                            // console.log("user_balance: " + user_balance);
-                            final_user_coin = user_coin - sell_amount;
-                            final_user_balance = user_balance + sell_total;
+                            if (snapshot.child("/current_prices/" + current_coin_type).val() >= sellOrderLists[index]["price"]){
+                                let user_coin = snapshot.child("/assets/" + current_coin_type).val();
+                                let user_balance = snapshot.child("/assets/balance").val();
+                                let user_coin_amount_spent = snapshot.child("/assets/" + current_coin_type).val();
 
-                            let oid = null;
-                            let status = null;
-                            const sellOrderFB = firebase.database().ref('sell/');
-                            sellOrderFB.on('value', (snapshot) => {
-                                if(snapshot.val() !== null){
+                                final_user_coin = user_coin - sell_amount;
+                                final_user_balance = user_balance + sell_total;
+                                final_user_coin_amount_spent = user_coin_amount_spent - sell_total;
 
-                                    for(const indexJ in snapshot.val()){
-                                        // console.log("indexJ " + indexJ);
-
-                                        if (indexJ === sellOrderLists[index]["id"] ){
-                                            oid = indexJ;
-                                            status = snapshot.child(indexJ +"/process").val()
+                                let oid = null;
+                                let status = null;
+                                const sellOrderFB = firebase.database().ref('sell/');
+                                sellOrderFB.on('value', (snapshot) => {
+                                    if(snapshot.val() !== null){
+                                        for(const indexJ in snapshot.val()){
+                                            if (indexJ === sellOrderLists[index]["id"] ){
+                                                oid = indexJ;
+                                                status = snapshot.child(indexJ + "/process").val()
+                                            }
                                         }
                                     }
+                                });
+                                if (status === false) {
+                                    let updates = {};
+                                    updates['portfolio/' + uid + '/assets/' + user_coin] = final_user_coin;
+                                    updates['portfolio/' + uid + '/assets/balance'] = final_user_balance;
+                                    updates['portfolio/' + uid + '/amount_spent/' + user_coin] = final_user_coin_amount_spent;
+
+                                    firebase.database().ref('sell/' + oid + '/').update({
+                                        process: true
+                                    });
+                                    firebase.database().ref().update(updates);
+
+                                    const sellOrder = firebase.database().ref('sell/' + oid + '/');
+                                    sellOrder.on('value', (snapshot) => {
+                                        if (snapshot.val() !== null) {
+                                            // copy to a new record in history node
+                                            firebase.database().ref('history/').push({
+                                                amount: snapshot.child("/amount").val(),
+                                                coinType: snapshot.child("/coinType").val(),
+                                                coinValue: snapshot.child("/coinValue").val(),
+                                                coinTotal: snapshot.child("/coinTotal").val(),
+                                                price: snapshot.child("/price").val(),
+                                                total: snapshot.child("/total").val(),
+                                                timestamp: snapshot.child("/timestamp").val(),
+                                                type: "Sell",
+                                                user_id: snapshot.child("/user_id").val()
+                                            });
+                                            // then remove the processed transaction
+                                            const processed_transaction = firebase.database().ref('sell/' + oid + '/');
+                                            processed_transaction.remove();
+                                        }
+                                    });
                                 }
-                            });
-                            // console.log("oid " + oid);
-                            // console.log("status " + status);
-                            if (status === false) {
-                                let updates = {};
-                                updates['user/' + uid + '/coin/' + this.state.coinType] = final_user_coin;
-                                updates['user/' + uid + '/coin/balance'] = final_user_balance;
-
-                                firebase.database().ref('sell/' + oid + '/').update({
-                                    process: true
-                                });
-                                firebase.database().ref().update(updates);
-
-                                const sellOrder = firebase.database().ref('sell/' + oid + '/');
-                                sellOrder.on('value', (snapshot) => {
-                                    if (snapshot.val() !== null) {
-                                        // copy to a new record in history node
-                                        firebase.database().ref('history/').push({
-                                            amount: snapshot.child("/amount").val(),
-                                            coinType: snapshot.child("/coinType").val(),
-                                            coinValue: snapshot.child("/coinValue").val(),
-                                            coinTotal: snapshot.child("/coinTotal").val(),
-                                            price: snapshot.child("/price").val(),
-                                            total: snapshot.child("/total").val(),
-                                            timestamp: snapshot.child("/timestamp").val(),
-                                            type: "Sell",
-                                            user_id: snapshot.child("/user_id").val()
-                                        });
-                                        // then remove the processed transaction
-                                        const processed_transaction = firebase.database().ref('sell/' + oid + '/');
-                                        processed_transaction.remove();
-
-                                    }
-                                });
-
                             }
-
                         }
                     });
                 }
             }
-        }
     }
+
+
 
 
 

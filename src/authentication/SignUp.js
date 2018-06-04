@@ -111,17 +111,27 @@ export default class SignUp extends Component {
                      admin: this.state.admin,
                      trading: false
                   });
-                  app.database().ref('user/' + uid + '/coin').set({
-                     BTC: 0,
-                     EOS: 0,
-                     ETH: 0,
-                     LTC: 0,
-                     NEO: 0,
-                     NULS: 0,
-                     XMR: 0,
-                     XRP: 0,
-                     balance: 1000000
-                  });
+                  app.database().ref('portfolio/' + uid + '/assets').set({
+                    BTC: 0,
+                    EOS: 0,
+                    ETH: 0,
+                    LTC: 0,
+                    NEO: 0,
+                    NULS: 0,
+                    XMR: 0,
+                    XRP: 0,
+                    balance: 1000000
+                 });
+                 app.database().ref('portfolio/' + uid + '/amount_spent').set({
+                    BTC: 0,
+                    EOS: 0,
+                    ETH: 0,
+                    LTC: 0,
+                    NEO: 0,
+                    NULS: 0,
+                    XMR: 0,
+                    XRP: 0
+                 });
                }
             });
          }

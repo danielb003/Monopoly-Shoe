@@ -31,7 +31,7 @@ export default class Switchboard extends Component {
    }
 
    componentWillUnmount() {
-      this.removeAuthListener;
+      this.removeAuthListener();
    }
 
    render() {
