@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, NavDropdown, NavbarBrand, MenuItem} from 'react-bootstrap';
+import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import './Leaderboard.css';
 import Button from 'material-ui/Button';
 import { withStyles } from 'material-ui/styles';

@@ -154,7 +154,7 @@ export default class SignUp extends Component {
          app.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).catch(function (error) {
             var errorCode = error.code;
             var errorMessage = error.message;
-            if (errorCode == 'auth/weak-password') {
+            if (errorCode === 'auth/weak-password') {
                alert('The password is too weak.');
             } else {
                alert(errorMessage);
