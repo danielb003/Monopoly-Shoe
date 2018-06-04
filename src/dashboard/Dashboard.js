@@ -86,15 +86,15 @@ class Dashboard extends Component {
 
    }
 
-   loadCurrentPrice() {
+    loadCurrentPrice() {
         app.auth().onAuthStateChanged((user) => {
             if (user) {
                 let user_id = user.uid;
-                const currentPriceFb = app.database().ref('user/' + user_id + '/coin/current_prices/');
+                const currentPriceFb = app.database().ref('portfolio/' + user_id + '/current_prices/');
                 this.state.pairs.map((pair, index) => {
-                    if (pair != undefined)
+                    if (pair !== undefined)
                     {
-                        let currency = this.state.currency;
+                        let currency = "AUD";
                         let url = 'https://min-api.cryptocompare.com/data/price?fsym=' + pair.name + '&tsyms=' + currency;
                         fetch(url).then(r => r.json())
                         .then((coinData) => {
@@ -109,7 +109,7 @@ class Dashboard extends Component {
                 });
             }
         });
-  }
+    }
  
    retrieve_open_buy_orders() {
     
@@ -249,7 +249,6 @@ class Dashboard extends Component {
                   admin = snapshot.child('admin').val();
                   user_details.push({
                      admin: snapshot.child('admin').val(),
-                     coin: snapshot.child('coin').val(),
                      email: snapshot.child('email').val(),
                      fname: snapshot.child('fname').val(),
                      lname: snapshot.child('lname').val(),
@@ -272,28 +271,28 @@ class Dashboard extends Component {
             if (user) {
                 user_id = user.uid;
                 let assignedCoins = [];
-                const user_coin_ref = app.database().ref('user/' + user_id +'/coin');
-                user_coin_ref.once('value', (snapshot) => {
+                const portfolio_ref = app.database().ref('portfolio/' + user_id);
+                portfolio_ref.once('value', (snapshot) => {
                 if(snapshot.val() !== null) {
-                    let items = snapshot.val();
+                    let items = snapshot.child('/assets/').val();
                     for (let key in items) {
-                            if( snapshot.child(key).val()>0) {
-                                if (key === "balance") {
+                            if(snapshot.child('/assets/' + key).val()) {
+                                if (key==="balance") {
                                     assignedCoins.push({
                                         name: "Balance in AUD",
-                                        amt: snapshot.child(key).val(),
+                                        amt: snapshot.child('/assets/' + key).val(),
                                         averagePrice: 1,
                                         cost: "N/A",
                                         currentPrice: 1,
-                                        totalWorth: snapshot.child(key).val(),
+                                        totalWorth: snapshot.child('/assets/' + key).val(),
                                         profitLoss: "N/A",
                                         profitLossP: "N/A"
                                     });
                                 }
                                 else {
                                     let current_price = snapshot.child('/current_prices/' + key).val();
-                                    let current_amount = snapshot.child(key).val();
-                                    let current_cost = snapshot.child('/amount/' + key).val();
+                                    let current_amount = snapshot.child('/assets/' + key).val();
+                                    let current_cost = snapshot.child('/amount_spent/' + key).val();
                                     //console.log(key + " " + current_price + " " + current_amount + " " + current_cost);
                                     assignedCoins.push({
                                         name: key,
@@ -379,7 +378,6 @@ class Dashboard extends Component {
 
       const historyState = this.state.history;
       const tradingStatus = this.state.openTradingAccount;
-      console.log('trading status ' + tradingStatus);
       const { startDate,endDate, user_data } = this.state;
 
       const historyTableData = historyState ? (

@@ -3,9 +3,6 @@ import moment from 'moment';
 import './InfoBox.css';
 
 class InfoBox extends Component {
-   constructor(props) {
-      super(props);
-   }
    render(){
       const firstPrice = this.props.firstPrice;
       const currentPrice = this.props.currentPrice;
