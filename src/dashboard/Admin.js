@@ -23,7 +23,6 @@ export default class Admin extends Component {
       this.loadUserIDAndTradingStatus();
       this.retrieve_userData();
       this.retrieve_all_users();
-      this.expandTable();
    }
 
    loadUserIDAndTradingStatus() {
@@ -106,10 +105,19 @@ export default class Admin extends Component {
    }
 
    retrieve_history(fname, lname){
+      console.log(fname);
+      console.log(lname);
+      var user_id;
       const userFB = app.database().ref('user/');
       userFB.on('value', (snapshot) => {
-         if(snapshot.val() === fname || snapshot.val() === lname) {
+         if(snapshot.val() !== null) {
 
+            for(const index in snapshot.val()) {
+               if(snapshot.child(index + "/fname").val() === fname && snapshot.child(index + "/lname").val() == lname) {
+                  user_id = index;
+                  console.log(user_id);
+               }
+            }
          }
       })
 
@@ -119,7 +127,7 @@ export default class Admin extends Component {
          if(snapshot.val() !== null){
 
             for(const index in snapshot.val()) {
-               if (snapshot.child(index + "/user_id").val()) {
+               if (snapshot.child(index + "/user_id").val() === user_id) {
                   assignedHistory.push({
                      id: index,
                      amount: snapshot.child(index + "/amount").val(),
@@ -138,10 +146,6 @@ export default class Admin extends Component {
             });
          }
       });
-   }
-
-   expandTable = () => {
-      console.log("expand exists")
    }
 
    render() {
@@ -169,10 +173,10 @@ export default class Admin extends Component {
 
       const userState = this.state.all_users;
       const userTableData = userState ? (
-         this.state.all_users.map(function(item){
+         this.state.all_users.map((item) => {
             return (
                <tbody>
-               <tr key={item.fname} id="table_row">
+               <tr key={item.id} id="table_row">
                   <td onClick={() => this.retrieve_history(item.fname, item.lname)}>{item.fname}</td>
                   <td onClick={() => this.retrieve_history(item.fname, item.lname)}>{item.lname}</td>
                   <td id="edit_header"><a href={"https://console.firebase.google.com/u/0/project/pp1-project-5de58/authentication/users"} target="_blank">Go</a></td>
