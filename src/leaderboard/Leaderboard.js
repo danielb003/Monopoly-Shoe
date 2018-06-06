@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, NavDropdown, NavbarBrand, MenuItem} from 'react-bootstrap';
+import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import './Leaderboard.css';
-import Button from 'material-ui/Button';
 import { withStyles } from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
 import Tabs, { Tab } from 'material-ui/Tabs';
@@ -78,7 +77,7 @@ class Leaderboard extends Component {
                 var moment = require('moment');
                 var currentTime = moment();
                 // Past 24 Hrs
-                if(this.state.tabValue == 0){
+                if(this.state.tabValue === 0){
                     for(const index in snapshot.val()){
                         const timestamp = snapshot.child(index +"/timestamp").val();
                         const parseTimestramp = moment(timestamp);
@@ -109,7 +108,7 @@ class Leaderboard extends Component {
                     });
                 }
                 // Past 1 Week
-                else if(this.state.tabValue == 1){
+                else if(this.state.tabValue === 1){
                     for(const index in snapshot.val()){
                         const timestamp = snapshot.child(index +"/timestamp").val();
                         const parseTimestramp = moment(timestamp);
@@ -140,7 +139,7 @@ class Leaderboard extends Component {
                     });
                 }
                 // Past 1 Month
-                else if(this.state.tabValue == 2){
+                else if(this.state.tabValue === 2){
                     for(const index in snapshot.val()){
                         const timestamp = snapshot.child(index +"/timestamp").val();
                         const parseTimestramp = moment(timestamp);
@@ -171,7 +170,7 @@ class Leaderboard extends Component {
                     });
                 }
                 // All Times
-                else if(this.state.tabValue == 3){
+                else if(this.state.tabValue === 3){
                     for(const index in snapshot.val()){
                         filtered_history.push({
                             user_id: snapshot.child(index + "/user_id").val(),
@@ -204,7 +203,7 @@ class Leaderboard extends Component {
         const historyLists = this.state.history;
         console.log('historyLists: ' + historyLists);
         for(const index in historyLists){
-            if(userLists === undefined || userLists.length == 0){
+            if(userLists === undefined || userLists.length === 0){
                 // userLists.push({
                 //     uid : historyLists[index]['user_id'],
                 //     data : historyLists[index]
@@ -224,7 +223,7 @@ class Leaderboard extends Component {
         const userState = [];
         for(const index in historyLists){
             for(const id in userLists){
-                if(userLists[id] == historyLists[index]['user_id']){
+                if(userLists[id] === historyLists[index]['user_id']){
                     const type = historyLists[index]['type'];
                     const coinTotal = historyLists[index]['coinTotal'];
                     const coinType = historyLists[index]['coinType'];
@@ -235,7 +234,7 @@ class Leaderboard extends Component {
                             const estCurrentTotal = historyLists[index]['amount'] * this.state.coinPrice[coinIndex][coinType];
                             console.log('coinTotal: ' + coinTotal + ' | estTotal: ' + estCurrentTotal);
                             var profitLoss_Percent = 0;
-                            if(type == "Sell"){
+                            if(type === "Sell"){
                                 const diff = coinTotal - estCurrentTotal;
                                 profitLoss_Percent = diff / estCurrentTotal;
                             }else{
@@ -258,7 +257,7 @@ class Leaderboard extends Component {
         var reducedState = [];
         userState.forEach(function(value) {
             var existing = reducedState.filter(function(v, i) {
-                return (v.uid == value.uid);
+                return (v.uid === value.uid);
             });
             if (existing.length) {
                 var existingIndex = reducedState.indexOf(existing[0]);
@@ -432,7 +431,7 @@ class Leaderboard extends Component {
 
                             {tabValue === 0 && <TabContainer>
                                 <table className="table table-bordered text-center">
-                                    {userTableData == '' ?
+                                    {userTableData === '' ?
                                         <h2>No Data within 24 hours</h2>
                                         :
                                         (<thead className>
@@ -448,7 +447,7 @@ class Leaderboard extends Component {
                             </TabContainer>}
                             {tabValue === 1 && <TabContainer>
                                 <table className="table table-bordered text-center">
-                                    {userTableData == '' ?
+                                    {userTableData === '' ?
                                         <h2>No Data within 1 week</h2>
                                         :
                                         (<thead className>
@@ -465,7 +464,7 @@ class Leaderboard extends Component {
                             </TabContainer>}
                             {tabValue === 2 && <TabContainer>
                                 <table className="table table-bordered text-center">
-                                    {userTableData == '' ?
+                                    {userTableData === '' ?
                                         <h2>No Data within 1 month</h2>
                                         :
                                         (<thead className>
@@ -481,7 +480,7 @@ class Leaderboard extends Component {
                             </TabContainer>}
                             {tabValue === 3 && <TabContainer>
                                 <table className="table table-bordered text-center">
-                                    {userTableData == '' ?
+                                    {userTableData === '' ?
                                         <h2>No Data</h2>
                                         :
                                         (<thead className>

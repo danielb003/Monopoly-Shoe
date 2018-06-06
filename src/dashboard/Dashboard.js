@@ -1,12 +1,9 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, NavDropdown, NavbarBrand, MenuItem} from 'react-bootstrap';
+import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import './../App.css';
 import './Dashboard.css';
 import profile_img from './../img/profile-img.png';
-import bitcoin_icon from './../img/bitcoin_icon.png';
-import ethereum_icon from './../img/ethereum_icon.png';
-import litecoin_icon from './../img/litecoin_icon.png';
 import Switch from 'material-ui/Switch';
 import Button from 'material-ui/Button';
 import { app } from '../Constant';
@@ -25,6 +22,7 @@ class Dashboard extends Component {
           endDate:null,
           user_data: [],
           coins:[],
+          currency: "AUD",
           open_buy_orders: [],
           open_sell_orders: [],
           pairs: [{name: "BTC"},{name: "LTC"},{name: "ETH"},{name: "NULS"},{name: "XRP"},{name: "XMR"},{name: "NEO"},{name: "EOS"}],
@@ -88,13 +86,13 @@ class Dashboard extends Component {
 
    }
 
-   loadCurrentPrice() {
+    loadCurrentPrice() {
         app.auth().onAuthStateChanged((user) => {
             if (user) {
                 let user_id = user.uid;
-                const currentPriceFb = app.database().ref('user/' + user_id + '/coin/current_prices/');
+                const currentPriceFb = app.database().ref('portfolio/' + user_id + '/current_prices/');
                 this.state.pairs.map((pair, index) => {
-                    if (pair != undefined)
+                    if (pair !== undefined)
                     {
                         let currency = "AUD";
                         let url = 'https://min-api.cryptocompare.com/data/price?fsym=' + pair.name + '&tsyms=' + currency;
@@ -111,7 +109,7 @@ class Dashboard extends Component {
                 });
             }
         });
-  }
+    }
  
    retrieve_open_buy_orders() {
     
@@ -121,7 +119,7 @@ class Dashboard extends Component {
          if(snapshot.val() !== null){
 
             for(const index in snapshot.val()) {
-               if (snapshot.child(index + "/user_id").val() == app.auth().currentUser.uid) {
+               if (snapshot.child(index + "/user_id").val() === app.auth().currentUser.uid) {
                   assignedOpenBuys.push({
                      id: index,
                      amount: snapshot.child(index + "/amount").val(),
@@ -149,7 +147,7 @@ class Dashboard extends Component {
             if(snapshot.val() !== null){
 
                 for(const index in snapshot.val()) {
-                    if (snapshot.child(index + "/user_id").val() == app.auth().currentUser.uid) {
+                    if (snapshot.child(index + "/user_id").val() === app.auth().currentUser.uid) {
                         assignedOpenSells.push({
                             id: index,
                             amount: snapshot.child(index + "/amount").val(),
@@ -218,7 +216,7 @@ class Dashboard extends Component {
          if(snapshot.val() !== null){
 
             for(const index in snapshot.val()) {
-               if (snapshot.child(index + "/user_id").val() == app.auth().currentUser.uid) {
+               if (snapshot.child(index + "/user_id").val() === app.auth().currentUser.uid) {
                   assignedHistory.push({
                      id: index,
                      amount: snapshot.child(index + "/amount").val(),
@@ -251,7 +249,6 @@ class Dashboard extends Component {
                   admin = snapshot.child('admin').val();
                   user_details.push({
                      admin: snapshot.child('admin').val(),
-                     coin: snapshot.child('coin').val(),
                      email: snapshot.child('email').val(),
                      fname: snapshot.child('fname').val(),
                      lname: snapshot.child('lname').val(),
@@ -274,27 +271,28 @@ class Dashboard extends Component {
             if (user) {
                 user_id = user.uid;
                 let assignedCoins = [];
-                const user_coin_ref = app.database().ref('user/' + user_id +'/coin');
-                user_coin_ref.once('value', (snapshot) => {
+                const portfolio_ref = app.database().ref('portfolio/' + user_id);
+                portfolio_ref.once('value', (snapshot) => {
                 if(snapshot.val() !== null) {
-                    let items = snapshot.val();
+                    let items = snapshot.child('/assets/').val();
                     for (let key in items) {
-                            if( snapshot.child(key).val()>0) {
-                                if (key=="balance") {
+                            if(snapshot.child('/assets/' + key).val()) {
+                                if (key==="balance") {
                                     assignedCoins.push({
                                         name: "Balance in AUD",
-                                        amt: snapshot.child(key).val(),
+                                        amt: snapshot.child('/assets/' + key).val(),
                                         averagePrice: 1,
                                         cost: "N/A",
                                         currentPrice: 1,
-                                        totalWorth: snapshot.child(key).val(),
-                                        profitLoss: "N/A"
+                                        totalWorth: snapshot.child('/assets/' + key).val(),
+                                        profitLoss: "N/A",
+                                        profitLossP: "N/A"
                                     });
                                 }
                                 else {
                                     let current_price = snapshot.child('/current_prices/' + key).val();
-                                    let current_amount = snapshot.child(key).val();
-                                    let current_cost = snapshot.child('/amount/' + key).val();
+                                    let current_amount = snapshot.child('/assets/' + key).val();
+                                    let current_cost = snapshot.child('/amount_spent/' + key).val();
                                     //console.log(key + " " + current_price + " " + current_amount + " " + current_cost);
                                     assignedCoins.push({
                                         name: key,
@@ -303,7 +301,8 @@ class Dashboard extends Component {
                                         cost: current_cost,
                                         currentPrice: current_price,
                                         totalWorth: current_amount * current_price,
-                                        profitLoss: (current_amount * current_price) - current_cost
+                                        profitLoss: (current_amount * current_price) - current_cost,
+                                        profitLossP: (((current_amount * current_price) - current_cost) / current_cost * 100).toFixed(2) + '%'
                                     });
                                 } 
                             }  
@@ -329,7 +328,7 @@ class Dashboard extends Component {
          if(snapshot.val() !== null){
 
             for(const index in snapshot.val()) {
-               if (snapshot.child(index + "/user_id").val() == app.auth().currentUser.uid) {
+               if (snapshot.child(index + "/user_id").val() === app.auth().currentUser.uid) {
                   let historyDate = snapshot.child(index + "/timestamp").val();
                   historyDate = historyDate.substring(0, 10);
                   let momentDate = moment(historyDate);
@@ -379,11 +378,10 @@ class Dashboard extends Component {
 
       const historyState = this.state.history;
       const tradingStatus = this.state.openTradingAccount;
-      console.log('trading status ' + tradingStatus);
       const { startDate,endDate, user_data } = this.state;
 
       const historyTableData = historyState ? (
-         this.state.history.map(function(item){
+         this.state.history.map((item) => {
             return (
                <tbody>
                <tr key={item.id}>
@@ -403,7 +401,7 @@ class Dashboard extends Component {
       const openBuyOrdersState = this.state.open_buy_orders;
 
       const openBuyTableData = openBuyOrdersState ? (
-          this.state.open_buy_orders.map(function(item){
+          this.state.open_buy_orders.map((item) => {
           return (
               <tbody>
               <tr key={item.id}>
@@ -422,7 +420,7 @@ class Dashboard extends Component {
       const openSellOrdersState = this.state.open_sell_orders;
 
       const openSellTableData = openSellOrdersState ? (
-          this.state.open_sell_orders.map(function(item){
+          this.state.open_sell_orders.map((item) => {
           return (
               <tbody>
               <tr key={item.id}>
@@ -440,40 +438,60 @@ class Dashboard extends Component {
 
 
       const coinState = this.state.coins;
-
+      const currency = this.state.currency;
       const coinTableData = coinState ? (
-         this.state.coins.map(function(item){
-            return (
-               <tbody>
-               <tr key={item.id}>
-                  <td>{item.name}</td>
-                  <td>{item.amt}</td>
-                  <td>{item.cost}</td>
-                  <td>{item.totalWorth}</td>
-                  <td>{item.averagePrice}</td>
-                  <td>{item.currentPrice}</td>
-                  <td>{item.profitLoss}</td>
-               </tr>
-               </tbody>
-            )
+         this.state.coins.map((item) => {
+            if (item.profitLoss >= 0) {
+                return (
+                    <tbody>
+                    <tr key={item.id}>
+                       <td>{item.name}</td>
+                       <td>{item.amt}</td>
+                       <td>{item.cost.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td>{item.totalWorth.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td>{item.averagePrice.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td>{item.currentPrice.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td className="profit-loss-positive" >{item.profitLoss.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td className="profit-loss-positive" >{item.profitLossP}</td>
+                    </tr>
+                    </tbody>
+                 )
+            }
+            if (item.profitLoss < 0) {
+                return (
+                    <tbody>
+                    <tr key={item.id}>
+                       <td>{item.name}</td>
+                       <td>{item.amt}</td>
+                       <td>{item.cost.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td>{item.totalWorth.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td>{item.averagePrice.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td>{item.currentPrice.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td className="profit-loss-negative" >{item.profitLoss.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td className="profit-loss-negative" >{item.profitLossP}</td>
+                    </tr>
+                    </tbody>
+                 )
+            }
+            if (item.profitLoss === "N/A") {
+                return (
+                    <tbody>
+                    <tr key={item.id}>
+                       <td>{item.name}</td>
+                       <td>{item.amt}</td>
+                       <td>{item.cost.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td>{item.totalWorth.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td>{item.averagePrice.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td>{item.currentPrice.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td>{item.profitLoss.toLocaleString('en-AU',{ style: 'currency', currency: currency })}</td>
+                       <td>{item.profitLossP}</td>
+                    </tr>
+                    </tbody>
+                 )
+            }
          })) : (
          null
       );
-
-      //  const userData = this.state.user_data;
-      // const portfolioTable = userData ? (
-      //     this.state.user_data.map(function(item){
-      //         return (
-      //             <tbody>
-      //             <tr key={item.id}>
-      //                 {/*<td>{item.image}</td>*/}
-      //                 {/*<td>{item.totalBalance}</td>*/}
-      //                 {/*<td>{item.availableBalance}</td>*/}
-      //                 {/*<td>{item.BTC value}</td>*/}
-      //             </tr>
-      //             </tbody>
-      //         )
-      // })) : ( null );
 
       return (
          <div>
@@ -505,13 +523,13 @@ class Dashboard extends Component {
                         <img id="user_profile" src={profile_img } className="center-block img-responsive img-circle" />
                         <h2> {user_data.fname} {user_data.lname}</h2><br/>
                         <strong>{user_data.email} </strong> <br/><br/>
-                        {user_data.admin == true && user_data.admin !== null
+                        {user_data.admin === true && user_data.admin !== null
                            ? (<strong>Admin User</strong>) : (<strong>Regular User</strong>)}
                         <br/><br/>
                         <strong>Trading Account</strong>
                         <div>
                            <Switch
-                              checked={tradingStatus == true ? true : false}
+                              checked={tradingStatus === true ? true : false}
                               onChange={this.handleSwitchChange}
                               color="primary"
                            />
@@ -539,7 +557,8 @@ class Dashboard extends Component {
                                  <th>Total Worth</th>
                                  <th>Average Price</th>
                                  <th>Current Price</th>
-                                 <th>Profit/Loss</th>
+                                 <th>Profit/Loss ($)</th>
+                                 <th>Profit/Loss (%)</th>
                               </tr>
                               </thead>) : null}
                               {coinTableData}
