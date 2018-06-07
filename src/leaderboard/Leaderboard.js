@@ -287,7 +287,7 @@ class Leaderboard extends Component {
                         reducedState[index]['count'] = 1;
                     }
                     const pl = ((reducedState[index]['profitLossPercent'] * 100) / reducedState[index]['count']).toFixed(2);
-                    const num = reducedState[index]['count'];
+                    const num = reducedState[index]['count'] + 1;
                     newUserState.push({
                         uid:  reducedState[index]['uid'],
                         fname: fn,
