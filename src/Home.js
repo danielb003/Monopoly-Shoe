@@ -56,32 +56,32 @@ export default class Home extends Component {
          <div>
             <Navbar inverse>
                <Nav id="nav_box">
-                  <NavItem class="nav_item">
+                  <NavItem className="nav_item">
                      <p>Prolific Trading</p>
                   </NavItem>
                   {this.state.authenticated && !this.state.adminStatus ? (
-                     <NavItem class="nav_item" eventKey={1} href="/dashboard">
+                     <NavItem className="nav_item" eventKey={1} href="/dashboard">
                         Portfolio
                      </NavItem>
                   ) : this.state.authenticated && this.state.adminStatus ? (
-                     <NavItem class="nav_item" eventKey={1} href="/admin">
+                     <NavItem className="nav_item" eventKey={1} href="/admin">
                         Admin
                      </NavItem>
                   ) : !this.state.authenticated && !this.state.adminStatus ? (
-                     <NavItem class="nav_item" eventKey={1} href="/">
+                     <NavItem className="nav_item" eventKey={1} href="/">
                         Market
                      </NavItem>
                   ) : null }
-                  <NavItem class="nav_item" eventKey={2} href="/leaderboard">
+                  <NavItem className="nav_item" eventKey={2} href="/leaderboard">
                      Leaderboard
                   </NavItem>
                </Nav>
                <Nav pullRight>
                   {this.state.authenticated ? (
-                     <NavItem class="nav_item" eventKey={2} href="/logout">
+                     <NavItem className="nav_item" eventKey={2} href="/logout">
                         Logout
                      </NavItem> ) : (
-                     <NavItem class="nav_item" eventKey={2} href="/auth">
+                     <NavItem className="nav_item" eventKey={2} href="/auth">
                         Login
                      </NavItem> )
                   }
