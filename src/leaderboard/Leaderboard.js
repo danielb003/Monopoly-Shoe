@@ -431,7 +431,7 @@ class Leaderboard extends Component {
 
                             {tabValue === 0 && <TabContainer>
                                 <table className="table table-bordered text-center">
-                                    {userTableData === '' ?
+                                    {userTableData.length === 0 ?
                                         <h2>No Data within 24 hours</h2>
                                         :
                                         (<thead>
@@ -447,7 +447,7 @@ class Leaderboard extends Component {
                             </TabContainer>}
                             {tabValue === 1 && <TabContainer>
                                 <table className="table table-bordered text-center">
-                                    {userTableData === '' ?
+                                    {userTableData.length === 0 ?
                                         <h2>No Data within 1 week</h2>
                                         :
                                         (<thead>
@@ -464,7 +464,7 @@ class Leaderboard extends Component {
                             </TabContainer>}
                             {tabValue === 2 && <TabContainer>
                                 <table className="table table-bordered text-center">
-                                    {userTableData === '' ?
+                                    {userTableData.length === 0 ?
                                         <h2>No Data within 1 month</h2>
                                         :
                                         (<thead>
@@ -480,7 +480,7 @@ class Leaderboard extends Component {
                             </TabContainer>}
                             {tabValue === 3 && <TabContainer>
                                 <table className="table table-bordered text-center">
-                                    {userTableData === '' ?
+                                    {userTableData.length === 0 ?
                                         <h2>No Data</h2>
                                         :
                                         (<thead>

@@ -166,7 +166,10 @@ exports[`Component: Dashboard tests something on Dashboard 1`] = `
                     Current Price
                   </th>
                   <th>
-                    Profit/Loss
+                    Profit/Loss ($)
+                  </th>
+                  <th>
+                    Profit/Loss (%)
                   </th>
                 </tr>
               </thead>

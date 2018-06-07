@@ -5,10 +5,6 @@ import { Redirect } from 'react-router-dom'
 
 import Dashboard from '../src/dashboard/Dashboard';
 
-// import jsdom from 'jsdom'
-// const doc = jsdom.jsdom('<!doctype html><html><body></body></html>')
-// global.document = doc
-// global.window = doc.defaultView
 describe('Component: Dashboard', () =>{
     it('tests to be defined', () => {
         expect(Dashboard).toBeDefined();
@@ -42,7 +38,8 @@ describe('Component: Dashboard', () =>{
                     <th>Total Worth</th>
                     <th>Average Price</th>
                     <th>Current Price</th>
-                    <th>Profit/Loss</th>
+                    <th>Profit/Loss ($)</th>
+                    <th>Profit/Loss (%)</th>
                 </tr>
             )).toEqual(true);
     });
@@ -86,7 +83,8 @@ describe('Component: Dashboard', () =>{
                 totalWorth: '510000',
                 averagePrice: '4444',
                 currentPrice: '5000',
-                profitLoss: '5999'
+                profitLoss: '5999',
+                profitLossP: '12.2'
             }]
         });
         expect(
@@ -98,6 +96,7 @@ describe('Component: Dashboard', () =>{
                 <td>4444</td>,
                 <td>5000</td>,
                 <td>5999</td>,
+                <td>12.2</td>
             ])).toEqual(true);
     });
 
