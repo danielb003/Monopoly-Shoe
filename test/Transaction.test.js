@@ -1,45 +1,207 @@
 import React, { Component } from 'react';
-import { shallow, configure, mount } from 'enzyme';
-import Adapter from 'enzyme-adapter-react-16';
-
-configure({adapter: new Adapter()});
-
-import { Transaction } from "../src/graph/Transaction";
-import { expect } from 'chai';
-
-// import jsdom from 'jsdom'
-// const doc = jsdom.jsdom('<!doctype html><html><body></body></html>')
-// global.document = doc
-// global.window = doc.defaultView
+import RaisedButton from 'material-ui/Button';
+import TextField from 'material-ui/TextField';
+import Transaction from "../src/graph/Transaction";
 
 describe('Component: Transaction', () =>{
-    it('tests something on transaction', () => {
-        let wrapper;
 
-        beforeEach(() => { wrapper = shallow(<Transaction />);});
+    it('tests to be defined', () => {
+        expect(Transaction).toBeDefined();
+    });
 
 
-        expect(true).to.equal(true);
-        // expect(wrapper.find({ sellTotal: null })).to.have.length(0);
-        // const wrapper = shallow((
-        //     <div>
-        //         <div data-foo="foo" data-bar="bar">Hello</div>
-        //     </div>
-        // ));
-        // expect(wrapper.contains(<div data-foo="foo" data-bar="bar">Hello</div>)).to.equal(true);
-    })
+    it('tests checking the text field for Price on Buy Component', () => {
+        let wrapper = shallow(<Transaction/>);
+        expect(
+            wrapper.dive().find('#transaction').find('#buyPrice').length
+        ).toEqual(1);
+
+        expect(
+            wrapper.dive().containsAnyMatchingElements([
+                <p>Price:</p>,
+                <TextField fullWidth
+                           id="buyPrice"
+                           value={0}
+                           onChange={0}
+                           type="number"
+                           InputProps={{
+                               disableUnderline: true,
+                               classes: {
+                                   input: null
+                               }
+                           }}
+                           InputLabelProps={{
+                               shrink: true,
+                           }}
+                           margin="normal"
+                />
+            ])
+        ).toEqual(true);
+    });
+
+    it('tests checking the text field for Amount on Buy Component', () => {
+        let wrapper = shallow(<Transaction/>);
+
+        expect(
+            wrapper.dive().find('#transaction').find('#buyAmount').length
+        ).toEqual(1);
+
+        expect(
+            wrapper.dive().containsAnyMatchingElements([
+                <p>Amount:</p>,
+                <TextField fullWidth
+                           id="buyAmount"
+                           value={0}
+                           onChange={0}
+                           type="number"
+                           InputProps={{
+                               disableUnderline: true,
+                               classes: {
+                                   input: null
+                               }
+                           }}
+                           InputLabelProps={{
+                               shrink: true,
+                           }}
+                           margin="normal"
+                />
+            ])
+        ).toEqual(true);
+    });
+
+    it('tests checking the text field for Total on Buy Component', () => {
+        let wrapper = shallow(<Transaction/>);
+        expect(
+            wrapper.dive().find('#transaction').find('#buyTotal').length
+        ).toEqual(1);
+
+        expect(
+            wrapper.dive().containsAnyMatchingElements([
+                <p>Total:</p>,
+                <TextField fullWidth
+                           id="buyTotal"
+                           value={0}
+                           onChange={0}
+                           type="number"
+                           InputProps={{
+                               disableUnderline: true,
+                               classes: {
+                                   input: null
+                               }
+                           }}
+                           InputLabelProps={{
+                               shrink: true,
+                           }}
+                           margin="normal"
+                />
+            ])
+        ).toEqual(true);
+    });
+
+    it('tests checking the text field for Price on Sell Component', () => {
+        let wrapper = shallow(<Transaction/>);
+        expect(
+            wrapper.dive().find('#transaction').find('#sellPrice').length
+        ).toEqual(1);
+
+        expect(
+            wrapper.dive().containsAnyMatchingElements([
+                <p>Price:</p>,
+                <TextField fullWidth
+                           id="sellPrice"
+                           value={0}
+                           onChange={0}
+                           type="number"
+                           InputProps={{
+                               disableUnderline: true,
+                               classes: {
+                                   input: null
+                               }
+                           }}
+                           InputLabelProps={{
+                               shrink: true,
+                           }}
+                           margin="normal"
+                />
+            ])
+        ).toEqual(true);
+    });
+
+    it('tests checking the text field for Amount on Sell Component', () => {
+        let wrapper = shallow(<Transaction/>);
+        expect(
+            wrapper.dive().find('#transaction').find('#sellAmount').length
+        ).toEqual(1);
+
+        expect(
+            wrapper.dive().containsAnyMatchingElements([
+                <p>Amount:</p>,
+                <TextField fullWidth
+                           id="sellAmount"
+                           value={0}
+                           onChange={0}
+                           type="number"
+                           InputProps={{
+                               disableUnderline: true,
+                               classes: {
+                                   input: null
+                               }
+                           }}
+                           InputLabelProps={{
+                               shrink: true,
+                           }}
+                           margin="normal"
+                />
+            ])
+        ).toEqual(true);
+    });
+
+    it('tests checking the text field for Total on Sell Component', () => {
+        let wrapper = shallow(<Transaction/>);
+        expect(
+            wrapper.dive().find('#transaction').find('#sellTotal').length
+        ).toEqual(1);
+
+        expect(
+            wrapper.dive().containsAnyMatchingElements([
+                <p>Total:</p>,
+                <TextField fullWidth
+                           id="sellTotal"
+                           value={0}
+                           onChange={0}
+                           type="number"
+                           InputProps={{
+                               disableUnderline: true,
+                               classes: {
+                                   input: null
+                               }
+                           }}
+                           InputLabelProps={{
+                               shrink: true,
+                           }}
+                           margin="normal"
+                />
+            ])
+        ).toEqual(true);
+    });
+
+    it('tests checking the buttons for Buy and Sell', () => {
+        let wrapper = shallow(<Transaction/>);
+        expect(
+            wrapper.dive().contains(
+                <RaisedButton id="buy-button" color="primary" type="submit" >
+                    <h3>Buy</h3>
+                </RaisedButton>
+            )
+        ).toEqual(true);
+        expect(
+            wrapper.dive().contains(
+                <RaisedButton id="sell-button" color="secondary" type="submit" >
+                    <h3>Sell</h3>
+                </RaisedButton>
+            )
+        ).toEqual(true);
+    });
+
 })
 
-
-
-// check state if amount is empty
-//             if price is empty
-
-// check coin state is not empty
-//            price is not 0
-
-
-// firebase test
-// test user's transaction for enough balance or enough amount
-// test user's buy
-// test user's sell
