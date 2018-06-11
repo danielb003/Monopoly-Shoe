@@ -7,9 +7,11 @@ import SignUp from './SignUp';
 export default class Auth extends Component {
     constructor(props) {
         super(props);
+
         this.state = {
             type: null
         };
+
         this.handleClick = this.handleClick.bind(this);
     }
 

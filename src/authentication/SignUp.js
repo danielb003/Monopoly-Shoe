@@ -56,9 +56,9 @@ export default class SignUp extends Component {
          {
             field: 'password',
             method: 'matches',
-            args: [/(?:[^\/\\\.\,\+\=\~]{9,})/],
+            args: [/(^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{9,}))/],
             validWhen: true,
-            message: 'Password must be 9 or more characters'
+            message: 'Password requires lower-case, upper-case & numbers'
          }
       ]);
 
@@ -182,7 +182,6 @@ export default class SignUp extends Component {
       }])
 
       const usersRef = app.database().ref('user');
-
       const user = {
          fname: this.state.fname,
          lname: this.state.lname,

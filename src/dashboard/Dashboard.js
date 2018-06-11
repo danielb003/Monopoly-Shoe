@@ -13,6 +13,7 @@ import TextField from 'material-ui/TextField';
 class Dashboard extends Component {
    constructor(props) {
       super(props);
+
       this.state = {
           authenticated: true,
           openTradingAccount: null,

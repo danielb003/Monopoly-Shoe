@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Navbar, Nav, NavItem, NavDropdown, NavbarBrand, MenuItem} from 'react-bootstrap';
+import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import './Admin.css';
 import profile_img from './../img/profile-img.png';
 import Switch from 'material-ui/Switch';
@@ -21,8 +21,8 @@ export default class Admin extends Component {
 
    componentDidMount(){
       this.loadUserIDAndTradingStatus();
-      this.retrieve_userData();
-      this.retrieve_all_users();
+      this.retrieveUserData();
+      this.retrieveAllUsers();
    }
 
    loadUserIDAndTradingStatus() {
@@ -51,7 +51,7 @@ export default class Admin extends Component {
       });
    }
 
-   retrieve_userData() {
+   retrieveUserData() {
       var user_id = null, admin = false;
       app.auth().onAuthStateChanged((user) => {
          if (user) {
@@ -81,7 +81,7 @@ export default class Admin extends Component {
       });
    }
 
-   retrieve_all_users() {
+   retrieveAllUsers() {
       const assignedUser = [];
       const userFB = app.database().ref('user/');
       userFB.on('value', (snapshot) => {
@@ -104,7 +104,7 @@ export default class Admin extends Component {
       });
    }
 
-   retrieve_history(fname, lname){
+   retrieveHistory(fname, lname){
       console.log(fname);
       console.log(lname);
       var user_id;
@@ -177,8 +177,8 @@ export default class Admin extends Component {
             return (
                <tbody>
                <tr key={item.id} id="table_row">
-                  <td onClick={() => this.retrieve_history(item.fname, item.lname)}>{item.fname}</td>
-                  <td onClick={() => this.retrieve_history(item.fname, item.lname)}>{item.lname}</td>
+                  <td onClick={() => this.retrieveHistory(item.fname, item.lname)}>{item.fname}</td>
+                  <td onClick={() => this.retrieveHistory(item.fname, item.lname)}>{item.lname}</td>
                   <td id="edit_header"><a href={"https://console.firebase.google.com/u/0/project/pp1-project-5de58/authentication/users"} target="_blank">Go</a></td>
                </tr>
                </tbody>

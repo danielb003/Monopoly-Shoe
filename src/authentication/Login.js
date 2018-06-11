@@ -89,7 +89,6 @@ export default class Login extends Component {
             var errorMessage = error.message;
             alert("Email or password entered was incorrect or doesn't exist.");
          })
-         /*this.changeStates = true;*/
       }
 
       console.table([{
