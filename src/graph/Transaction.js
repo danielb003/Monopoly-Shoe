@@ -234,10 +234,9 @@ class Transaction extends Component{
             let sell_total = sellOrderLists[index]["total"];
             let sell_amount = sellOrderLists[index]["amount"];
             let uid = sellOrderLists[index]["user_id"];
-    
+            let current_coin_type = sellOrderLists[index]["coinType"];
             const user = firebase.database().ref('portfolio/' + uid);
             user.on('value', (snapshot) => {
-                let current_coin_type = this.state.coinType
                 let final_user_coin = null;
                 let final_user_balance = null;
                 let final_user_coin_amount_spent = null;
