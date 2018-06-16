@@ -245,7 +245,7 @@ class Transaction extends Component{
                     if (snapshot.child("/current_prices/" + current_coin_type).val() >= sellOrderLists[index]["price"]){
                         let user_coin = snapshot.child("/assets/" + current_coin_type).val();
                         let user_balance = snapshot.child("/assets/balance").val();
-                        let user_coin_amount_spent = snapshot.child("/assets/" + current_coin_type).val();
+                        let user_coin_amount_spent = snapshot.child("/amount_spent/" + current_coin_type).val();
     
                         final_user_coin = user_coin - sell_amount;
                         final_user_balance = user_balance + sell_total;

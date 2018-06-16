@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './CryptoChart.css';
 import LineChart from './LineChart';
 import ToolTip from './ToolTip';
 import InfoBox from './InfoBox';
