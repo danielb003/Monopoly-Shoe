@@ -1,72 +1,83 @@
-// Sinon is a library used for mocking or verifying function calls in JavaScript.
-const sinon = require('sinon');
+import SignUp from "../src/authentication/SignUp";
+import React, { Component } from 'react';
 
-// Require firebase-admin so we can stub out some of its methods.
-const admin = require('firebase-admin');
-// Require and initialize firebase-functions-test
 
-const test = require('firebase-functions-test')();
-import SignUp from '../src/authentication/SignUp';
+describe('Component: SignUp', () => {
 
-describe('Cloud Functions', () => {
-    let myFunctions, adminInitStub;
-
-    before(() => {
-
-        // stub admin.initializeApp to be a dummy function that doesn't do anything.
-        adminInitStub = sinon.stub(admin, 'initializeApp');
-        // save the exports inside a namespace called myFunctions.
-        myFunctions = require('../src/authentication/SignUp');
+    it('tests SignUp component to be defined', () => {
+        expect(SignUp).toBeDefined();
     });
 
-    after(() => {
-        // Restore admin.initializeApp() to its original method.
-        adminInitStub.restore();
-        // Do other cleanup tasks.
-        test.cleanup();
+
+    it('tests checking the firstname field', () => {
+        let wrapper = shallow(<SignUp/>);
+
+        expect(
+            wrapper.containsAnyMatchingElements([
+                <input
+                    id="firstname"
+                    type="text"
+                    name="fname"
+                    placeholder="Enter first name"/>,
+                <span id="help-block-1"/>
+            ])
+        ).toEqual(true);
     });
 
-    describe('User SignUp', () => {
-        let oldDatabase;
-        before(() => {
-            // Save the old database method so it can be restored after the test.
-            oldDatabase = admin.database;
-        });
+    it('tests checking the lastname field', () => {
+        let wrapper = shallow(<SignUp/>);
 
-        after(() => {
-            // Restoring admin.database() to the original method.
-            admin.database = oldDatabase;
-        });
-
-        it('should test adding user', (done) => {
-            const refParam = '/user';
-            const pushParam = {
-                fname: 'john',
-                lname: 'doe',
-                email: 'john@doe2.com',
-                password: 'abcdef12345'
-            };
-
-            const databaseStub = sinon.stub();
-            const refStub = sinon.stub();
-            const pushStub = sinon.stub();
-
-
-            Object.defineProperty(admin, 'database', { get: () => databaseStub });
-            databaseStub.returns({ ref: refStub });
-            refStub.withArgs(refParam).returns({ push: pushStub });
-            pushStub.withArgs(pushParam).returns(Promise.resolve({ ref: 'new_ref' }));
-
-            let wrapper = mount(<SignUp/>).setState({
-                fname: 'john',
-                lname: 'doe',
-                email: 'john@doe2.com',
-                password: 'abcdef12345'
-            });
-
-            // assertion to do
-
-        });
+        expect(
+            wrapper.containsAnyMatchingElements([
+                <input
+                    id="lastname"
+                    type="text"
+                    name="lname"
+                    placeholder="Enter last name"/>,
+                <span id="help-block-1"/>
+            ])
+        ).toEqual(true);
     });
 
-})
+    it('tests checking the email field', () => {
+        let wrapper = shallow(<SignUp/>);
+
+        expect(
+            wrapper.containsAnyMatchingElements([
+                <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    placeholder="Enter email"/>,
+                <span id="help-block-1"/>
+            ])
+        ).toEqual(true);
+    });
+
+    it('tests checking the firstname field', () => {
+        let wrapper = shallow(<SignUp/>);
+
+        expect(
+            wrapper.containsAnyMatchingElements([
+                <input
+                    id="password"
+                    type="password"
+                    name="password"
+                    placeholder="Enter password"/>,
+                <span id="help-block-1"/>
+            ])
+        ).toEqual(true);
+    });
+
+    it('tests redirect to dashboard', () => {
+        let wrapper = shallow(<SignUp/>).setState({
+            redirect : true
+        });
+
+        expect(
+            wrapper.find('Redirect').prop('to')
+        ).toEqual('/dashboard');
+
+    });
+
+});
