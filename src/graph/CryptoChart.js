@@ -143,7 +143,7 @@ onTimeClick(limit, longname){
 // load data every 15 seconds
 componentDidMount(){
       this.loadData();
-      this.refresh = setInterval(() => this.loadData(), 15000);
+      this.refresh = setInterval(() => this.loadData(), 200);
 }
 
 componentWillUnmount(){

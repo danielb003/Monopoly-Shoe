@@ -27,13 +27,13 @@ class InfoBox extends Component {
                   <div className="subtext">{'Updated ' + moment(updatedAt ).fromNow()}</div>
                </div>
                : null}
-            { monthChangeD ?
+            { currentPrice ?
                <div id="middle" className='box'>
                   <div className="heading">{monthChangeD}</div>
                   <div className="subtext">{coin} ($) Change Since Last {limitname} ({currency})</div>
                </div>
                : null}
-            { monthChangeP ?
+            { currentPrice ?
             <div id="right" className='box'>
                <div className="heading">{monthChangeP}</div>
                <div className="subtext">{coin} (%) Change Since Last {limitname}</div>
