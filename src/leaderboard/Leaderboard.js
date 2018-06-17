@@ -1,3 +1,10 @@
+/*
+Leaderboard Page
+Author: Panhaseth Heang
+Refactored By: Panhaseth Heang
+Date: 07/06/2018
+*/
+
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import './Leaderboard.css';
@@ -7,6 +14,7 @@ import Tabs, { Tab } from 'material-ui/Tabs';
 import Typography from 'material-ui/Typography';
 import {app} from "../Constant";
 
+// Style for elements inside each Tab
 function TabContainer(props) {
     return (
         <Typography component="div" style={{ padding: 8 * 3 }}>
@@ -15,6 +23,7 @@ function TabContainer(props) {
     );
 }
 
+// Material UI Style
 const styles = theme => ({
     root: {
         flexGrow: 1,
@@ -41,6 +50,7 @@ class Leaderboard extends Component {
                 XRP: 0
             }
         }
+        // Bindings before usage
         this.handleTabChange = this.handleTabChange.bind(this);
         this.loadHistoryData_andSaveToState = this.loadHistoryData_andSaveToState.bind(this);
         this.loadUsersFromHistory = this.loadUsersFromHistory.bind(this);
@@ -48,7 +58,6 @@ class Leaderboard extends Component {
     }
 
     componentWillMount() {
-
         this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
             if(user) {
                 this.setState({ authenticated : true })
@@ -63,29 +72,33 @@ class Leaderboard extends Component {
         this.retrieve_currentCryptoPrice();
     }
 
+    /* Handle Each Tab Clicked, then load the filtered content respectively */
     handleTabChange(event, tabValue){
         this.setState({ tabValue }, () => {
             this.loadHistoryData_andSaveToState();
         });
     };
 
+    /*
+    Loop history data based on specified Timeframes (eg. 24 Hrs, Last Week, Last Month, All Time)
+    Then save to state
+    */
     loadHistoryData_andSaveToState() {
         const history = app.database().ref('history');
         const filtered_history = []
+        // API call to Firebase Database and get data from 'history' node
         history.on('value', (snapshot) => {
             if(snapshot.val() != null){
+                // DateTime manipulation using 'moment' nodeJS library
                 var moment = require('moment');
                 var currentTime = moment();
-                // Past 24 Hrs
+                // Filter for Past 24 Hrs
                 if(this.state.tabValue === 0){
                     for(const index in snapshot.val()){
                         const timestamp = snapshot.child(index +"/timestamp").val();
                         const parseTimestramp = moment(timestamp);
-                        // console.log('currentTime :' + currentTime.format());
-                        // console.log('parseTimestramp :' + parseTimestramp.format());
-
                         const hoursDiff = currentTime.diff(parseTimestramp, 'hours');
-                        // console.log('diff ' + hoursDiff);
+
                         if (hoursDiff <= 24){
                             filtered_history.push({
                                 user_id: snapshot.child(index + "/user_id").val(),
@@ -103,20 +116,16 @@ class Leaderboard extends Component {
                     this.setState({
                         history: filtered_history
                     }, () => {
-                        // console.log(filtered_history)
                         this.loadUsersFromHistory();
                     });
                 }
-                // Past 1 Week
+                // Filter for Past 1 Week
                 else if(this.state.tabValue === 1){
                     for(const index in snapshot.val()){
                         const timestamp = snapshot.child(index +"/timestamp").val();
                         const parseTimestramp = moment(timestamp);
-                        // console.log('currentTime :' + currentTime.format());
-                        // console.log('parseTimestramp :' + parseTimestramp.format());
-
                         const weeksDiff = currentTime.diff(parseTimestramp, 'weeks');
-                        // console.log('weeksDiff ' + weeksDiff);
+
                         if (weeksDiff < 1){
                             filtered_history.push({
                                 user_id: snapshot.child(index + "/user_id").val(),
@@ -134,20 +143,16 @@ class Leaderboard extends Component {
                     this.setState({
                         history: filtered_history
                     }, () => {
-                        // console.log(filtered_history)
                         this.loadUsersFromHistory();
                     });
                 }
-                // Past 1 Month
+                // Filter for Past 1 Month
                 else if(this.state.tabValue === 2){
                     for(const index in snapshot.val()){
                         const timestamp = snapshot.child(index +"/timestamp").val();
                         const parseTimestramp = moment(timestamp);
-                        // console.log('currentTime :' + currentTime.format());
-                        // console.log('parseTimestramp :' + parseTimestramp.format());
-
                         const monthsDiff = currentTime.diff(parseTimestramp, 'months');
-                        // console.log('monthsDiff ' + monthsDiff);
+
                         if (monthsDiff < 1){
                             filtered_history.push({
                                 user_id: snapshot.child(index + "/user_id").val(),
@@ -165,11 +170,10 @@ class Leaderboard extends Component {
                     this.setState({
                         history: filtered_history
                     }, () => {
-                        // console.log(filtered_history)
                         this.loadUsersFromHistory();
                     });
                 }
-                // All Times
+                // Filter for All Times
                 else if(this.state.tabValue === 3){
                     for(const index in snapshot.val()){
                         filtered_history.push({
@@ -187,7 +191,6 @@ class Leaderboard extends Component {
                     this.setState({
                         history: filtered_history
                     }, () => {
-                        // console.log(filtered_history)
                         this.loadUsersFromHistory();
                     });
                 }
@@ -195,27 +198,20 @@ class Leaderboard extends Component {
         });
     }
 
-    // Loop history data based on specified Timeframe
-    // Then save to state
-
+    /*
+    First, Get Users and History Data
+    Then, Calculate the final profit/loss percentage for each user from transaction records
+    And, Save to State
+    */
     loadUsersFromHistory() {
         const userLists = [];
         const historyLists = this.state.history;
         console.log('historyLists: ' + historyLists);
         for(const index in historyLists){
             if(userLists === undefined || userLists.length === 0){
-                // userLists.push({
-                //     uid : historyLists[index]['user_id'],
-                //     data : historyLists[index]
-                // });
                 userLists.push(historyLists[index]['user_id']);
             }
             if(!userLists.includes(historyLists[index]['user_id'])){
-                console.log('compared true');
-                // userLists.push({
-                //     uid : historyLists[index]['user_id'],
-                //     data : historyLists[index]
-                // });
                 userLists.push(historyLists[index]['user_id']);
             }
         }
@@ -229,19 +225,19 @@ class Leaderboard extends Component {
                     const coinType = historyLists[index]['coinType'];
                     for(const coinIndex in this.state.coinPrice){
                         if(this.state.coinPrice[coinIndex][coinType]){
-                            console.log('this.state.coinPrice[coinIndex]' + this.state.coinPrice[coinIndex]);
-                            // estimate total given the current crypto-value market
+                            // Estimate Total using the current crypto-value market value
                             const estCurrentTotal = historyLists[index]['amount'] * this.state.coinPrice[coinIndex][coinType];
-                            console.log('coinTotal: ' + coinTotal + ' | estTotal: ' + estCurrentTotal);
                             var profitLoss_Percent = 0;
+                            // Check type; buy or sell?
+                            // Then, calculate profit/loss % for each transaction record
                             if(type === "Sell"){
                                 const diff = coinTotal - estCurrentTotal;
                                 profitLoss_Percent = diff / estCurrentTotal;
                             }else{
-                                // Buy Type
                                 const diff = estCurrentTotal - coinTotal;
                                 profitLoss_Percent = diff / estCurrentTotal;
                             }
+                            // save
                             userState.push({
                                 uid: userLists[id],
                                 profitLossPercent: profitLoss_Percent
@@ -251,9 +247,9 @@ class Leaderboard extends Component {
                 }
             }
         }
-        // console.log(userState);
 
-        // Add up all the profit/loss and get the final result percentage
+        // Add up all the profit/loss % from each transaction
+        // Then, get the final result percentage for each user
         var reducedState = [];
         userState.forEach(function(value) {
             var existing = reducedState.filter(function(v, i) {
@@ -261,33 +257,35 @@ class Leaderboard extends Component {
             });
             if (existing.length) {
                 var existingIndex = reducedState.indexOf(existing[0]);
+                // set count to 0 if NaN type
                 if (isNaN(reducedState[existingIndex].count)){
                     reducedState[existingIndex].count = 0;
                 }
+                // Sum up all profit/loss % and count
                 reducedState[existingIndex].profitLossPercent += value.profitLossPercent;
                 reducedState[existingIndex].count += 1;
             } else {
                 reducedState.push(value);
             }
         });
-        // console.log("COUNT*****")
-        // console.log(reducedState)
-
-        // console.log('reduced State: ')
-        // console.log(reducedState);
 
         const newUserState = [];
         for(const index in reducedState){
+            // API call to Firebase Database and get data from 'user/[uid]' node
             const data = app.database().ref('user/' + reducedState[index]['uid']);
             data.on('value', (snapshot) => {
                 if(snapshot.val() !== null){
+                    // get first name and last name from each user node
                     const fn = snapshot.child("/fname").val();
                     const ln = snapshot.child("/lname").val();
                     if (!reducedState[index]['count']) {
                         reducedState[index]['count'] = 1;
                     }
+                    // Get Final percentage by divide sum of profit/loss % with total counts of trades,
+                    // and round up to 2 decimal places
                     const pl = ((reducedState[index]['profitLossPercent'] * 100) / reducedState[index]['count']).toFixed(2);
                     const num = reducedState[index]['count'] + 1;
+                    // save the profit/loss % data to state for final display
                     newUserState.push({
                         uid:  reducedState[index]['uid'],
                         fname: fn,
@@ -301,13 +299,13 @@ class Leaderboard extends Component {
                 }
             });
         }
-        // if(newUserState.updated)
         this.setState({
             user: newUserState
         });
-        console.log(newUserState);
     }
-
+    /*
+    Get the Current Cryptocurrency market value from API calls
+    */
     retrieve_currentCryptoPrice(){
         this.getData = () => {
             // filter coin, pass coin from chart
@@ -316,6 +314,7 @@ class Leaderboard extends Component {
             const coinStorage = [];
             const currency = 'AUD';
             for(const index in coin){
+                // get coin data from API call
                 const url = 'https://min-api.cryptocompare.com/data/price?fsym=' + index + '&tsyms=' + currency;
                 fetch(url).then(r => r.json())
                     .then((coinData) => {
@@ -329,28 +328,27 @@ class Leaderboard extends Component {
                         console.log(e);
                     });
             }
+            // save to state
             this.setState({
-                // coinType: coin,
                 coinPrice: coinStorage,
                 updatedAt: new Date()
-            }, () => {
-                console.log(this.state.coinPrice);
             });
-
         }
         this.getData();
+        // refresh API call every 90 seconds
         this.refresh = setInterval(() => this.getData(), 90000);
     }
 
     render() {
         const {classes} = this.props;
         const {tabValue} = this.state;
-        // sort the ranking based on highest profit
+        // sort the ranking based on highest profits
         const sortedState = this.state.user.sort(function (a, b) {
             console.log(a.profitLoss);
             return b.profitLoss - a.profitLoss;
         });
-        // console.log(this.state.user);
+
+        // fill in the table row for each user data
         const userTableData = sortedState ? (
             sortedState.map(function(item, index){
                 return (
@@ -413,8 +411,8 @@ class Leaderboard extends Component {
                     </Nav>
                 </Navbar>
 
-                {/*Create Leaderboard of users who have made the most in specified time frames (24 hrs, 1 week, 1 month, All Time)*/}
-
+                {/*Create Leaderboard of users who have made the most
+                in specified time frames (24 hrs, 1 week, 1 month, All Time)*/}
                 <div className='container'>
                     <div className='col-md-12'>
                         <h3 id='leaderboard'>Leaderboard</h3>
@@ -428,7 +426,7 @@ class Leaderboard extends Component {
                                     <Tab label="All Times" />
                                 </Tabs>
                             </AppBar>
-
+                            {/* 24 Hrs Tab */}
                             {tabValue === 0 && <TabContainer>
                                 <table className="table table-bordered text-center">
                                     {userTableData.length === 0 ?
@@ -445,6 +443,7 @@ class Leaderboard extends Component {
                                     {userTableData}
                                 </table>
                             </TabContainer>}
+                            {/* Past Week Tab */}
                             {tabValue === 1 && <TabContainer>
                                 <table className="table table-bordered text-center">
                                     {userTableData.length === 0 ?
@@ -459,9 +458,9 @@ class Leaderboard extends Component {
                                         </tr>
                                         </thead>) }
                                     {userTableData}
-                                    {/*{userTableData}*/}
                                 </table>
                             </TabContainer>}
+                            {/* Past Month Tab */}
                             {tabValue === 2 && <TabContainer>
                                 <table className="table table-bordered text-center">
                                     {userTableData.length === 0 ?
@@ -478,6 +477,7 @@ class Leaderboard extends Component {
                                     {userTableData}
                                 </table>
                             </TabContainer>}
+                            {/* All Times Tab */}
                             {tabValue === 3 && <TabContainer>
                                 <table className="table table-bordered text-center">
                                     {userTableData.length === 0 ?

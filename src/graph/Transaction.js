@@ -1,3 +1,10 @@
+/*
+Transaction Page
+Author: Panhaseth Heang
+Edited and Refactored By: Peter Locarnini
+Date: 16/06/2018
+*/
+
 import React, { Component } from 'react';
 import './Transaction.css';
 import RaisedButton from 'material-ui/Button';
@@ -6,6 +13,7 @@ import { withStyles} from 'material-ui/styles';
 import { app } from "../Constant";
 import firebase from "firebase/index";
 
+// Material UI theme style
 const styles = theme => ({
     bootstrapInput: {
         borderRadius: 4,
@@ -28,7 +36,6 @@ const styles = theme => ({
 class Transaction extends Component{
 
     constructor(props){
-
         super(props);
         this.state = {
             currentPrice: null,
@@ -47,7 +54,7 @@ class Transaction extends Component{
             coinType: 'BTC',
             uid: null
         }
-
+        // Bindings before usage
         this.handleBuyPriceChange = this.handleBuyPriceChange.bind(this);
         this.handleBuyAmountChange = this.handleBuyAmountChange.bind(this);
         this.handleSellPriceChange = this.handleSellPriceChange.bind(this);
@@ -62,7 +69,6 @@ class Transaction extends Component{
     }
 
     componentDidMount(){
-
         this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
             if(user) {
                 this.setState({ authenticated : true })
@@ -70,24 +76,25 @@ class Transaction extends Component{
                 this.setState({ authenticated: false })
             }
         });
-
+        // load User ID and refresh the process order function every 5 seconds
         this.loadUserID();
         this.refresh = setInterval(() => this.process_orders(), 5000);
     }
 
+    /*
+    Get Buy order from Firebase Database and save to 'buyOrders' state
+    Get Sell order from Firebase Database and save to 'sellOrders' state
+    @Param: None
+     */
     retrieve_orders(){
-        // get api value for letious crypto values
-        // if buy/sell order reach specified amount, process it
-        // loop all orders and process it
         const assignedBuyOrder = [];
         const assignedSellOrder = [];
+        // get data from 'buy' and 'sell' node from Firebase DB
         const buyOrderFB = firebase.database().ref('buy/');
         const sellOrderFB = firebase.database().ref('sell/');
         buyOrderFB.on('value', (snapshot) => {
             if(snapshot.val() !== null){
-
                 for(const index in snapshot.val()){
-
                     assignedBuyOrder.push({
                         id:index,
                         amount:snapshot.child(index + "/amount").val(),
@@ -108,9 +115,7 @@ class Transaction extends Component{
         });
         sellOrderFB.on('value', (snapshot) => {
             if(snapshot.val() !== null){
-
                 for(const index in snapshot.val()){
-
                     assignedSellOrder.push({
                         id:index,
                         amount:snapshot.child(index + "/amount").val(),
@@ -132,6 +137,10 @@ class Transaction extends Component{
 
     }
 
+    /*
+    Update the current price of a specific crypto-coin
+    @Param: coin, user id
+     */
     update_current_price_fb(pairs, uid) {
         const currentPriceFb = app.database().ref('portfolio/' + uid + '/current_prices/');
         pairs.map((pair) => {
@@ -152,20 +161,24 @@ class Transaction extends Component{
         });
     }
 
+    /*
+    Process buy orders on the Firebase DB; re-assess the user financial data(coins and balance) after each buy order
+    @Param: a list of buy orders
+     */
     process_buy_orders_fb(buyOrderLists) {
         for (const index in buyOrderLists) {
             let current_coin_type = buyOrderLists[index]["coinType"];
-            // process the money:
-            // deduct money from user's balance and increase their btc coin
             let buy_total = buyOrderLists[index]["total"];
             let buy_amount = buyOrderLists[index]["amount"];
             let uid = buyOrderLists[index]["user_id"];
             const user = firebase.database().ref('portfolio/' + uid);
+            // load user financial data from Firebase DB
             user.on('value', (snapshot) => {
                 if (snapshot.val() !== null) {
                     let final_user_coin = null;
                     let final_user_balance = null;
                     let final_user_coin_amount_spent = null;
+                    // check if the coins' current value is less than or equal to the buy orders' values
                     if (snapshot.child("/current_prices/" + current_coin_type).val() <= buyOrderLists[index]["price"]) {
                         let user_coin = snapshot.child("/assets/" + current_coin_type).val();
                         let user_balance = snapshot.child("/assets/balance").val();
@@ -177,19 +190,21 @@ class Transaction extends Component{
     
                         let oid = null;
                         let status = null;
+                        // load process status from all buy orders
                         const buyOrderFB = firebase.database().ref('buy/');
                         buyOrderFB.on('value', (snapshot) => {
                             if(snapshot.val() !== null){
                                 for(const indexJ in snapshot.val()){
                                     if (indexJ === buyOrderLists[index]["id"] ){
                                         oid = indexJ;
+                                        // get process status; true or false
                                         status = snapshot.child(indexJ + "/process").val()
                                     }
                                 }
                             }
                         });
+                        // if process status is false, then process the transaction
                         if (status === false) {
-    
                             let updates = {};
                             updates['portfolio/' + uid + '/assets/' + current_coin_type] = final_user_coin;
                             updates['portfolio/' + uid + '/assets/balance'] = final_user_balance;
@@ -216,7 +231,7 @@ class Transaction extends Component{
                                         type: "Buy",
                                         user_id: snapshot.child("/user_id").val()
                                     });
-                                    // then remove the processed transaction
+                                    // then remove the processed transaction record from the 'buy' node
                                     const processed_transaction = firebase.database().ref('buy/' + oid + '/');
                                     processed_transaction.remove();
                                 }
@@ -228,9 +243,12 @@ class Transaction extends Component{
         }
     }
 
+    /*
+    Process sell orders on the Firebase DB; re-assess the user financial data(coins and balance) after each sell order
+    @Param: a list of sell orders
+     */
     process_sell_orders_fb(sellOrderLists) {
         for(const index in sellOrderLists){
-
             let sell_total = sellOrderLists[index]["total"];
             let sell_amount = sellOrderLists[index]["amount"];
             let uid = sellOrderLists[index]["user_id"];
@@ -241,6 +259,7 @@ class Transaction extends Component{
                 let final_user_balance = null;
                 let final_user_coin_amount_spent = null;
                 if (snapshot.val() !== null) {
+                    // check if the coins' current value is larger than or equal to the sell orders' values
                     if (snapshot.child("/current_prices/" + current_coin_type).val() >= sellOrderLists[index]["price"]){
                         let user_coin = snapshot.child("/assets/" + current_coin_type).val();
                         let user_balance = snapshot.child("/assets/balance").val();
@@ -252,23 +271,27 @@ class Transaction extends Component{
     
                         let oid = null;
                         let status = null;
+                        // load process status from all sell orders
                         const sellOrderFB = firebase.database().ref('sell/');
                         sellOrderFB.on('value', (snapshot) => {
                             if(snapshot.val() !== null){
                                 for(const indexJ in snapshot.val()){
                                     if (indexJ === sellOrderLists[index]["id"] ){
                                         oid = indexJ;
+                                        // get process status; true or false
                                         status = snapshot.child(indexJ + "/process").val()
                                     }
                                 }
                             }
                         });
+                        // if process status is false, then process the transaction record
                         if (status === false) {
                             let updates = {};
                             updates['portfolio/' + uid + '/assets/' + current_coin_type] = final_user_coin;
                             updates['portfolio/' + uid + '/assets/balance'] = final_user_balance;
                             updates['portfolio/' + uid + '/amount_spent/' + current_coin_type] = final_user_coin_amount_spent;
-    
+
+                            // update only one field without affecting other fields
                             firebase.database().ref('sell/' + oid + '/').update({
                                 process: true
                             });
@@ -289,7 +312,7 @@ class Transaction extends Component{
                                         type: "Sell",
                                         user_id: snapshot.child("/user_id").val()
                                     });
-                                    // then remove the processed transaction
+                                    // then remove the processed transaction record from the 'sell' node
                                     const processed_transaction = firebase.database().ref('sell/' + oid + '/');
                                     processed_transaction.remove();
                                 }
@@ -301,6 +324,10 @@ class Transaction extends Component{
         }    
     }
 
+    /*
+    Any coin clicked, will update the current coin state and its value
+    @Param: coin selected
+    */
     componentWillReceiveProps(props){
         if (props.coin !== this.state.coinType){
             this.setState({
@@ -309,6 +336,7 @@ class Transaction extends Component{
         }
     }
 
+    /* load user id and save to state */
     loadUserID(){
         let authData = firebase.auth().currentUser;
         if (authData) {
@@ -318,6 +346,7 @@ class Transaction extends Component{
         }
     }
 
+    /* load current timestamp and save to state */
     loadTimestamp(event){
         let moment = require('moment');
         let currentTime = moment();
@@ -328,15 +357,22 @@ class Transaction extends Component{
         event.preventDefault();
     }
 
+    /*
+    Validate the buy transaction and Save the buy order
+    @Param: Click Event on the Buy button
+     */
     save_BuyOrder = (event) => {
         event.preventDefault();
         let moment = require('moment');
         let currentTime = moment();
+        // get current time stamp
         currentTime = currentTime.format();
+        // validate the Total
         if (this.state.buyTotal === null || 0){
             alert("Buy Total is 0!");
             return;
         }
+        // validate buy order
         this.validate_buy = () => {
             this.update_current_price_fb(this.state.pairs, this.state.uid);
             const current_coin_type = this.state.coinType;
@@ -347,12 +383,14 @@ class Transaction extends Component{
                     const coin_current_price = snapshot.child("/current_prices/" + current_coin_type).val();
                     for (const index in snapshot.child('/assets/').val()){
                         if (index === current_coin_type){
+                            // Check if there is enough balance for transaction
                             if( coin_bal < this.state.buyTotal){
                                 alert('Not Enough Balance');
                                 return;
                             }
                             else
                             {
+                                // save the data as a buy order to 'buy' node in Firebase DB
                                 this.setState({
                                     timestamp: currentTime
                                 }, () => {
@@ -370,6 +408,7 @@ class Transaction extends Component{
                                         alert('Buy order failed, please try again');
                                     });
                                     alert('Buy order is successfully submitted');
+                                    // set the UI's buy data fields to empty after order saved
                                     this.setState({
                                         buyAmount: '',
                                         buyPrice: '',
@@ -381,26 +420,32 @@ class Transaction extends Component{
                     }
                 }
             });
-            // return true;
         }
         this.validate_buy();
         this.retrieve_orders();
     }
 
+    /*
+    Validate the sell transaction and Save the sell order
+    @Param: Click Event on the Sell button
+     */
      save_SellOrder = (event) => {
         event.preventDefault();
         let moment = require('moment');
         let currentTime = moment();
+        // get current time stampt
         currentTime = currentTime.format();
         this.update_current_price_fb(this.state.pairs, this.state.uid);
         let current_coin_type = this.state.coinType
         const portfolioData = firebase.database().ref('portfolio/' + this.state.uid);
         console.log('current timestamp: ' + currentTime);
+        // Check the sell Total if empty
         if (this.state.sellTotal === null ||
             this.state.sellTotal === 0){
             alert("Sell Total is 0!");
             return;
-        }            
+        }
+        // check if the sell price is less than the coin's current value
         portfolioData.once('value', (snapshot) => {
             if(snapshot.val() !== null) {
                 if (this.state.sellPrice < snapshot.child("/current_prices/" + current_coin_type).val()){
@@ -413,7 +458,7 @@ class Transaction extends Component{
                 }
             }
         });
-
+        // validate save order
         this.validate_sell = () => {
             this.update_current_price_fb(this.state.pairs, this.state.uid);
             let current_coin_type = this.state.coinType
@@ -423,10 +468,12 @@ class Transaction extends Component{
                     for (const index in snapshot.child('assets/').val()){
                         if (index === current_coin_type){
                             const coin_amt = snapshot.child('/assets/' + current_coin_type).val();
+                            // Check if there is enough coin for transaction
                             if(coin_amt < this.state.sellAmount){
                                 alert('Not Enough Coin');
                                 return;
                             }else{
+                                // if enough coin, save the order to sell node
                                 this.setState({
                                     timestamp: currentTime
                                 }, () => {
@@ -445,6 +492,7 @@ class Transaction extends Component{
                                     }).catch(function (error) {
                                         console.log("Sell Order Insertion Failed: " + error.message)
                                     });
+                                    // set UI sell data field to empty
                                     this.setState({
                                         sellAmount: '',
                                         sellPrice: '',
@@ -462,6 +510,7 @@ class Transaction extends Component{
         this.retrieve_orders();
     }
 
+    /* Handle input to BuyAmount Field on the UI */
     handleBuyAmountChange(event) {
         // Prevent negative input value
         if(event.target.value < 0) {
@@ -473,6 +522,7 @@ class Transaction extends Component{
         // callback function for real time update on Total value
     }
 
+    /* Handle input to BuyPrice Field on the UI */
     handleBuyPriceChange(event) {
         if(event.target.value < 0) {
             event.target.value = Math.abs(event.target.value);
@@ -482,12 +532,14 @@ class Transaction extends Component{
         }, () => this.handleBuyTotalChange());
     }
 
+    /* Calculate the buyTotal Field on the UI */
     handleBuyTotalChange() {
         this.setState({
             buyTotal: this.state.buyAmount * this.state.buyPrice
         });
     }
 
+    /* Handle input to SellAmount Field on the UI */
     handleSellAmountChange(event) {
         if(event.target.value < 0) {
             event.target.value = Math.abs(event.target.value);
@@ -496,6 +548,8 @@ class Transaction extends Component{
             sellAmount: event.target.value,
         }, () => this.handleSellTotalChange());
     }
+
+    /* Handle input to SellPrice Field on the UI */
     handleSellPriceChange(event) {
         if(event.target.value < 0) {
             event.target.value = Math.abs(event.target.value);
@@ -505,12 +559,14 @@ class Transaction extends Component{
         }, () => this.handleSellTotalChange());
     }
 
+    /* Calculate the sellTotal Field on the UI */
     handleSellTotalChange() {
         this.setState({
             sellTotal: this.state.sellAmount * this.state.sellPrice
         });
     }
 
+    /* process order function calls */
     process_orders() {
         this.retrieve_orders();
         this.update_current_price_fb(this.state.pairs, this.state.uid);
@@ -519,7 +575,6 @@ class Transaction extends Component{
     }
 
     render(){
-
         const { classes } = this.props,{ buyOrders,  current_order, buyPrice, buyAmount, sellPrice, sellAmount } = this.state;
         return(
             <div>

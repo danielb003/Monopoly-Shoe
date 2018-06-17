@@ -1,6 +1,11 @@
+/*
+Admin page tests
+Author: Panhaseth Heang
+Date: 09/06/2018
+*/
+
 import React, { Component } from 'react';
 import Admin from "../src/dashboard/Admin";
-
 
 describe('Component: Admin', () => {
     it('tests Admin component to be defined', () => {

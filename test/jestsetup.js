@@ -1,3 +1,9 @@
+/*
+Jest Testing Setup Page
+Author: Panhaseth Heang
+Date: 31/05/2018
+*/
+
 import Enzyme, { shallow, render, mount } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 // React 16 Enzyme adapter

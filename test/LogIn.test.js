@@ -1,4 +1,10 @@
 import React, { Component } from 'react';
+/*
+Login page tests
+Author: Panhaseth Heang
+Date: 09/06/2018
+*/
+
 import LogIn from "../src/authentication/Login";
 
 describe('Component: LogIn', () => {

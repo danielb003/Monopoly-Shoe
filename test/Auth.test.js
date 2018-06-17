@@ -1,3 +1,9 @@
+/*
+Auth page tests
+Author: Panhaseth Heang
+Date: 16/06/2018
+*/
+
 import Auth from "../src/authentication/Auth";
 import SignUp from "../src/authentication/SignUp";
 import Login from "../src/authentication/Login";

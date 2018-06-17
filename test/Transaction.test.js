@@ -1,3 +1,8 @@
+/*
+Transaction page tests
+Author: Panhaseth Heang
+Date: 08/06/2018
+*/
 import React, { Component } from 'react';
 import RaisedButton from 'material-ui/Button';
 import TextField from 'material-ui/TextField';

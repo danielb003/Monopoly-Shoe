@@ -1,3 +1,9 @@
+/*
+Leaderboard page tests
+Author: Panhaseth Heang
+Date: 03/06/2018
+*/
+
 import React, { Component } from 'react';
 import AppBar from 'material-ui/AppBar';
 import Tabs, { Tab } from 'material-ui/Tabs';

@@ -1,6 +1,10 @@
+/*
+LogOut page tests
+Author: Panhaseth Heang
+Date: 16/06/2018
+*/
 import LogOut from "../src/authentication/Logout";
 import React, { Component } from 'react';
-
 
 describe('Component: LogOut', () => {
 

@@ -1,6 +1,10 @@
+/*
+SignUp page tests
+Author: Panhaseth Heang
+Date: 16/06/2018
+*/
 import SignUp from "../src/authentication/SignUp";
 import React, { Component } from 'react';
-
 
 describe('Component: SignUp', () => {
 
