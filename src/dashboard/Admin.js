@@ -31,34 +31,6 @@ export default class Admin extends Component {
       this.retrieveAllUsers();
    }
 
-    /*
-     Load user id with the current authenticated user
-     and their trading status
-     @Param: None
-      */
-   loadUserIDAndTradingStatus() {
-      var user_id = null;
-      app.auth().onAuthStateChanged((user) => {
-         if (user) {
-            user_id = user.uid;
-            this.setState({
-               uid : user_id
-            })
-            const userDB = app.database().ref('user/' + user_id);
-            var trading = null;
-            userDB.on('value', (snapshot) => {
-
-               if (snapshot.val() !== null) {
-                  trading = snapshot.child("/trading").val();
-               }
-               this.setState({
-                  openTradingAccount: trading
-               });
-            });
-         }
-      });
-   }
-
    /*
    Retrieve user profile data from 'user' node on Firebase DB, including admin status
    Then, save to states
@@ -169,7 +141,6 @@ export default class Admin extends Component {
    }
 
    render() {
-      const tradingStatus = this.state.openTradingAccount;
       const { user_data } = this.state;
       const historyState = this.state.history;
       // display history data of one user
