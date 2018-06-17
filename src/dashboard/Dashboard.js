@@ -679,7 +679,6 @@ class Dashboard extends Component {
                                     <h4>End Date</h4>
                                     <TextField
                                        id="endDate"
-                                       // label="End Date"
                                        value={this.state.endDate}
                                        onChange={this.endDateChange}
                                        type="date"

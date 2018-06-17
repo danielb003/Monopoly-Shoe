@@ -62,55 +62,52 @@ class CryptoChart extends Component {
       }
    }
 
-   handleChartHover(hoverLoc, activePoint){
+handleChartHover(hoverLoc, activePoint){
       this.setState({
-         hoverLoc: hoverLoc,
-         activePoint: activePoint
+      hoverLoc: hoverLoc,
+      activePoint: activePoint
       })
-   }
-   loadDataIntoChart(){
-      const url = 'https://min-api.cryptocompare.com/data/histoday?fsym=' + this.state.coin + '&limit=' + this.state.limit + '&tsym=' + this.state.currency;
+}
 
+loadDataIntoChart(){
+      const url = 'https://min-api.cryptocompare.com/data/histoday?fsym=' + this.state.coin + '&limit=' + this.state.limit + '&tsym=' + this.state.currency;
       fetch(url).then( r => r.json())
             .then((coinData) => {
-            const sortedData = [];
-            let count = 0;
-
-            for (let i in coinData.Data){
-                  // Create a new JavaScript Date object based on the timestamp
-                  // multiplied by 1000 so that the argument is in milliseconds, not seconds.
-                  var date = new Date(coinData.Data[i].time*1000);
-                  sortedData.push({
-                        d: date.toDateString(),
-                        p: coinData.Data[i].close.toLocaleString('en-AU',{ style: 'currency', currency: this.state.currency }),
-                        x: count, //previous days
-                        y: coinData.Data[i].close // numerical price
-                  });   
-                  count++;
-            }
-            this.setState({
-                  firstPrice: sortedData[0].y,
-                  data: sortedData,
-                  fetchingData: false
-            })
+                  const sortedData = [];
+                  let count = 0;
+                  for (let i in coinData.Data){
+                        // Create a new JavaScript Date object based on the timestamp
+                        // multiplied by 1000 so that the argument is in milliseconds, not seconds.
+                        var date = new Date(coinData.Data[i].time*1000);
+                        sortedData.push({
+                              d: date.toDateString(), // date
+                              p: coinData.Data[i].close.toLocaleString('en-AU',{ style: 'currency', currency: this.state.currency }), 
+                              x: count, // previous days
+                              y: coinData.Data[i].close // numerical price
+                        });   
+                        count++;
+                  }
+                  this.setState({
+                        firstPrice: sortedData[0].y, // set the first price to first data point in array
+                        data: sortedData, // set the data object to data loaded
+                        fetchingData: false // set fetching data to false
+                  })
             })
             .catch((e) => {
-            console.log(e);
+                  console.log(e);
             });
-   }
-   loadCurrentPrice() {
-        
+}
+
+loadCurrentPrice() {
       const coin = this.state.coin;
       const currency = this.state.currency;
       const firstPrice = this.state.firstPrice ? this.state.firstPrice : 0.01;
       const url = 'https://min-api.cryptocompare.com/data/price?fsym=' + coin + '&tsyms=' + currency;
-
       fetch(url).then(r => r.json())
       .then((coinData) => {
          const price = coinData.AUD;
          const change = price - firstPrice;
          const changeP = (price - firstPrice) / firstPrice * 100;
-
          this.setState({
             currentPrice: coinData.AUD,
             monthChangeD: change.toLocaleString('en-AU',{ style: 'currency', currency: currency }),
@@ -121,28 +118,37 @@ class CryptoChart extends Component {
       .catch((e) => {
          console.log(e);
       });
-    }
-    loadData()
-    {
+}
+
+// load data method used for refreshing data into the chart every 15 seconds
+loadData() {
       this.loadCurrentPrice();
       this.loadDataIntoChart();
-    }
-   onCoinClick(name){
+}
+
+// when different coins are selected change state therefore rerender component and reload data
+onCoinClick(name){
       this.setState({coin: name});
-  }
-  onTimeClick(limit, longname){
+}
+
+// when different time period is selected change state therefore rerender componet and reload data
+onTimeClick(limit, longname){
       this.setState({
             limit: limit,
             limitname: longname
       });
-  }
-   componentDidMount(){
+}
+
+// load data every 15 seconds
+componentDidMount(){
       this.loadData();
-      this.refresh = setInterval(() => this.loadData(), 50);
-   }
-   componentWillUnmount(){
+      this.refresh = setInterval(() => this.loadData(), 15000);
+}
+
+componentWillUnmount(){
       clearInterval(this.refresh);
-   }
+}
+
    render() {
        const isAuth = this.props.auth;
        const { classes } = this.props;

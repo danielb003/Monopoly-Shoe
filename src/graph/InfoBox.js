@@ -1,3 +1,10 @@
+/*
+CryptoChart Component
+Author: Peter Locarnini
+Edited and Refactored by: Daniel Bellino, Panhaseth Heang, Peter Locarnini
+Date: 17/06/2018
+*/
+
 import React, { Component } from 'react';
 import moment from 'moment';
 import './InfoBox.css';
@@ -20,17 +27,18 @@ class InfoBox extends Component {
                   <div className="subtext">{'Updated ' + moment(updatedAt ).fromNow()}</div>
                </div>
                : null}
-            { currentPrice ?
+            { monthChangeD ?
                <div id="middle" className='box'>
                   <div className="heading">{monthChangeD}</div>
                   <div className="subtext">{coin} ($) Change Since Last {limitname} ({currency})</div>
                </div>
                : null}
+            { monthChangeP ?
             <div id="right" className='box'>
                <div className="heading">{monthChangeP}</div>
                <div className="subtext">{coin} (%) Change Since Last {limitname}</div>
             </div>
-
+                : null}
          </div>
       );
    }
