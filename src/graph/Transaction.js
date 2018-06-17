@@ -583,6 +583,7 @@ class Transaction extends Component{
                         <div className="col-md-6 pad-box">
                             <div className="buy-box pull-right">
                                 <h2 className="text-center">BUYING</h2>
+                                <p>Coin: <span id="selected_coin_buy">{this.state.coinType}</span></p>
                                 <p>Price:</p>
                                 <form id="transaction" onSubmit={this.save_BuyOrder}>
                                 <TextField fullWidth
@@ -644,6 +645,7 @@ class Transaction extends Component{
                         <div className="col-md-6 pad-box">
                             <div className="sell-box pull-left">
                                 <h2 className="text-center">SELLING</h2>
+                                <p>Coin: <span id="selected_coin_sell">{this.state.coinType}</span></p>
                                 <p>Price:</p>
                                 <form id="transaction" onSubmit={this.save_SellOrder}>
                                     <TextField fullWidth

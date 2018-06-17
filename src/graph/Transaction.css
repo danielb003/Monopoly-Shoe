@@ -1,7 +1,7 @@
 /*
 Leaderboard CSS
-Author: Panhaseth Heang
-Edited by: Daniel Bellino
+Author: Bryan Soh, Panhaseth Heang
+Edited by: Bryan Soh, Panhaseth Heang, Daniel Bellino
 Date: 03/06/2018
 */
 
@@ -88,4 +88,10 @@ div.pull-right {
 }
 div.pull-left {
     margin-right: 140px;
+}
+#selected_coin_buy{
+    color: rgb(0, 102, 0);
+}
+#selected_coin_sell{
+    color: rgb(204, 0, 0);
 }

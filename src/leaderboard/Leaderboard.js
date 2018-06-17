@@ -435,8 +435,8 @@ class Leaderboard extends Component {
                                         <tr>
                                             <th>Rank</th>
                                             <th>Trader Name</th>
-                                            <th>Trades</th>
-                                            <th>Profit</th>
+                                            <th>Trade Counts</th>
+                                            <th>Profit/Loss %</th>
                                         </tr>
                                         </thead>) }
                                     {userTableData}
@@ -452,8 +452,8 @@ class Leaderboard extends Component {
                                         <tr>
                                             <th>Rank</th>
                                             <th>Trader Name</th>
-                                            <th>Trades</th>
-                                            <th>Profit</th>
+                                            <th>Trade Counts</th>
+                                            <th>Profit/Loss %</th>
                                         </tr>
                                         </thead>) }
                                     {userTableData}
@@ -469,8 +469,8 @@ class Leaderboard extends Component {
                                         <tr>
                                             <th>Rank</th>
                                             <th>Trader Name</th>
-                                            <th>Trades</th>
-                                            <th>Profit</th>
+                                            <th>Trade Counts</th>
+                                            <th>Profit/Loss %</th>
                                         </tr>
                                         </thead>) }
                                     {userTableData}
@@ -486,8 +486,8 @@ class Leaderboard extends Component {
                                         <tr>
                                             <th>Rank</th>
                                             <th>Trader Name</th>
-                                            <th>Trades</th>
-                                            <th>Profit</th>
+                                            <th>Trade Counts</th>
+                                            <th>Profit/Loss %</th>
                                         </tr>
                                         </thead>) }
                                     {userTableData}
