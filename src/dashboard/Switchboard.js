@@ -1,3 +1,8 @@
+/*
+Switchboard Page
+Author: Daniel Bellino
+Date: 16/06/2018
+*/
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { app } from '../Constant';

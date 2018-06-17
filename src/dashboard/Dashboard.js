@@ -1,3 +1,10 @@
+/*
+Dashboard Page
+Author: Peter Locarnini, Bryan Soh, Panhaseth Heang
+Edited and Refactored By: Peter Locarnini, Panhaseth Heang
+Date: 16/06/2018
+*/
+
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
@@ -27,7 +34,7 @@ class Dashboard extends Component {
           open_sell_orders: [],
           pairs: [{name: "BTC"},{name: "LTC"},{name: "ETH"},{name: "NULS"},{name: "XRP"},{name: "XMR"},{name: "NEO"},{name: "EOS"}],
       }
-
+      // Bindings before usage
       this.handleSwitchChange = this.handleSwitchChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
       this.startDateChange = this.startDateChange.bind(this);
@@ -54,9 +61,8 @@ class Dashboard extends Component {
             const userData = app.database().ref('user/' + user_id);
             userData.on('value', (snapshot) => {
                if(snapshot.val() !== null) {
-                  console.log('admin: ' + snapshot.child('admin').val());
                   admin = snapshot.child('admin').val();
-
+                  // check user's admin status and set to 'admin' if true
                   this.setState({
                      adminStatus: admin
                   });
@@ -86,6 +92,10 @@ class Dashboard extends Component {
 
    }
 
+   /*
+    load current market values of all coins and save to states
+    @Param: None
+    */
     loadCurrentPrice() {
         app.auth().onAuthStateChanged((user) => {
             if (user) {
@@ -110,7 +120,11 @@ class Dashboard extends Component {
             }
         });
     }
- 
+
+    /*
+    Get buy orders from Firebase DB and save to states
+    @Param: None
+     */
    retrieve_open_buy_orders() {
     
       const assignedOpenBuys = [];
@@ -138,7 +152,11 @@ class Dashboard extends Component {
          }
       });
    }
-    
+
+    /*
+     Get sell orders from Firebase DB and save to states
+     @Param: None
+      */
     retrieve_open_sell_orders() {
 
         const assignedOpenSells = [];
@@ -167,6 +185,11 @@ class Dashboard extends Component {
         });
     }
 
+    /*
+    Load user id with the current authenticated user
+    and their trading status
+    @Param: None
+     */
    loadUserIDAndTradingStatus() {
       let user_id = null;
       app.auth().onAuthStateChanged((user) => {
@@ -174,7 +197,7 @@ class Dashboard extends Component {
             user_id = user.uid;
             this.setState({
                uid : user_id
-            })
+            });
             const userDB = app.database().ref('user/' + user_id);
             let trading = null;
             userDB.on('value', (snapshot) => {
@@ -184,14 +207,18 @@ class Dashboard extends Component {
                }
                this.setState({
                   openTradingAccount: trading
-               }, () => {
-                  console.log('load trading : ' + this.state.openTradingAccount);
                });
             });
          }
       });
    }
 
+   /*
+   Handle Switch button for trading account status, switch 'on' or 'off'
+   Default: Off
+   Then update trading status automatically after clicked
+   @Param: Click Event to Switch 'on or 'off'
+    */
    handleSwitchChange(event) {
       this.setState({
          openTradingAccount: event.target.checked
@@ -201,13 +228,21 @@ class Dashboard extends Component {
 
    }
 
+   /*
+   Update trading status function, it is called after the switch event
+   @Param: None
+    */
    updateTrading() {
-      console.log('trading status in handle change ' + this.state.openTradingAccount);
       app.database().ref('user/' + this.state.uid + '/').update({
          trading: this.state.openTradingAccount
       });
    }
 
+   /*
+   Retrieve History from 'history' node on Firebase DB
+   Then, save to states
+   @Param: None
+    */
    retrieve_history(){
 
       const assignedHistory = [];
@@ -237,6 +272,11 @@ class Dashboard extends Component {
       });
    }
 
+   /*
+   Get user profile data from 'user' node on Firebase DB, including admin status
+   Then, save to states
+   @Param: None
+    */
    retrieve_userData(){
       let user_id = null, admin = false;
       app.auth().onAuthStateChanged((user) => {
@@ -265,6 +305,12 @@ class Dashboard extends Component {
       });
    }
 
+   /*
+   Get user financial assets data from 'portfolio/[user_id]/assets/' node from Firebase DB
+   Then, calculate average price of coins, total worth, profit/loss($), profit/loss(%)
+   Then, Save to state
+   @Param: None
+    */
    retrieve_coins(){
         let user_id = null;
         app.auth().onAuthStateChanged((user) => {
@@ -293,7 +339,7 @@ class Dashboard extends Component {
                                     let current_price = snapshot.child('/current_prices/' + key).val();
                                     let current_amount = snapshot.child('/assets/' + key).val();
                                     let current_cost = snapshot.child('/amount_spent/' + key).val();
-                                    //console.log(key + " " + current_price + " " + current_amount + " " + current_cost);
+
                                     assignedCoins.push({
                                         name: key,
                                         amt: current_amount,
@@ -316,13 +362,19 @@ class Dashboard extends Component {
         });
     }
 
+    /*
+    Handle 'Filter' button event, when user filter the start and end date of history data
+    @Param: Click Event on "Filter" button
+     */
    handleSubmit(event) {
       event.preventDefault();
       let moment = require('moment');
+      // format start data and end date
       let momentStartDate=moment(this.state.startDate);
       let momentEndDate=moment(this.state.endDate);
 
       const assignedFilHistory = [];
+      // get data from 'history' node
       const historyFB = app.database().ref('history/');
       historyFB.on('value', (snapshot) => {
          if(snapshot.val() !== null){
@@ -330,10 +382,11 @@ class Dashboard extends Component {
             for(const index in snapshot.val()) {
                if (snapshot.child(index + "/user_id").val() === app.auth().currentUser.uid) {
                   let historyDate = snapshot.child(index + "/timestamp").val();
+                  // cut off the time, keep the date
                   historyDate = historyDate.substring(0, 10);
                   let momentDate = moment(historyDate);
+                  // filter between, including start and end date
                   if(moment(momentDate).isBetween(momentStartDate,momentEndDate)) {
-
                      assignedFilHistory.push({
                         id: index,
                         amount: snapshot.child(index + "/amount").val(),
@@ -349,14 +402,14 @@ class Dashboard extends Component {
             }
             this.setState({
                history: assignedFilHistory
-            }, () => {
-               console.log(assignedFilHistory)
             });
          }
       });
-
    }
 
+   /*
+   Handle input in start date field and save to state
+    */
    startDateChange(event){
       this.setState({
          startDate: event.target.value
@@ -364,6 +417,9 @@ class Dashboard extends Component {
 
    }
 
+    /*
+    Handle input in end date field and save to state
+     */
    endDateChange(event){
       this.setState({
          endDate: event.target.value
@@ -372,6 +428,7 @@ class Dashboard extends Component {
 
 
    render(){
+       // check for user authentication, and send them to home page if unauthenticated
       if(this.state.authenticated === false) {
          return <Redirect to='/'/>
       }
@@ -380,6 +437,7 @@ class Dashboard extends Component {
       const tradingStatus = this.state.openTradingAccount;
       const { startDate,endDate, user_data } = this.state;
 
+      // history data to populate the history table
       const historyTableData = historyState ? (
          this.state.history.map((item) => {
             return (
@@ -400,6 +458,7 @@ class Dashboard extends Component {
 
       const openBuyOrdersState = this.state.open_buy_orders;
 
+      // buy orders data to populate open_buy_order table
       const openBuyTableData = openBuyOrdersState ? (
           this.state.open_buy_orders.map((item) => {
           return (
@@ -419,6 +478,7 @@ class Dashboard extends Component {
 
       const openSellOrdersState = this.state.open_sell_orders;
 
+       // sell orders data to populate sell_buy_order table
       const openSellTableData = openSellOrdersState ? (
           this.state.open_sell_orders.map((item) => {
           return (
@@ -437,10 +497,13 @@ class Dashboard extends Component {
       );
 
 
+       // porfolio data including coin data and average price, total balance, total worth, profit/loss($) and profit/loss(%)
+       // to populate portfolio data
       const coinState = this.state.coins;
       const currency = this.state.currency;
       const coinTableData = coinState ? (
          this.state.coins.map((item) => {
+             // profit
             if (item.profitLoss >= 0) {
                 return (
                     <tbody>
@@ -457,6 +520,7 @@ class Dashboard extends Component {
                     </tbody>
                  )
             }
+            // loss
             if (item.profitLoss < 0) {
                 return (
                     <tbody>
@@ -542,12 +606,8 @@ class Dashboard extends Component {
                   <div className="col-md-9 noPad">
                      <div className="text-center"><h1 id="dashboard" className="display-4">DASHBOARD</h1></div>
                      <div className="container col-md-12 noPad">
-
-
                         <div className="container-fluid noPad">
                            <h4 id="heading" className="pull-left">Portfolio</h4>
-
-
                            <table className="table table-bordered">
                               {this.state.coins ? (<thead className="">
                               <tr>
@@ -567,7 +627,6 @@ class Dashboard extends Component {
                         </div>
                         <div className="container-fluid noPad">
                               <h4 id="heading" className="pull-left">Open Buy Orders</h4>
-
                                  <table className="table table-bordered">
                                    {this.state.open_buy_orders ? (<thead className="">
                                    <tr>
@@ -584,7 +643,6 @@ class Dashboard extends Component {
   
                             <div className="container-fluid noPad">
                               <h4 id="heading" className="pull-left">Open Sell Orders</h4>
-
                                  <table className="table table-bordered">
                                    {this.state.open_sell_orders ? (<thead className="">
                                    <tr>
@@ -601,7 +659,6 @@ class Dashboard extends Component {
 
                         <div className="container-fluid noPad">
                            <h4 id="heading" className="pull-left">Transaction History</h4>
-
                            <div className="col-md-12 white-bg table-bordered">
                               <form id="filter" onSubmit={this.handleSubmit} noValidate>
                                  <div className="col-md-3">
@@ -651,7 +708,6 @@ class Dashboard extends Component {
                               </thead>) : null}
                               {historyTableData}
                            </table>
-
                         </div>
                      </div>
                   </div>

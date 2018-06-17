@@ -1,3 +1,9 @@
+/*
+SignUp Page
+Author: Daniel Bellino
+Edited and Refactored by: Daniel Bellino, Panhaseth Heang, Peter Locarnini
+Date: 16/06/2018
+*/
 import React, { Component } from 'react';
 import './SignUp.css';
 import { Redirect } from 'react-router-dom'
@@ -8,6 +14,7 @@ export default class SignUp extends Component {
    constructor(props) {
       super(props);
 
+      // validator states including various validations of first name, last name, email, password
       this.validator = new FormValidator([
          {
             field: 'fname',
@@ -92,17 +99,17 @@ export default class SignUp extends Component {
       this.removeAuthListener();
 
       app.auth().onAuthStateChanged((user) => {
+         // check user authenticity
          if(user){
             var authData = app.auth().currentUser;
-            if (authData) {
-               console.log(authData.uid);
-            }
             var uid = authData.uid;
+            // Change the node id from Firebase's default 'push id' to 'user id'
             const user = app.database().ref('user/' + this.state.pushID);
             user.on('value', (snapshot) => {
                if (snapshot.val() !== null) {
-
+                  // remove node with push id
                   user.remove();
+                  // create a new node with user id
                   app.database().ref('user/' + uid).set({
                      fname: this.state.fname,
                      lname: this.state.lname,
@@ -111,6 +118,7 @@ export default class SignUp extends Component {
                      admin: this.state.admin,
                      trading: false
                   });
+                  // initialize the user initial's assets data
                   app.database().ref('portfolio/' + uid + '/assets').set({
                     BTC: 0,
                     EOS: 0,
@@ -136,31 +144,33 @@ export default class SignUp extends Component {
             });
          }
       });
-
-
    }
 
+   /*
+   Handle input on all fields and save to state
+   @Param: Keyboard input event
+    */
    handleChange(event) {
       const name = event.target.name;
       const value = event.target.value;
       this.setState({ [name]: value });
-      console.table([{
-         fname: this.state.fname,
-         lname: this.state.lname,
-         email: this.state.email,
-         password: this.state.password,
-         redirect: this.state.redirect
-      }])
    }
 
+   /*
+   Handle signing up, validate the input
+   If validation passes, save data into 'user' node on Firebase DB
+   @Param: Click Event on SignUp button
+    */
    handleSignUp(event) {
       event.preventDefault();
-
+      // validate input
       const validation = this.validator.validate(this.state);
       this.setState({validation});
       this.submitted = true;
 
+      // check if validation passed
       if (validation.isValid) {
+         // API call to create user with email and password
          app.auth().createUserWithEmailAndPassword(this.state.email, this.state.password).catch(function (error) {
             var errorCode = error.code;
             var errorMessage = error.message;
@@ -173,14 +183,7 @@ export default class SignUp extends Component {
          })
       }
 
-      console.table([{
-         fname: this.state.fname,
-         lname: this.state.lname,
-         email: this.state.email,
-         password: this.state.password,
-         redirect: this.state.redirect
-      }])
-
+      // save data to 'user' node
       const usersRef = app.database().ref('user');
       const user = {
          fname: this.state.fname,

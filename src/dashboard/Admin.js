@@ -1,3 +1,9 @@
+/*
+Admin Page
+Author: Daniel Bellino
+Edited and Refactored By: Daniel Bellino, Panhaseth Heang
+Date: 16/06/2018
+*/
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import './Admin.css';
@@ -25,6 +31,11 @@ export default class Admin extends Component {
       this.retrieveAllUsers();
    }
 
+    /*
+     Load user id with the current authenticated user
+     and their trading status
+     @Param: None
+      */
    loadUserIDAndTradingStatus() {
       var user_id = null;
       app.auth().onAuthStateChanged((user) => {
@@ -40,17 +51,19 @@ export default class Admin extends Component {
                if (snapshot.val() !== null) {
                   trading = snapshot.child("/trading").val();
                }
-               // console.log('load trading : ' + trading);
                this.setState({
                   openTradingAccount: trading
-               }, () => {
-                  console.log('load trading : ' + this.state.openTradingAccount);
                });
             });
          }
       });
    }
 
+   /*
+   Retrieve user profile data from 'user' node on Firebase DB, including admin status
+   Then, save to states
+   @Param: None
+    */
    retrieveUserData() {
       var user_id = null, admin = false;
       app.auth().onAuthStateChanged((user) => {
@@ -81,6 +94,11 @@ export default class Admin extends Component {
       });
    }
 
+   /*
+   Retrieve all users from 'user' node on Firebase DB
+   Then, save to state as an array
+   @Param: None
+    */
    retrieveAllUsers() {
       const assignedUser = [];
       const userFB = app.database().ref('user/');
@@ -104,9 +122,11 @@ export default class Admin extends Component {
       });
    }
 
+   /*
+   Get history data of one user and save to State, using their first name and last name
+   @Param: first name, last name
+    */
    retrieveHistory(fname, lname){
-      console.log(fname);
-      console.log(lname);
       var user_id;
       const userFB = app.database().ref('user/');
       userFB.on('value', (snapshot) => {
@@ -115,13 +135,13 @@ export default class Admin extends Component {
             for(const index in snapshot.val()) {
                if(snapshot.child(index + "/fname").val() === fname && snapshot.child(index + "/lname").val() == lname) {
                   user_id = index;
-                  console.log(user_id);
                }
             }
          }
       })
 
       const assignedHistory = [];
+      // get date from 'history' node on Firebase DB and save to state
       const historyFB = app.database().ref('history/');
       historyFB.on('value', (snapshot) => {
          if(snapshot.val() !== null){
@@ -151,8 +171,8 @@ export default class Admin extends Component {
    render() {
       const tradingStatus = this.state.openTradingAccount;
       const { user_data } = this.state;
-
       const historyState = this.state.history;
+      // display history data of one user
       const historyTableData = historyState ? (
          this.state.history.map(function(item){
             return (
@@ -171,6 +191,9 @@ export default class Admin extends Component {
          null
       );
 
+      // display each row of data with first name and last name and is clickable,
+       // display history table of any user clicked
+       // including 'Go' button which redirect user to Firebase Auth page for password reset/freeze user functionalties
       const userState = this.state.all_users;
       const userTableData = userState ? (
          this.state.all_users.map((item) => {
@@ -222,12 +245,10 @@ export default class Admin extends Component {
                         <br/><br/>
                      </div>
                   </div>
-
-
-
                   <div className="col-md-9 noPad">
                      <div className="text-center"><h1 id="dashboard" className="display-4">ADMINISTRATOR</h1></div>
                      <div className="container col-md-12 noPad">
+
                         <div className="container-fluid noPad">
                            <h4 id="heading" className="pull-left">Users</h4>
 
@@ -241,12 +262,10 @@ export default class Admin extends Component {
                               </thead>) : null}
                               {userTableData}
                            </table>
-
                         </div>
 
                         <div className="container-fluid noPad">
                            <h4 id="heading" className="pull-left">User History</h4>
-
                            <table className="table table-bordered">
                               {this.state.history ? (<thead className="">
                               <tr>
