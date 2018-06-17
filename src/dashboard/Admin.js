@@ -2,8 +2,9 @@
 Admin Page
 Author: Daniel Bellino
 Edited and Refactored By: Daniel Bellino, Panhaseth Heang
-Date: 16/06/2018
+Date: 17/06/2018
 */
+
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import './Admin.css';
@@ -29,34 +30,6 @@ export default class Admin extends Component {
       this.loadUserIDAndTradingStatus();
       this.retrieveUserData();
       this.retrieveAllUsers();
-   }
-
-    /*
-     Load user id with the current authenticated user
-     and their trading status
-     @Param: None
-      */
-   loadUserIDAndTradingStatus() {
-      var user_id = null;
-      app.auth().onAuthStateChanged((user) => {
-         if (user) {
-            user_id = user.uid;
-            this.setState({
-               uid : user_id
-            })
-            const userDB = app.database().ref('user/' + user_id);
-            var trading = null;
-            userDB.on('value', (snapshot) => {
-
-               if (snapshot.val() !== null) {
-                  trading = snapshot.child("/trading").val();
-               }
-               this.setState({
-                  openTradingAccount: trading
-               });
-            });
-         }
-      });
    }
 
    /*
@@ -169,7 +142,6 @@ export default class Admin extends Component {
    }
 
    render() {
-      const tradingStatus = this.state.openTradingAccount;
       const { user_data } = this.state;
       const historyState = this.state.history;
       // display history data of one user

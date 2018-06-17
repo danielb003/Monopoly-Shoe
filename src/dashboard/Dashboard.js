@@ -1,6 +1,6 @@
 /*
 Dashboard Page
-Author: Peter Locarnini, Bryan Soh, Panhaseth Heang
+Author: Peter Locarnini, Bryan Soh, Panhaseth Heang, Daniel Bellino
 Edited and Refactored By: Peter Locarnini, Panhaseth Heang
 Date: 16/06/2018
 */
@@ -48,7 +48,9 @@ class Dashboard extends Component {
       this.retrieve_userData = this.retrieve_userData.bind(this);
       this.retrieve_coins = this.retrieve_coins.bind(this);
    }
-
+   /* this method checks the authentication state and determines whether or not
+    * to render this page
+    */
    componentWillMount() {
       this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
          if(user) {
@@ -76,7 +78,7 @@ class Dashboard extends Component {
       });
 
    }
-
+   /* these methods will be called once the component has rendered */
    componentDidMount(){
       this.loadUserIDAndTradingStatus();
       this.loadCurrentPrice();

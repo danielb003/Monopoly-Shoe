@@ -2,8 +2,9 @@
 SignUp Page
 Author: Daniel Bellino
 Edited and Refactored by: Daniel Bellino, Panhaseth Heang, Peter Locarnini
-Date: 16/06/2018
+Date: 17/06/2018
 */
+
 import React, { Component } from 'react';
 import './SignUp.css';
 import { Redirect } from 'react-router-dom'

@@ -1,3 +1,10 @@
+/*
+Index Component
+Author: Daniel Bellino
+Edited and Refactored By: Daniel Bellino
+Date: 17/06/2018
+*/
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
@@ -11,6 +18,7 @@ import Switchboard from './dashboard/Switchboard';
 import { BrowserRouter, Route } from 'react-router-dom';
 import registerServiceWorker from './registerServiceWorker';
 
+/* Routing for the whole application is below */
 const Root = () => (
    <BrowserRouter>
       <div>

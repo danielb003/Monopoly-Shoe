@@ -1,3 +1,10 @@
+/*
+Authentication Component
+Author: Daniel Bellino
+Edited and Refactored By:
+Date: 17/06/2018
+*/
+
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import './Auth.css';
@@ -15,6 +22,7 @@ export default class Auth extends Component {
         this.handleClick = this.handleClick.bind(this);
     }
 
+    /* method to handle the login and sign up tab */
     handleClick(type) {
        this.setState({ type: type });
     }

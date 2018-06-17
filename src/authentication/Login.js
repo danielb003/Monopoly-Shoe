@@ -1,3 +1,10 @@
+/*
+Login Page
+Author: Daniel Bellino
+Edited and Refactored By:
+Date: 17/06/2018
+*/
+
 import React, { Component } from 'react';
 import './Login.css';
 import { Redirect } from 'react-router-dom'
@@ -50,7 +57,7 @@ export default class Login extends Component {
       this.handleLogin = this.handleLogin.bind(this);
       this.changeState = this.changeState.bind(this);
    }
-
+   /* checks the authentication status before rendering */
    componentWillMount() {
       this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
          if(user) {
@@ -64,7 +71,7 @@ export default class Login extends Component {
    componentWillUnmount(){
       this.removeAuthListener();
    }
-
+   /* handle and record the changes in the form */
    handleChange(event) {
       const name = event.target.name;
       const value = event.target.value;
@@ -75,7 +82,7 @@ export default class Login extends Component {
          redirect: this.state.redirect
       }])
    }
-
+   /* method to process the submission of the form */
    handleLogin(event) {
       event.preventDefault()
 
@@ -97,11 +104,11 @@ export default class Login extends Component {
          redirect: this.state.redirect
       }])
    }
-
+   /* method changes the login state */
    changeState() {
-      this.setState({loginError: true})
+      this.setState({ loginError: true })
    }
-
+   /* redirects the user after successful login, otherwise renders as normal */
    render() {
       let validation = this.submitted ?
          this.validator.validate(this.state) :

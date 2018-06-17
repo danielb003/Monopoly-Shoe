@@ -1,3 +1,10 @@
+/*
+Constant Component
+Author: Daniel Bellino, Panhaseth Heang
+Edited and Refactored By: Daniel Bellino, Panhaseth Heang
+Date: 17/06/2018
+*/
+
 import firebase from 'firebase';
 
 // Firebase Database Configuration Data

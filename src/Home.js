@@ -1,3 +1,10 @@
+/*
+Home Page
+Author: Daniel Bellino, Peter Locarnini, Bryan Soh, Panhaseth Heang
+Edited and Refactored By: Daniel Bellino
+Date: 17/06/2018
+*/
+
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import CryptoChart from './graph/CryptoChart';
@@ -14,7 +21,9 @@ export default class Home extends Component {
          adminStatus: false
       };
    }
-
+   /* checks the authentication state to determine what components to display and what
+    * the navigation should display
+    */
    componentWillMount() {
       this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
          if(user) {
@@ -23,14 +32,14 @@ export default class Home extends Component {
             this.setState({ authenticated: false })
          }
       });
-      this.loadTradingStatus();
+      this.loadTradingAdminStatus();
    }
 
    componentWillUnmount() {
       this.removeAuthListener()
    }
-
-   loadTradingStatus() {
+   /* method to check the loading and admin status */
+   loadTradingAdminStatus() {
       var user_id = null;
       app.auth().onAuthStateChanged((user) => {
          if (user) {
