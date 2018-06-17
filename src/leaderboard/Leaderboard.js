@@ -221,7 +221,7 @@ class Leaderboard extends Component {
             for(const id in userLists){
                 if(userLists[id] === historyLists[index]['user_id']){
                     const type = historyLists[index]['type'];
-                    const coinTotal = historyLists[index]['coinTotal'];
+                    const coinTotal = historyLists[index]['total'];
                     const coinType = historyLists[index]['coinType'];
                     for(const coinIndex in this.state.coinPrice){
                         if(this.state.coinPrice[coinIndex][coinType]){
@@ -268,7 +268,6 @@ class Leaderboard extends Component {
                 reducedState.push(value);
             }
         });
-
         const newUserState = [];
         for(const index in reducedState){
             // API call to Firebase Database and get data from 'user/[uid]' node
