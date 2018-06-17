@@ -96,6 +96,12 @@ export default class SignUp extends Component {
       });
    }
 
+   /*
+   When the user’s leaving the page, this method will retrieve the authenticated user id
+   And, replace the default ‘push id’ with the user’s ‘uid’ as the default id for user node in many API calls throughout the application.
+   This is because push ID is not directly tied to each user,
+   but uid is fixed and unique for each user and can be retrieved easily with a simple function call.
+    */
    componentWillUnmount() {
       this.removeAuthListener();
 
