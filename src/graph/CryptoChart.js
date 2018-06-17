@@ -30,12 +30,13 @@ const styles = theme => ({
         }
     },
     custom3: {
-       fontSize: 12,
        textAlign: "center",
        margin: "50px auto -50px auto",
-       border: "1px solid yellow",
-       textColorPrimary: "#ffffff"
-    }
+    },
+   custom4: {
+      fontSize: 18,
+      fontColor: "#ffffff"
+   }
 });
 
 class CryptoChart extends Component {
@@ -184,7 +185,7 @@ componentWillUnmount(){
                   </div>
                   <div className='row'>
                   <div className={classes.custom3}>
-                     <p>Please use the buttons above to select the coin you would like to buy shares in</p>
+                     <p className={classes.custom4}>Please use the buttons above to select the coin you would like to buy shares in</p>
                   </div>
                   </div>
                 {

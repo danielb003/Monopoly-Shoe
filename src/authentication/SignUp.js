@@ -204,7 +204,6 @@ export default class SignUp extends Component {
 
       // set user's uid as push key
       if (validation.isValid) {
-         console.log("In here");
          var push_id = usersRef.push(user).key;
          this.setState({
             pushID: push_id
