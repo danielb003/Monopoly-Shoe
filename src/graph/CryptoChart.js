@@ -35,7 +35,7 @@ const styles = theme => ({
     },
    custom4: {
       fontSize: 18,
-      fontColor: "#ffffff"
+      color: "#ffffff"
    }
 });
 
@@ -185,7 +185,7 @@ componentWillUnmount(){
                   </div>
                   <div className='row'>
                   <div className={classes.custom3}>
-                     <p className={classes.custom4}>Please use the buttons above to select the coin you would like to buy shares in</p>
+                     <p className={classes.custom4} style={{color:'#e0e0e0'}}>Please use the buttons above to select the coin you would like to buy shares in</p>
                   </div>
                   </div>
                 {
