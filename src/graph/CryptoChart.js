@@ -35,7 +35,7 @@ const styles = theme => ({
     },
    custom4: {
       fontSize: 18,
-      fontColor: "#ffffff"
+      color: "#ffffff !important"
    }
 });
 
@@ -183,10 +183,8 @@ componentWillUnmount(){
                                                                        color="primary" key={index} onClick={() => this.onCoinClick(pair.name)}>{pair.name}</Button>)}
                   </div>
                   </div>
-                  <div className='row'>
                   <div className={classes.custom3}>
                      <p className={classes.custom4}>Please use the buttons above to select the coin you would like to buy shares in</p>
-                  </div>
                   </div>
                 {
                     isAuth ? (<Transaction coin={this.state.coin}/>) : null
