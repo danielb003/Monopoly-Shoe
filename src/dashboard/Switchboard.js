@@ -9,7 +9,7 @@ export default class Switchboard extends Component {
          adminStatus: null
       }
    }
-
+   /* checks the type of user before deciding where to redirect them */
    componentWillMount() {
       this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
          if(user) {
@@ -33,7 +33,7 @@ export default class Switchboard extends Component {
    componentWillUnmount() {
       this.removeAuthListener();
    }
-
+   /* depending on the redirect value the page will load the dashboard for the current user */
    render() {
       const adminStatus = this.state.adminStatus;
 

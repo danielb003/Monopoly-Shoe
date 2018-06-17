@@ -15,6 +15,7 @@ export default class Auth extends Component {
         this.handleClick = this.handleClick.bind(this);
     }
 
+    /* method to handle the login / sign up tab*/
     handleClick(type) {
        this.setState({ type: type });
     }

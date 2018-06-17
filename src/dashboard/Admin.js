@@ -18,39 +18,13 @@ export default class Admin extends Component {
       };
 
    }
-
+   /* methods that can be accessed once the component has loaded successfully */
    componentDidMount(){
       this.loadUserIDAndTradingStatus();
       this.retrieveUserData();
       this.retrieveAllUsers();
    }
-
-   loadUserIDAndTradingStatus() {
-      var user_id = null;
-      app.auth().onAuthStateChanged((user) => {
-         if (user) {
-            user_id = user.uid;
-            this.setState({
-               uid : user_id
-            })
-            const userDB = app.database().ref('user/' + user_id);
-            var trading = null;
-            userDB.on('value', (snapshot) => {
-
-               if (snapshot.val() !== null) {
-                  trading = snapshot.child("/trading").val();
-               }
-               // console.log('load trading : ' + trading);
-               this.setState({
-                  openTradingAccount: trading
-               }, () => {
-                  console.log('load trading : ' + this.state.openTradingAccount);
-               });
-            });
-         }
-      });
-   }
-
+   /* method to retrieve the data of the current admin user */
    retrieveUserData() {
       var user_id = null, admin = false;
       app.auth().onAuthStateChanged((user) => {
@@ -80,7 +54,7 @@ export default class Admin extends Component {
          }
       });
    }
-
+   /* method to populate the users table in admin mode */
    retrieveAllUsers() {
       const assignedUser = [];
       const userFB = app.database().ref('user/');
@@ -103,7 +77,7 @@ export default class Admin extends Component {
          }
       });
    }
-
+   /* method to retrieve the history of any chosen user in the user table */
    retrieveHistory(fname, lname){
       console.log(fname);
       console.log(lname);
@@ -149,7 +123,6 @@ export default class Admin extends Component {
    }
 
    render() {
-      const tradingStatus = this.state.openTradingAccount;
       const { user_data } = this.state;
 
       const historyState = this.state.history;

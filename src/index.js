@@ -11,6 +11,7 @@ import Switchboard from './dashboard/Switchboard';
 import { BrowserRouter, Route } from 'react-router-dom';
 import registerServiceWorker from './registerServiceWorker';
 
+/* Routing for the whole application is below */
 const Root = () => (
    <BrowserRouter>
       <div>

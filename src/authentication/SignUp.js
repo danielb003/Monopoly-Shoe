@@ -77,7 +77,7 @@ export default class SignUp extends Component {
       this.handleChange = this.handleChange.bind(this);
       this.handleSignUp = this.handleSignUp.bind(this);
    }
-
+   /* this method will check the authentication state before rendering */
    componentWillMount() {
       this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
          if(user) {
@@ -87,7 +87,7 @@ export default class SignUp extends Component {
          }
       });
    }
-
+   /* this method will check the authentication state and */
    componentWillUnmount() {
       this.removeAuthListener();
 
@@ -139,7 +139,7 @@ export default class SignUp extends Component {
 
 
    }
-
+   /* method to handle and record the form changes */
    handleChange(event) {
       const name = event.target.name;
       const value = event.target.value;
@@ -152,7 +152,7 @@ export default class SignUp extends Component {
          redirect: this.state.redirect
       }])
    }
-
+   /* method to handle the submission of the form */
    handleSignUp(event) {
       event.preventDefault();
 
@@ -199,7 +199,7 @@ export default class SignUp extends Component {
       app.database().ref().child('user').child(push_id).set(user);
 
    }
-
+   /* renders unless otherwise redirected. i.e. not authenticated */
    render() {
       let validation = this.submitted ?
          this.validator.validate(this.state) :

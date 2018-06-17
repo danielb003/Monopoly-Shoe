@@ -1,10 +1,11 @@
 import validator from 'validator';
 
-class FormValidator {
+export default class FormValidator {
    constructor(validations) {
       this.validations = validations;
    }
 
+   /* validator method for forms */
    validate(state) {
       let validation = this.valid();
 
@@ -35,5 +36,3 @@ class FormValidator {
       return { isValid: true, ...validation };
    }
 }
-
-export default FormValidator;

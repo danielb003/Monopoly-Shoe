@@ -14,7 +14,9 @@ export default class Home extends Component {
          adminStatus: false
       };
    }
-
+   /* checks the authentication state to determine what components to display and what
+    * the navigation should display
+    */
    componentWillMount() {
       this.removeAuthListener = app.auth().onAuthStateChanged((user) => {
          if(user) {
@@ -23,14 +25,14 @@ export default class Home extends Component {
             this.setState({ authenticated: false })
          }
       });
-      this.loadTradingStatus();
+      this.loadTradingAdminStatus();
    }
 
    componentWillUnmount() {
       this.removeAuthListener()
    }
-
-   loadTradingStatus() {
+   /* method to check the loading and admin status */
+   loadTradingAdminStatus() {
       var user_id = null;
       app.auth().onAuthStateChanged((user) => {
          if (user) {

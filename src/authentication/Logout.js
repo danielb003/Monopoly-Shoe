@@ -9,13 +9,13 @@ export default class Logout extends Component {
          redirect: false
       }
    }
-
+   /* signs the user out once the component had rendered */
    componentWillMount() {
       app.auth().signOut().then((user, error) => {
          this.setState({ redirect: true })
       });
    }
-
+   /* method redirects the user to the home page */
    render() {
       if(this.state.redirect === true) {
          return <Redirect to="/" />
