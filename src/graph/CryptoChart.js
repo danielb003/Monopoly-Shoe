@@ -1,3 +1,10 @@
+/*
+CryptoChart Component
+Author: Peter Locarnini
+Edited and Refactored by: Daniel Bellino, Panhaseth Heang, Peter Locarnini
+Date: 17/06/2018
+*/
+
 import React, { Component } from 'react';
 import LineChart from './LineChart';
 import ToolTip from './ToolTip';
