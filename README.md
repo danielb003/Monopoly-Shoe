@@ -1,3 +1,4 @@
+# Programming Project 1 - Prolific Trading
 ## Project Team:
 * Daniel Bellino - Product Owner
 * Peter Locarnini - Project Leader
