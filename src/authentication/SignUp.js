@@ -167,6 +167,7 @@ export default class SignUp extends Component {
       // validate input
       const validation = this.validator.validate(this.state);
       this.setState({validation});
+      console.log(validation);
       this.submitted = true;
 
       // check if validation passed
@@ -196,11 +197,14 @@ export default class SignUp extends Component {
       }
 
       // set user's uid as push key
-      var push_id = usersRef.push(user).key;
-      this.setState({
-         pushID: push_id
-      });
-      app.database().ref().child('user').child(push_id).set(user);
+      if (validation.isValid) {
+         console.log("In here");
+         var push_id = usersRef.push(user).key;
+         this.setState({
+            pushID: push_id
+         });
+         app.database().ref().child('user').child(push_id).set(user);
+      }
 
    }
 

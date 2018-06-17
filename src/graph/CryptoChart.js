@@ -14,16 +14,21 @@ const styles = theme => ({
         '&:focus': {
             boxShadow: '0 0 0 0.2rem rgba(240,248,255,.5)',
         }
-
-},
+    },
     custom2: {
         fontSize: 16,
         margin: theme.spacing.unit,
         '&:focus': {
             boxShadow: '0 0 0 0.2rem rgba(245,245,245,.5)',
         }
+    },
+    custom3: {
+       fontSize: 12,
+       textAlign: "center",
+       margin: "50px auto -50px auto",
+       border: "1px solid yellow",
+       textColorPrimary: "#ffffff"
     }
-
 });
 
 class CryptoChart extends Component {
@@ -162,6 +167,11 @@ class CryptoChart extends Component {
                   <div className='text-center'>
                         {this.state.pairs.map((pair, index) => <Button className={classes.custom2}  size="medium"  variant="raised"
                                                                        color="primary" key={index} onClick={() => this.onCoinClick(pair.name)}>{pair.name}</Button>)}
+                  </div>
+                  </div>
+                  <div className='row'>
+                  <div className={classes.custom3}>
+                     <p>Please use the buttons above to select the coin you would like to buy shares in</p>
                   </div>
                   </div>
                 {
