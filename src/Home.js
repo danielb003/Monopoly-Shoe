@@ -1,3 +1,10 @@
+/*
+Home Page
+Author: Daniel Bellino, Peter Locarnini, Bryan Soh, Panhaseth Heang
+Edited and Refactored By: Daniel Bellino
+Date: 17/06/2018
+*/
+
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import CryptoChart from './graph/CryptoChart';

@@ -1,3 +1,10 @@
+/*
+Authentication Component
+Author: Daniel Bellino
+Edited and Refactored By:
+Date: 17/06/2018
+*/
+
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import './Auth.css';

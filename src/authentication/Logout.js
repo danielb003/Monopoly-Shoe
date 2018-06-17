@@ -1,3 +1,10 @@
+/*
+Logout Page
+Author: Daniel bellino
+Edited and Refactored By:
+Date: 17/06/2018
+*/
+
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom'
 import { app } from '../Constant'

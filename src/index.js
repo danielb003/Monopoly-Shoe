@@ -1,3 +1,10 @@
+/*
+Index Component
+Author: Daniel Bellino
+Edited and Refactored By: Daniel Bellino
+Date: 17/06/2018
+*/
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';

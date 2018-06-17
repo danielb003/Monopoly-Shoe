@@ -1,3 +1,10 @@
+/*
+Login Page
+Author: Daniel Bellino
+Edited and Refactored By:
+Date: 17/06/2018
+*/
+
 import React, { Component } from 'react';
 import './Login.css';
 import { Redirect } from 'react-router-dom'

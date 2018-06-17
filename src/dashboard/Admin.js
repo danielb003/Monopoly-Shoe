@@ -2,8 +2,9 @@
 Admin Page
 Author: Daniel Bellino
 Edited and Refactored By: Daniel Bellino, Panhaseth Heang
-Date: 16/06/2018
+Date: 17/06/2018
 */
+
 import React, { Component } from 'react';
 import { Navbar, Nav, NavItem } from 'react-bootstrap';
 import './Admin.css';

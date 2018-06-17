@@ -1,6 +1,6 @@
 /*
 Dashboard Page
-Author: Peter Locarnini, Bryan Soh, Panhaseth Heang
+Author: Peter Locarnini, Bryan Soh, Panhaseth Heang, Daniel Bellino
 Edited and Refactored By: Peter Locarnini, Panhaseth Heang
 Date: 16/06/2018
 */
