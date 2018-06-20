@@ -173,7 +173,7 @@ class Transaction extends Component{
             let uid = buyOrderLists[index]["user_id"];
             const user = firebase.database().ref('portfolio/' + uid);
             // load user financial data from Firebase DB
-            user.on('value', (snapshot) => {
+            user.once('value', (snapshot) => {
                 if (snapshot.val() !== null) {
                     let final_user_coin = null;
                     let final_user_balance = null;
@@ -254,7 +254,7 @@ class Transaction extends Component{
             let uid = sellOrderLists[index]["user_id"];
             let current_coin_type = sellOrderLists[index]["coinType"];
             const user = firebase.database().ref('portfolio/' + uid);
-            user.on('value', (snapshot) => {
+            user.once('value', (snapshot) => {
                 let final_user_coin = null;
                 let final_user_balance = null;
                 let final_user_coin_amount_spent = null;
