@@ -183,11 +183,13 @@ componentWillUnmount(){
                                                                        color="primary" key={index} onClick={() => this.onCoinClick(pair.name)}>{pair.name}</Button>)}
                   </div>
                   </div>
+               {this.props.auth ? (
                   <div className='row'>
                   <div className={classes.custom3}>
                      <p className={classes.custom4} style={{color:'#e0e0e0'}}>Please use the buttons above to select the coin you would like to buy shares in</p>
                   </div>
                   </div>
+                  ) : null }
                 {
                     isAuth ? (<Transaction coin={this.state.coin}/>) : null
                 }
